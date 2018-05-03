@@ -1,2 +1,2 @@
 # Real
-Boost numerical type for real numbers representation 
+Boost numerical data type for real numbers representation 

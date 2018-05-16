@@ -68,13 +68,13 @@ namespace boost {
             };
 
             ~real() {
-                delete[] this->_number;
+                delete this->_number;
                 this->_number = NULL;
 
-                delete[] this->_lhs;
+                delete this->_lhs;
                 this->_lhs = NULL;
 
-                delete[] this->_rhs;
+                delete this->_rhs;
                 this->_rhs = NULL;
             }
 
@@ -85,7 +85,7 @@ namespace boost {
 
             int get_nth_digit(unsigned int n) const {
 
-                if (n > this->_digits.size()) {
+                if (n > this->_precision) {
                     return 0;
                 }
 
@@ -97,6 +97,10 @@ namespace boost {
                     case OP::ADD:
                         // check that this->_lhs != NULL and this->_rhs != NULL
                         return this->add_get_nth_digit(n);
+                }
+
+                if (n > this->_digits.size()) {
+                    return 0;
                 }
 
                 std::list<short>::const_iterator it = this->_digits.cbegin();

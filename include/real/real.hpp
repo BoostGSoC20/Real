@@ -19,12 +19,17 @@ namespace boost {
             real* _lhs = NULL;
             real* _rhs = NULL;
             OP _operation = OP::NONE;
+            int _add_operands = 1;
 
             real(OP operation, const real& lhs, const real& rhs) {
                 this->_lhs = new real(lhs);
                 this->_rhs = new real(rhs);
                 this->_precision = std::max(lhs._precision, rhs._precision);
                 this->_operation = operation;
+
+                if (operation == OP::ADD) {
+                    this->_add_operands = this->_lhs->_add_operands + this->_rhs->_add_operands;
+                }
             };
 
             // It assumes n < this->_precision
@@ -46,6 +51,26 @@ namespace boost {
             };
 
         public:
+
+            class iterator {
+            private:
+                std::list<short> m;
+                real* ptr;
+
+            public:
+                iterator() = default;
+                iterator(const iterator& other) : m(other.m) {}
+                iterator(real* ptr) : ptr(ptr) {}
+                std::list<short>& operator*() { return this->m; }
+                iterator operator++() {
+                    int n = this->m.size() + 1;
+                    this->ptr->_digits.size();
+                    this->m.push_back(this->ptr->get_nth_digit(n));
+
+
+                    return *this; // WARNING: This is returning the updated iterator;
+                }
+            };
 
             unsigned int _precision;
 

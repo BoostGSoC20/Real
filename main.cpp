@@ -18,7 +18,7 @@ int main() {
     boost::real::real e(c + d);
     e.print();
 
-    boost::real::real::iterator it = c.begin();
+    boost::real::real::iterator it = e.begin();
 
     for(int i = 0; i < 10; ++i) {
         std::cout << "lower bound: 0.";

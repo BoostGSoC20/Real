@@ -95,7 +95,7 @@ namespace boost {
                 std::list<short>& get_upper_bound() { return this->upper_bound; }
 
                 void operator++() {
-                    short new_digit;
+                    short new_digit, carry;
 
                     if (this->ptr->_operation == OP::NONE) {
                         if (!this->upper_bound.empty()) {
@@ -106,17 +106,20 @@ namespace boost {
                         this->n++;
                         new_digit = this->ptr->get_nth_digit(this->n);
                         this->lower_bound.push_back(new_digit);
-                        this->upper_bound.push_back(new_digit + 1);
-                        auto it = this->upper_bound.rbegin();
-                        while (it != upper_bound.rend() && *it == 10) {
-                            *it = 0;
-                            ++it;
-                            *it += 1;
+
+                        carry = 1;
+                        this->upper_bound.clear();
+                        for (auto it = this->lower_bound.rbegin(); it != lower_bound.rend(); ++it) {
+                            if (*it + carry == 10) {
+                                this->upper_bound.push_front(0);
+                            } else {
+                                this->upper_bound.push_front(*it + carry);
+                                carry = 0;
+                            }
                         }
 
-                        if (this->upper_bound.front() == 10) {
-                            this->upper_bound.front() = 0;
-                            this->upper_bound.push_front(1);
+                        if (carry > 0) {
+                            this->upper_bound.push_front(carry);
                         }
 
                         return;

@@ -4,3 +4,8 @@ set (Boost.Real 1)
 set (Boost.Real 0)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -std=c++11")
+
+include_directories(include)
+set(SOURCES main.cpp)
+
+add_executable(main ${SOURCES})

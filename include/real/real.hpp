@@ -5,6 +5,7 @@
 #include <list>
 #include <algorithm>
 #include <initializer_list>
+#include <utility>
 
 #include <real/number.hpp>
 
@@ -32,35 +33,45 @@ namespace boost {
                 }
             };
 
-            // It assumes n < this->_precision
-            int add_get_nth_digit(unsigned int n) const {
-                short carry = 0;
-                int digit;
-                for(int i = this->_precision; i > 0; i--) {
-                    digit = carry + this->_lhs->get_nth_digit(i) + this->_rhs->get_nth_digit(i);
-                    if (digit > 9) {
-                        carry = 1;
-                        digit -= 10;
-                    } else {
-                        carry = 0;
-                    }
-                    if (i == n) {
-                        return digit;
-                    }
-                }
-            };
-
         public:
 
             class iterator {
             private:
-                std::list<short> lower_bound = { 0 };
-                std::list<short> upper_bound = { 0 };
-                int n = 1;
+                std::list<short> lower_bound = {};
+                std::list<short> upper_bound = {};
+                unsigned int n = 0;
 
-                real* ptr;
-                iterator* lhs_iterator;
-                iterator* rhs_iterator;
+                real* ptr = NULL;
+                iterator* lhs_iterator = NULL;
+                iterator* rhs_iterator = NULL;
+
+                void add_bounds(const std::list<short>& lhs, const std::list<short>& rhs, std::list<short>& result) const {
+                    short carry = 0;
+                    short digit;
+
+                    auto lhs_it = lhs.crbegin();
+                    auto rhs_it = rhs.crbegin();
+
+                    while(lhs_it != lhs.crend() and rhs_it != rhs.crend()) {
+
+                        digit = carry + *lhs_it + *rhs_it;
+
+                        if (digit > 9) {
+                            carry = 1;
+                            digit -= 10;
+                        } else {
+                            carry = 0;
+                        }
+
+                        result.push_front(digit);
+                        ++lhs_it;
+                        ++rhs_it;
+                    }
+
+                    if (carry == 1) {
+                        result.push_front(1);
+                    }
+                };
 
             public:
                 iterator() = default;
@@ -68,31 +79,58 @@ namespace boost {
                 iterator(const iterator& other)
                         : lower_bound(other.lower_bound),
                           upper_bound(other.upper_bound),
-                          ptr(other.ptr),
                           n(other.n),
+                          ptr(other.ptr),
                           lhs_iterator(other.lhs_iterator),
                           rhs_iterator(other.rhs_iterator) {}
 
-                // TODO: add the lhs and rhs iterators
-                iterator(real* ptr)
-                        : ptr(ptr) {;
+                iterator(real* ptr) : ptr(ptr) {
+                    if (this->ptr->_operation != OP::NONE) {
+                        this->lhs_iterator = new iterator(this->ptr->_lhs->begin());
+                        this->rhs_iterator = new iterator(this->ptr->_rhs->begin());
+                    }
                 }
 
-                iterator operator++() {
+                std::list<short>& get_lower_bound() { return this->lower_bound; }
+                std::list<short>& get_upper_bound() { return this->upper_bound; }
 
-                    //TODO: fix this intializator, does not work because the *this does not return an iterator
-                    iterator i(*this);
+                void operator++() {
+                    short new_digit;
 
                     if (this->ptr->_operation == OP::NONE) {
-                        this->lower_bound.push_back(this->ptr->get_nth_digit(this->n));
-                        this->upper_bound.push_back(this->ptr->get_nth_digit(this->n));
+                        if (!this->upper_bound.empty()) {
+                            this->upper_bound.pop_back();
+                            this->upper_bound.push_back(this->lower_bound.back());
+                        }
+
                         this->n++;
-                        return i;
+                        new_digit = this->ptr->get_nth_digit(this->n);
+                        this->lower_bound.push_back(new_digit);
+                        this->upper_bound.push_back(new_digit + 1);
+                        auto it = this->upper_bound.rbegin();
+                        while (it != upper_bound.rend() && *it == 10) {
+                            *it = 0;
+                            ++it;
+                            *it += 1;
+                        }
+
+                        if (this->upper_bound.front() == 10) {
+                            this->upper_bound.front() = 0;
+                            this->upper_bound.push_front(1);
+                        }
+
+                        return;
                     }
 
-                    // TODO: Make the algorthm margin both iterators.
+                    this->lower_bound.clear();
+                    this->upper_bound.clear();
 
-                    return i;
+                    if (this->ptr->_operation == OP::ADD) {
+                        ++(*this->lhs_iterator);
+                        ++(*this->rhs_iterator);
+                        this->add_bounds((*this->lhs_iterator).get_lower_bound(), (*this->rhs_iterator).get_lower_bound(), this->lower_bound);
+                        this->add_bounds((*this->lhs_iterator).get_upper_bound(), (*this->rhs_iterator).get_upper_bound(), this->upper_bound);
+                    }
                 }
             };
 
@@ -127,11 +165,6 @@ namespace boost {
                 this->_rhs = NULL;
             }
 
-            real& operator+=(const real& rhs) {};
-            real& operator-=(const real& rhs) {};
-            real& operator*=(const real& rhs) {};
-            real& operator/=(const real& rhs) {};
-
             /*
              * Returns the nth digit of a base case number (i.e. a number that is not a composition of
              * multiple numbers operations)
@@ -149,7 +182,7 @@ namespace boost {
                 }
 
                 std::list<short>::const_iterator it = this->_digits.cbegin();
-                for (int i = 1; i < n; i++) { it++; }
+                for (unsigned int i = 1; i < n; i++) { it++; }
 
                 return *it;
             };
@@ -157,18 +190,18 @@ namespace boost {
             template <typename NUMBER, typename... Args>
             void add_number(Args&&... args) {
                 this->_number = new NUMBER(std::forward<Args>(args)...);
-            };
+            }
 
             // TODO: modify to use the iterator and print the number as the range [lower, upper] bounds
             void print() const {
                 std::cout << "0.";
-                for (int i = 1; i <= this->_precision; i++) {
+                for (unsigned int i = 1; i <= this->_precision; i++) {
                     std::cout << this->get_nth_digit(i);
                 }
                 std::cout << std::endl;
-            };
+            }
 
-            iterator begin() { return iterator(*this); }
+            iterator begin() { return iterator(this); }
 
             // friend operators are needed to access the private enum OP
             friend real operator+(const real& lhs, const real& rhs);

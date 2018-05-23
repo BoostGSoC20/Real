@@ -5,6 +5,7 @@ namespace boost {
     namespace real {
         class number {
         public:
+            virtual ~number() {};
             virtual int get_nth_digit(unsigned int n) const = 0;
         };
     }

@@ -12,14 +12,29 @@ int main() {
     a.print();
     b.print();
 
-    boost::real::real c(15, {4,4,4,4,4,5});
-    boost::real::real d(15, {3,5,5,5,5,5});
+    boost::real::real c(15, {9,9,9,9,9,9});
+    boost::real::real d(15, {9,9,9,9,9,9});
 
     boost::real::real e(c + d);
     e.print();
 
-    boost::real::real::iterator it = a.begin();
+    boost::real::real::iterator it = c.begin();
 
-    for(int i = 0; i < 10; i++) { ++it; }
+    for(int i = 0; i < 10; ++i) {
+        std::cout << "lower bound: 0.";
+        for (auto& l : it.get_lower_bound()) {
+            std::cout << l << "";
+        }
+
+        std::cout << std::endl;
+
+        std::cout << "upper bound: 0.";
+        for (auto& l : it.get_upper_bound()) {
+            std::cout << l << "";
+        }
+
+        std::cout << std::endl;
+        ++it;
+    }
     return 0;
 }

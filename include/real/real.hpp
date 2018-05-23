@@ -54,21 +54,45 @@ namespace boost {
 
             class iterator {
             private:
-                std::list<short> m;
+                std::list<short> lower_bound = { 0 };
+                std::list<short> upper_bound = { 0 };
+                int n = 1;
+
                 real* ptr;
+                iterator* lhs_iterator;
+                iterator* rhs_iterator;
 
             public:
                 iterator() = default;
-                iterator(const iterator& other) : m(other.m) {}
-                iterator(real* ptr) : ptr(ptr) {}
-                std::list<short>& operator*() { return this->m; }
+
+                iterator(const iterator& other)
+                        : lower_bound(other.lower_bound),
+                          upper_bound(other.upper_bound),
+                          ptr(other.ptr),
+                          n(other.n),
+                          lhs_iterator(other.lhs_iterator),
+                          rhs_iterator(other.rhs_iterator) {}
+
+                // TODO: add the lhs and rhs iterators
+                iterator(real* ptr)
+                        : ptr(ptr) {;
+                }
+
                 iterator operator++() {
-                    int n = this->m.size() + 1;
-                    this->ptr->_digits.size();
-                    this->m.push_back(this->ptr->get_nth_digit(n));
 
+                    //TODO: fix this intializator, does not work because the *this does not return an iterator
+                    iterator i(*this);
 
-                    return *this; // WARNING: This is returning the updated iterator;
+                    if (this->ptr->_operation == OP::NONE) {
+                        this->lower_bound.push_back(this->ptr->get_nth_digit(this->n));
+                        this->upper_bound.push_back(this->ptr->get_nth_digit(this->n));
+                        this->n++;
+                        return i;
+                    }
+
+                    // TODO: Make the algorthm margin both iterators.
+
+                    return i;
                 }
             };
 
@@ -108,20 +132,16 @@ namespace boost {
             real& operator*=(const real& rhs) {};
             real& operator/=(const real& rhs) {};
 
+            /*
+             * Returns the nth digit of a base case number (i.e. a number that is not a composition of
+             * multiple numbers operations)
+             *
+             * Requires: this->_operation == OP::NONE
+             */
             int get_nth_digit(unsigned int n) const {
-
-                if (n > this->_precision) {
-                    return 0;
-                }
 
                 if (this->_number != NULL) {
                     return this->_number->get_nth_digit(n);
-                }
-
-                switch (this->_operation) {
-                    case OP::ADD:
-                        // check that this->_lhs != NULL and this->_rhs != NULL
-                        return this->add_get_nth_digit(n);
                 }
 
                 if (n > this->_digits.size()) {
@@ -129,9 +149,7 @@ namespace boost {
                 }
 
                 std::list<short>::const_iterator it = this->_digits.cbegin();
-                for (int i = 1; i < n; i++) {
-                    it++;
-                }
+                for (int i = 1; i < n; i++) { it++; }
 
                 return *it;
             };
@@ -141,6 +159,7 @@ namespace boost {
                 this->_number = new NUMBER(std::forward<Args>(args)...);
             };
 
+            // TODO: modify to use the iterator and print the number as the range [lower, upper] bounds
             void print() const {
                 std::cout << "0.";
                 for (int i = 1; i <= this->_precision; i++) {
@@ -148,6 +167,8 @@ namespace boost {
                 }
                 std::cout << std::endl;
             };
+
+            iterator begin() { return iterator(*this); }
 
             // friend operators are needed to access the private enum OP
             friend real operator+(const real& lhs, const real& rhs);

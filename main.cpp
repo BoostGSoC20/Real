@@ -18,11 +18,8 @@ int main() {
     boost::real::real e(c + d);
     e.print();
 
-    boost::real::real::iterator it(&a);
+    boost::real::real::iterator it = a.begin();
 
-    for(int i = 0; i < 10; i++) {
-        std::cout << (*it).size() << std::endl;
-        ++it;
-    }
+    for(int i = 0; i < 10; i++) { ++it; }
     return 0;
 }

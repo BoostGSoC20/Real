@@ -40,15 +40,38 @@ namespace boost {
                 std::list<short> lower_bound = {};
                 std::list<short> upper_bound = {};
                 unsigned int n = 0;
+                unsigned int lower_integer_part = 0;
+                unsigned int upper_integer_part = 0;
 
                 real* ptr = NULL;
                 iterator* lhs_iterator = NULL;
                 iterator* rhs_iterator = NULL;
 
-                void add_bounds(const std::list<short>& lhs, const std::list<short>& rhs, std::list<short>& result) const {
+                unsigned int add_bounds(std::list<short> lhs, unsigned int lhs_integers, std::list<short> rhs, unsigned int rhs_integers, std::list<short>& result) const {
                     short carry = 0;
                     short digit;
 
+                    // This is to align numbers
+                    while (lhs_integers < rhs_integers) {
+
+                        lhs.push_front(0);
+                        lhs_integers++;
+                    }
+
+                    while (rhs_integers < lhs_integers) {
+                        lhs.push_front(0);
+                        rhs_integers++;
+                    }
+
+                    while (lhs.size() < rhs.size()) {
+                        lhs.push_back(0);
+                    }
+
+                    while (rhs.size() < lhs.size()) {
+                        rhs.push_back(0);
+                    }
+
+                    // Here does the addition starts
                     auto lhs_it = lhs.crbegin();
                     auto rhs_it = rhs.crbegin();
 
@@ -70,7 +93,10 @@ namespace boost {
 
                     if (carry == 1) {
                         result.push_front(1);
+                        return rhs_integers + 1;
                     }
+
+                    return rhs_integers;
                 };
 
             public:
@@ -80,6 +106,8 @@ namespace boost {
                         : lower_bound(other.lower_bound),
                           upper_bound(other.upper_bound),
                           n(other.n),
+                          lower_integer_part(other.lower_integer_part),
+                          upper_integer_part(other.upper_integer_part),
                           ptr(other.ptr),
                           lhs_iterator(other.lhs_iterator),
                           rhs_iterator(other.rhs_iterator) {}
@@ -88,14 +116,20 @@ namespace boost {
                     if (this->ptr->_operation != OP::NONE) {
                         this->lhs_iterator = new iterator(this->ptr->_lhs->begin());
                         this->rhs_iterator = new iterator(this->ptr->_rhs->begin());
+                    } else {
+                        this->lower_bound.push_back(0);
+                        this->upper_bound.push_back(0);
+                        this->lower_integer_part = 1;
+                        this->upper_integer_part = 1;
                     }
+
+                    ++(*this);
                 }
 
                 std::list<short>& get_lower_bound() { return this->lower_bound; }
                 std::list<short>& get_upper_bound() { return this->upper_bound; }
 
                 void operator++() {
-                    short new_digit, carry;
 
                     if (this->ptr->_operation == OP::NONE) {
                         if (!this->upper_bound.empty()) {
@@ -104,10 +138,9 @@ namespace boost {
                         }
 
                         this->n++;
-                        new_digit = this->ptr->get_nth_digit(this->n);
-                        this->lower_bound.push_back(new_digit);
+                        this->lower_bound.push_back(this->ptr->get_nth_digit(this->n));
 
-                        carry = 1;
+                        short carry = 1;
                         this->upper_bound.clear();
                         for (auto it = this->lower_bound.rbegin(); it != lower_bound.rend(); ++it) {
                             if (*it + carry == 10) {
@@ -120,6 +153,7 @@ namespace boost {
 
                         if (carry > 0) {
                             this->upper_bound.push_front(carry);
+                            this->upper_integer_part = this->lower_integer_part + 1;
                         }
 
                         return;
@@ -131,9 +165,30 @@ namespace boost {
                     if (this->ptr->_operation == OP::ADD) {
                         ++(*this->lhs_iterator);
                         ++(*this->rhs_iterator);
-                        this->add_bounds((*this->lhs_iterator).get_lower_bound(), (*this->rhs_iterator).get_lower_bound(), this->lower_bound);
-                        this->add_bounds((*this->lhs_iterator).get_upper_bound(), (*this->rhs_iterator).get_upper_bound(), this->upper_bound);
+                        this->lower_integer_part = this->add_bounds((*this->lhs_iterator).get_lower_bound(), (*this->lhs_iterator).lower_integer_part, (*this->rhs_iterator).get_lower_bound(), (*this->rhs_iterator).lower_integer_part, this->lower_bound);
+                        this->upper_integer_part = this->add_bounds((*this->lhs_iterator).get_upper_bound(), (*this->lhs_iterator).upper_integer_part, (*this->rhs_iterator).get_upper_bound(), (*this->rhs_iterator).upper_integer_part, this->upper_bound);
                     }
+                }
+
+                void print() {
+                    std::cout << '[';
+                    short before_dot = this->lower_integer_part;
+                    for (auto& d : this->lower_bound) {
+                        std::cout << d;
+                        before_dot--;
+                        if (before_dot == 0) std::cout << '.';
+                    }
+
+                    std::cout << ", ";
+
+                    before_dot = this->upper_integer_part;
+                    for (auto& d : this->upper_bound) {
+                        std::cout << d;
+                        before_dot--;
+                        if (before_dot == 0) std::cout << '.';
+                    }
+
+                    std::cout << ']';
                 }
             };
 

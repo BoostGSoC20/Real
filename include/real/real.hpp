@@ -14,7 +14,7 @@ namespace boost {
         class real {
 
             // Available operations
-            enum class OP {ADD, SUB, MUL, DIV, NONE};
+            enum class OP {ADDITION, SUBTRACT, NONE};
 
             // Explicit number definition
             std::list<int> _digits;
@@ -87,7 +87,6 @@ namespace boost {
 
                     this->align_numbers(lhs, lhs_integers, rhs, rhs_integers);
 
-                    // Here does the addition starts
                     auto lhs_it = lhs.crbegin();
                     auto rhs_it = rhs.crbegin();
 
@@ -115,9 +114,44 @@ namespace boost {
                     return rhs_integers;
                 };
 
+                /*
+                 * Pre-condition: lhs >= rhs
+                 */
                 int subtract_bounds(std::list<int> lhs, int lhs_integers, std::list<int> rhs, int rhs_integers, std::list<int>& result) const {
+                    int borrow = 0;
+
                     this->align_numbers(lhs, lhs_integers, rhs, rhs_integers);
-                    return 1;
+
+                    auto lhs_it = lhs.rbegin();
+                    auto rhs_it = rhs.rbegin();
+
+                    while(lhs_it != lhs.rend() and rhs_it != rhs.rend()) {
+
+                        if (*lhs_it < borrow) {
+                            *lhs_it += (10 - borrow); // Borrow is always 0 or 1, then it is never greater than 10
+                        } else {
+                            *lhs_it -= borrow;
+                            borrow = 0;
+                        }
+
+                        if (*lhs_it < *rhs_it) {
+                            *lhs_it += 10;
+                            borrow++;
+                        }
+
+                        result.push_front(*lhs_it - *rhs_it);
+                        ++lhs_it;
+                        ++rhs_it;
+                    }
+
+
+                    // Remove possible 0 prefix if more significant digits were canceled.
+                    while (result.front() == 0 && lhs_integers > 0) {
+                        result.pop_front();
+                        --lhs_integers;
+                    }
+
+                    return lhs_integers;
                 };
 
             public:
@@ -144,6 +178,8 @@ namespace boost {
 
                 void operator++() {
 
+                    // Single number (i.e. A number that is not a composition of two number related by an operator)
+                    // TODO: consider the case when n >= the number digit amount, if that's the case, then, the number has an exact representation and lower_boud == upper_bound
                     if (this->real_ptr->_operation == OP::NONE) {
                         if (!this->upper_bound.empty()) {
                             this->upper_bound.pop_back();
@@ -175,11 +211,18 @@ namespace boost {
                     this->lower_bound.clear();
                     this->upper_bound.clear();
 
-                    if (this->real_ptr->_operation == OP::ADD) {
-                        ++(*this->lhs_it_ptr);
-                        ++(*this->rhs_it_ptr);
+                    ++(*this->lhs_it_ptr);
+                    ++(*this->rhs_it_ptr);
+
+                    // TODO: This is only considering addition and subtraction between positive numbers.
+                    // TODO: The subtraction assumes lhs >= rhs, otherwise fails.
+                    // TODO: positive-negative leq and geq number combination must be considered to get correct result for all the cases.
+                    if (this->real_ptr->_operation == OP::ADDITION) {
                         this->lower_integer_part = this->add_bounds((*this->lhs_it_ptr).get_lower_bound(), (*this->lhs_it_ptr).lower_integer_part, (*this->rhs_it_ptr).get_lower_bound(), (*this->rhs_it_ptr).lower_integer_part, this->lower_bound);
                         this->upper_integer_part = this->add_bounds((*this->lhs_it_ptr).get_upper_bound(), (*this->lhs_it_ptr).upper_integer_part, (*this->rhs_it_ptr).get_upper_bound(), (*this->rhs_it_ptr).upper_integer_part, this->upper_bound);
+                    } else if (this->real_ptr->_operation == OP::SUBTRACT) {
+                        this->lower_integer_part = this->subtract_bounds((*this->lhs_it_ptr).get_lower_bound(), (*this->lhs_it_ptr).lower_integer_part, (*this->rhs_it_ptr).get_upper_bound(), (*this->rhs_it_ptr).lower_integer_part, this->lower_bound);
+                        this->upper_integer_part = this->subtract_bounds((*this->lhs_it_ptr).get_upper_bound(), (*this->lhs_it_ptr).upper_integer_part, (*this->rhs_it_ptr).get_lower_bound(), (*this->rhs_it_ptr).upper_integer_part, this->upper_bound);
                     }
                 }
 
@@ -266,11 +309,11 @@ namespace boost {
             iterator begin() { return iterator(this); }
 
             real operator+(const real& other) {
-                return real(real::OP::ADD, *this, other);
+                return real(real::OP::ADDITION, *this, other);
             }
 
             real operator-(const real& other) {
-                return real(real::OP::SUB, *this, other);
+                return real(real::OP::SUBTRACT, *this, other);
             }
 
             //TODO: make this const for operands, the problem is that iterators should be const

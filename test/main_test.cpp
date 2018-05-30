@@ -30,5 +30,17 @@ int main() {
         std::cout << "g < f --> false" << std::endl;
     }
 
+    boost::real::real h = (f - g);
+
+    std::cout << "h: ";
+    h.print(15);
+    std::cout << std::endl;
+    std::cout << "f: ";
+    f.print(15);
+    std::cout << std::endl;
+    std::cout << "g: ";
+    g.print(15);
+    std::cout << std::endl;
+
     return 0;
 }

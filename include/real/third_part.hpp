@@ -9,7 +9,7 @@ namespace boost {
         public:
             third_part() = default;
 
-            int get_nth_digit(unsigned int n) const { return 3; }
+            int get_nth_digit(int n) const { return 3; }
         };
     }
 }

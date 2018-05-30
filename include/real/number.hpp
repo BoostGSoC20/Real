@@ -6,7 +6,7 @@ namespace boost {
         class number {
         public:
             virtual ~number() {};
-            virtual int get_nth_digit(unsigned int n) const = 0;
+            virtual int get_nth_digit(int n) const = 0;
         };
     }
 }

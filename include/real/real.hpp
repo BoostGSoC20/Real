@@ -33,6 +33,23 @@ namespace boost {
                 this->_operation = operation;
             };
 
+            bool is_lower(const std::list<short>& lhs, std::list<short>& rhs) const {
+
+                // Check if lhs is lower than rhs
+                auto lhs_it = lhs.cbegin();
+                auto rhs_it = rhs.cbegin();
+                while (rhs_it != rhs.end() && lhs_it != lhs.end() && *lhs_it == *rhs_it) {
+                    ++lhs_it;
+                    ++rhs_it;
+                }
+
+                if (rhs_it != rhs.end() && lhs_it != lhs.end() && *lhs_it < *rhs_it) {
+                    return true;
+                }
+
+                return false;
+            }
+
         public:
 
             class iterator {
@@ -254,25 +271,31 @@ namespace boost {
 
             // friend operators are needed to access the private enum OP
             friend real operator+(const real& lhs, const real& rhs);
-            friend bool operator<(const real& lhs, const real& rhs);
+
+            //TODO: make this const for operands, the problem is that iterators should be const
+            bool operator<(real& other) {
+                auto this_it = this->begin();
+                auto other_it = other.begin();
+
+                //TODO: if both numbers are equal, this program never ends, thus, an end point must be set
+                while (true) {
+                    // Get more precision
+                    ++this_it;
+                    ++other_it;
+
+                    if (this->is_lower(this_it.get_upper_bound(), other_it.get_lower_bound())) {
+                        return true;
+                    }
+
+                    if (this->is_lower(other_it.get_upper_bound(), this_it.get_lower_bound())) {
+                        return false;
+                    }
+                }
+            }
         };
 
         inline real operator+(const real& lhs, const real& rhs) {
             return real(real::OP::ADD, lhs, rhs);
-        }
-
-        //TODO: make this const for operands, the problem is that iterators should be const
-        inline bool operator<(real& lhs, real& rhs) {
-            auto lhs_iterator = lhs.begin();
-            auto rhs_iterator = rhs.begin();
-            bool overlap = true;
-
-            std::list<short>::iterator lhs_lit;
-            std::list<short>::iterator rhs_lit;
-            std::list<short>::iterator lhs_uit;
-            std::list<short>::iterator rhs_uit;
-
-            return true;
         }
     }
 }

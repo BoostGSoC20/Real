@@ -20,5 +20,15 @@ int main() {
         std::cout << std::endl;
         ++it;
     }
+
+    boost::real::real f({9,9,9,9,9,9});
+    boost::real::real g({9,9,9,9,9,8});
+
+    if (g < f) {
+        std::cout << "g < f --> true" << std::endl;
+    } else {
+        std::cout << "g < f --> false" << std::endl;
+    }
+
     return 0;
 }

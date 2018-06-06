@@ -43,7 +43,7 @@ namespace boost {
                 }
             }
 
-            int add_bounds(std::list<int> lhs, int lhs_integers, std::list<int> rhs, int rhs_integers, std::list<int>& result) {
+            int add_bounds(std::list<int>& lhs, int lhs_integers, std::list<int>& rhs, int rhs_integers, std::list<int>& result) {
                 int carry = 0;
                 int digit;
 
@@ -79,7 +79,7 @@ namespace boost {
             /*
              * Pre-condition: lhs >= rhs
              */
-            int subtract_bounds(std::list<int> lhs, int lhs_integers, std::list<int> rhs, int rhs_integers, std::list<int>& result) {
+            int subtract_bounds(std::list<int>& lhs, int lhs_integers, std::list<int>& rhs, int rhs_integers, std::list<int>& result) {
                 int borrow = 0;
 
                 boost::real::helper::align_numbers(lhs, lhs_integers, rhs, rhs_integers);

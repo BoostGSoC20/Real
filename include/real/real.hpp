@@ -51,84 +51,83 @@ namespace boost {
 
         public:
 
-            class iterator {
+            class const_iterator {
             private:
 
-                // Number range boundaries
-                std::list<int> lower_bound = {};
-                std::list<int> upper_bound = {};
-                int lower_integer_part = 0;
-                int upper_integer_part = 0;
-
                 // Iterator precision
-                int n = 0;
+                int _n = 0;
 
                 // Internal number to iterate
-                real* real_ptr = nullptr;
+                real const* _real_ptr = nullptr;
 
-                // If the number is a composition, the iterator uses the operand iterators
-                iterator* lhs_it_ptr = nullptr;
-                iterator* rhs_it_ptr = nullptr;
+                // If the number is a composition, the const_iterator uses the operand iterators
+                const_iterator* _lhs_it_ptr = nullptr;
+                const_iterator* _rhs_it_ptr = nullptr;
 
             public:
-                iterator() = default;
 
-                iterator(const iterator& other) = default;
+                // Number range boundaries
+                std::list<int> _lower_bound = {};
+                std::list<int> _upper_bound = {};
+                int _lower_integer_part = 0;
+                int _upper_integer_part = 0;
 
-                explicit iterator(real* ptr) : real_ptr(ptr) {
-                    if (this->real_ptr->_operation != OP::NONE) {
-                        this->lhs_it_ptr = new iterator(this->real_ptr->_lhs_ptr->begin());
-                        this->rhs_it_ptr = new iterator(this->real_ptr->_rhs_ptr->begin());
+                const_iterator() = default;
+
+                const_iterator(const const_iterator& other) = default;
+
+                explicit const_iterator(real* ptr) : _real_ptr(ptr) {
+                    if (this->_real_ptr->_operation == OP::NONE) {
+                        this->_lower_bound.push_back(0);
+                        this->_upper_bound.push_back(0);
+                        this->_lower_integer_part = 1;
+                        this->_upper_integer_part = 1;
                     } else {
-                        this->lower_bound.push_back(0);
-                        this->upper_bound.push_back(0);
-                        this->lower_integer_part = 1;
-                        this->upper_integer_part = 1;
+                        this->_lhs_it_ptr = new const_iterator(this->_real_ptr->_lhs_ptr->begin());
+                        this->_rhs_it_ptr = new const_iterator(this->_real_ptr->_rhs_ptr->begin());
                     }
 
                     ++(*this);
                 }
 
-                std::list<int>& get_lower_bound() { return this->lower_bound; }
-                std::list<int>& get_upper_bound() { return this->upper_bound; }
-
                 void operator++() {
 
                     // Single number iteration
                     // i.e. A number that is not a composition of two number related by an operator
-                    if (this->real_ptr->_operation == OP::NONE) {
-                        this->n++;
+                    if (this->_real_ptr->_operation == OP::NONE) {
+                        this->_n++;
 
-                        if (this->n > (int)this->real_ptr->_digits.size()) {
-                            this->lower_bound.push_back(0);
-                            this->upper_bound.push_back(0);
+                        if (this->_n > (int)this->_real_ptr->_digits.size()) {
+                            this->_lower_bound.push_back(0);
+                            this->_upper_bound.push_back(0);
+
                             return;
                         }
 
-                        this->upper_bound.clear();
-                        this->lower_bound.push_back(this->real_ptr->get_nth_digit(this->n));
+                        this->_upper_bound.clear();
+                        this->_lower_bound.push_back(this->_real_ptr->get_nth_digit(this->_n));
 
-                        if (this->n == (int)this->real_ptr->_digits.size()) {
-                            for (auto& d : this->lower_bound) {
-                                this->upper_bound.push_back(d);
+                        if (this->_n == (int)this->_real_ptr->_digits.size()) {
+                            for (auto& d : this->_lower_bound) {
+                                this->_upper_bound.push_back(d);
                             }
 
                             return;
                         }
 
                         int carry = 1;
-                        for (auto it = this->lower_bound.rbegin(); it != lower_bound.rend(); ++it) {
+                        for (auto it = this->_lower_bound.rbegin(); it != _lower_bound.rend(); ++it) {
                             if (*it + carry == 10) {
-                                this->upper_bound.push_front(0);
+                                this->_upper_bound.push_front(0);
                             } else {
-                                this->upper_bound.push_front(*it + carry);
+                                this->_upper_bound.push_front(*it + carry);
                                 carry = 0;
                             }
                         }
 
                         if (carry > 0) {
-                            this->upper_bound.push_front(carry);
-                            this->upper_integer_part = this->lower_integer_part + 1;
+                            this->_upper_bound.push_front(carry);
+                            this->_upper_integer_part = this->_lower_integer_part + 1;
                         }
 
                         return;
@@ -136,28 +135,28 @@ namespace boost {
 
                     // Composed number iteration
                     // i.e. a number that is an operation between two real numbers
-                    this->lower_bound.clear();
-                    this->upper_bound.clear();
+                    this->_lower_bound.clear();
+                    this->_upper_bound.clear();
 
-                    ++(*this->lhs_it_ptr);
-                    ++(*this->rhs_it_ptr);
+                    ++(*this->_lhs_it_ptr);
+                    ++(*this->_rhs_it_ptr);
 
                     // TODO: This is only considering addition and subtraction between positive numbers.
                     // TODO: The subtraction assumes lhs >= rhs, otherwise fails.
                     // TODO: positive-negative leq and geq number combination must be considered to get correct result for all the cases.
-                    if (this->real_ptr->_operation == OP::ADDITION) {
-                        this->lower_integer_part = boost::real::helper::add_bounds((*this->lhs_it_ptr).get_lower_bound(), (*this->lhs_it_ptr).lower_integer_part, (*this->rhs_it_ptr).get_lower_bound(), (*this->rhs_it_ptr).lower_integer_part, this->lower_bound);
-                        this->upper_integer_part = boost::real::helper::add_bounds((*this->lhs_it_ptr).get_upper_bound(), (*this->lhs_it_ptr).upper_integer_part, (*this->rhs_it_ptr).get_upper_bound(), (*this->rhs_it_ptr).upper_integer_part, this->upper_bound);
-                    } else if (this->real_ptr->_operation == OP::SUBTRACT) {
-                        this->lower_integer_part = boost::real::helper::subtract_bounds((*this->lhs_it_ptr).get_lower_bound(), (*this->lhs_it_ptr).lower_integer_part, (*this->rhs_it_ptr).get_upper_bound(), (*this->rhs_it_ptr).lower_integer_part, this->lower_bound);
-                        this->upper_integer_part = boost::real::helper::subtract_bounds((*this->lhs_it_ptr).get_upper_bound(), (*this->lhs_it_ptr).upper_integer_part, (*this->rhs_it_ptr).get_lower_bound(), (*this->rhs_it_ptr).upper_integer_part, this->upper_bound);
+                    if (this->_real_ptr->_operation == OP::ADDITION) {
+                        this->_lower_integer_part = boost::real::helper::add_bounds(this->_lhs_it_ptr->_lower_bound, this->_lhs_it_ptr->_lower_integer_part, this->_rhs_it_ptr->_lower_bound, this->_rhs_it_ptr->_lower_integer_part, this->_lower_bound);
+                        this->_upper_integer_part = boost::real::helper::add_bounds(this->_lhs_it_ptr->_upper_bound, this->_lhs_it_ptr->_upper_integer_part, this->_rhs_it_ptr->_upper_bound, this->_rhs_it_ptr->_upper_integer_part, this->_upper_bound);
+                    } else if (this->_real_ptr->_operation == OP::SUBTRACT) {
+                        this->_lower_integer_part = boost::real::helper::subtract_bounds(this->_lhs_it_ptr->_lower_bound, this->_lhs_it_ptr->_lower_integer_part, this->_rhs_it_ptr->_upper_bound, this->_rhs_it_ptr->_lower_integer_part, this->_lower_bound);
+                        this->_upper_integer_part = boost::real::helper::subtract_bounds(this->_lhs_it_ptr->_upper_bound, this->_lhs_it_ptr->_upper_integer_part, this->_rhs_it_ptr->_lower_bound, this->_rhs_it_ptr->_upper_integer_part, this->_upper_bound);
                     }
                 }
 
                 void print() {
                     std::cout << '[';
-                    int before_dot = this->lower_integer_part;
-                    for (auto& d : this->lower_bound) {
+                    int before_dot = this->_lower_integer_part;
+                    for (auto& d : this->_lower_bound) {
                         std::cout << d;
                         before_dot--;
                         if (before_dot == 0) std::cout << '.';
@@ -165,8 +164,8 @@ namespace boost {
 
                     std::cout << ", ";
 
-                    before_dot = this->upper_integer_part;
-                    for (auto& d : this->upper_bound) {
+                    before_dot = this->_upper_integer_part;
+                    for (auto& d : this->_upper_bound) {
                         std::cout << d;
                         before_dot--;
                         if (before_dot == 0) std::cout << '.';
@@ -233,7 +232,7 @@ namespace boost {
                 it.print();
             }
 
-            iterator begin() { return iterator(this); }
+            const_iterator begin() { return const_iterator(this); }
 
             /************** Operators ******************/
 
@@ -266,11 +265,11 @@ namespace boost {
                     ++this_it;
                     ++other_it;
 
-                    if (boost::real::helper::is_lower(this_it.get_upper_bound(), other_it.get_lower_bound())) {
+                    if (boost::real::helper::is_lower(this_it._upper_bound, other_it._lower_bound)) {
                         return true;
                     }
 
-                    if (boost::real::helper::is_lower(other_it.get_upper_bound(), this_it.get_lower_bound())) {
+                    if (boost::real::helper::is_lower(other_it._upper_bound, this_it._lower_bound)) {
                         return false;
                     }
                 }

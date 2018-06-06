@@ -8,6 +8,7 @@
 #include <utility>
 
 #include <real/number.hpp>
+#include <real/real_exception.hpp>
 
 namespace boost {
     namespace real {
@@ -27,10 +28,14 @@ namespace boost {
             real* _lhs_ptr = nullptr;
             real* _rhs_ptr = nullptr;
 
+            // Precision to witch compare numbers, set by default in two.
+            int _precision = 2;
+
             real(OP operation, const real& lhs, const real& rhs) {
                 this->_lhs_ptr = new real(lhs);
                 this->_rhs_ptr = new real(rhs);
                 this->_operation = operation;
+                this->_precision = std::max(lhs._precision, rhs._precision);
             };
 
             bool is_lower(const std::list<int>& lhs, std::list<int>& rhs) const {
@@ -44,6 +49,16 @@ namespace boost {
                 }
 
                 return rhs_it != rhs.end() && lhs_it != lhs.end() && *lhs_it < *rhs_it;
+            }
+
+            void copy_operands(const real& other) {
+                if (other._lhs_ptr != nullptr) {
+                    this->_lhs_ptr = new real(*other._lhs_ptr);
+                }
+
+                if (other._rhs_ptr != nullptr) {
+                    this->_rhs_ptr = new real(*other._rhs_ptr);
+                }
             }
 
         public:
@@ -178,19 +193,29 @@ namespace boost {
 
                 void operator++() {
 
-                    // Single number (i.e. A number that is not a composition of two number related by an operator)
-                    // TODO: consider the case when n >= the number digit amount, if that's the case, then, the number has an exact representation and lower_boud == upper_bound
+                    // Single number iteration
+                    // i.e. A number that is not a composition of two number related by an operator
                     if (this->real_ptr->_operation == OP::NONE) {
-                        if (!this->upper_bound.empty()) {
-                            this->upper_bound.pop_back();
-                            this->upper_bound.push_back(this->lower_bound.back());
+                        this->n++;
+
+                        if (this->n > (int)this->real_ptr->_digits.size()) {
+                            this->lower_bound.push_back(0);
+                            this->upper_bound.push_back(0);
+                            return;
                         }
 
-                        this->n++;
+                        this->upper_bound.clear();
                         this->lower_bound.push_back(this->real_ptr->get_nth_digit(this->n));
 
+                        if (this->n == (int)this->real_ptr->_digits.size()) {
+                            for (auto& d : this->lower_bound) {
+                                this->upper_bound.push_back(d);
+                            }
+
+                            return;
+                        }
+
                         int carry = 1;
-                        this->upper_bound.clear();
                         for (auto it = this->lower_bound.rbegin(); it != lower_bound.rend(); ++it) {
                             if (*it + carry == 10) {
                                 this->upper_bound.push_front(0);
@@ -208,6 +233,8 @@ namespace boost {
                         return;
                     }
 
+                    // Composed number iteration
+                    // i.e. a number that is an operation between two real numbers
                     this->lower_bound.clear();
                     this->upper_bound.clear();
 
@@ -250,16 +277,15 @@ namespace boost {
 
             real() = default;
 
-            real(const real& other) {
-                this->_digits = other._digits;
-                this->_number_ptr = other._number_ptr;
-                this->_lhs_ptr = other._lhs_ptr;
-                this->_rhs_ptr = other._rhs_ptr;
-                this->_operation = other._operation;
-            };
+            real(const real& other)  :
+                    _digits(other._digits),
+                    _number_ptr(other._number_ptr),
+                    _operation(other._operation),
+                    _precision(other._precision) { this->copy_operands(other); };
 
             real(std::initializer_list<int> l) {
                 this->_digits = l;
+                this->_precision = (int)this->_digits.size() + 1;
             };
 
             ~real() {
@@ -308,21 +334,31 @@ namespace boost {
 
             iterator begin() { return iterator(this); }
 
-            real operator+(const real& other) {
+            real operator+(const real& other) const {
                 return real(real::OP::ADDITION, *this, other);
             }
 
-            real operator-(const real& other) {
+            real operator-(const real& other) const {
                 return real(real::OP::SUBTRACT, *this, other);
             }
+
+            real& operator=(const real& other) {
+                this->_digits = other._digits;
+                this->_number_ptr = other._number_ptr;
+                this->_operation = other._operation;
+                this->_precision = other._precision;
+                this->copy_operands(other);
+                return *this;
+            };
 
             //TODO: make this const for operands, the problem is that iterators should be const
             bool operator<(real& other) {
                 auto this_it = this->begin();
                 auto other_it = other.begin();
 
-                //TODO: if both numbers are equal, this program never ends, thus, an end point must be set
-                while (true) {
+
+                int current_precision = std::max(this->_precision, other._precision);
+                for (int p = 0; p < current_precision; ++p) {
                     // Get more precision
                     ++this_it;
                     ++other_it;
@@ -335,6 +371,10 @@ namespace boost {
                         return false;
                     }
                 }
+
+                // If after the precision is reached, the number ranges still overlap, then we cannot
+                // know if they are equals or other es less than this and we throw an error.
+                throw boost::real::precision_exception();
             }
         };
     }

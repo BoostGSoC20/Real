@@ -3,26 +3,33 @@
 #include <real/third_part.hpp>
 
 int main() {
+    int i;
+    boost::real::real a,b,c,d,e,f,g,g2,h,j,k;
 
-    boost::real::real a;
     a.add_number<boost::real::third_part>();
-    boost::real::real c({9,9,9,9,9,9});
-    boost::real::real d({9,9,9,9,9,9});
-    boost::real::real e(c + d);
+    c = boost::real::real({9,9,9,9,9,9});
+    d = boost::real::real({9,9,9,9,9,9});
+    e = c + d;
 
+    std::cout << "a: ";
     a.print(3);
+    std::cout << std::endl;
+    std::cout << "c: ";
     c.print(3);
+    std::cout << std::endl;
+    std::cout << "d: ";
     d.print(3);
+    std::cout << std::endl;
 
     boost::real::real::iterator it = e.begin();
-    for(int i = 0; i < 10; ++i) {
+    for(i = 0; i < 10; ++i) {
         it.print();
         std::cout << std::endl;
         ++it;
     }
 
-    boost::real::real f({9,9,9,9,9,9});
-    boost::real::real g({9,9,9,9,9,8});
+    f = boost::real::real({9,9,9,9,9,9});
+    g = boost::real::real({9,9,9,9,9,8});
 
     if (g < f) {
         std::cout << "g < f --> true" << std::endl;
@@ -30,7 +37,7 @@ int main() {
         std::cout << "g < f --> false" << std::endl;
     }
 
-    boost::real::real h = (f - g);
+    h = f - g;
 
     std::cout << "h: ";
     h.print(15);
@@ -41,6 +48,32 @@ int main() {
     std::cout << "g: ";
     g.print(15);
     std::cout << std::endl;
+
+    j = boost::real::real({9,9,9,8,9,9,9});
+
+    for (i = 0; i < 10; ++i) {
+        std::cout << "j:";
+        j.print(i);
+        std::cout << std::endl;
+    }
+
+    k = boost::real::real({9,9,9,7,9,9,9});
+
+    for (i = 0; i < 10; ++i) {
+        std::cout << "k:";
+        k.print(i);
+        std::cout << std::endl;
+    }
+
+    g2 = g;
+
+    try {
+        if (g < g2) {
+            std::cout << "Error, equal numbers should throw precision_exception" << std::endl;
+        }
+    } catch (boost::real::precision_exception& e) {
+        std::cout << "g < g correctly throws: " << e.what() << std::endl;
+    }
 
     return 0;
 }

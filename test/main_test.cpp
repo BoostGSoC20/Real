@@ -6,10 +6,13 @@ int main() {
     int i;
     boost::real::real a,b,c,d,e,f,g,g2,h,j,k;
 
-    a.add_number<boost::real::third_part>();
+    a = boost::real::real(boost::real::third_part());
     c = boost::real::real({9,9,9,9,9,9});
     d = boost::real::real({9,9,9,9,9,9});
     e = c + d;
+
+    std::cout << "a get_nth_digit: " << a.get_nth_digit(2) << std::endl;
+    std::cout << "function: " << boost::real::third_part()(2) << std::endl;
 
     std::cout << "a: ";
     a.print(3);

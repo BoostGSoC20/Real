@@ -5,11 +5,11 @@
 
 namespace boost {
     namespace real {
-        class third_part: public boost::real::number {
-        public:
+        struct third_part: public boost::real::number {
             third_part() = default;
 
-            int get_nth_digit(int n) const { return 3; }
+            int get_nth_digit(int n) const override { return 3; }
+            int operator()(int n) const { return 3; }
         };
     }
 }

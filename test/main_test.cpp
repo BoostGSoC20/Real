@@ -21,7 +21,7 @@ int main() {
     d.print(3);
     std::cout << std::endl;
 
-    boost::real::real::const_iterator it = e.begin();
+    boost::real::real::const_iterator it = e.cbegin();
     for(i = 0; i < 10; ++i) {
         it.print();
         std::cout << std::endl;

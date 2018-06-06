@@ -76,15 +76,15 @@ namespace boost {
 
                 const_iterator(const const_iterator& other) = default;
 
-                explicit const_iterator(real* ptr) : _real_ptr(ptr) {
+                explicit const_iterator(real const* ptr) : _real_ptr(ptr) {
                     if (this->_real_ptr->_operation == OP::NONE) {
                         this->_lower_bound.push_back(0);
                         this->_upper_bound.push_back(0);
                         this->_lower_integer_part = 1;
                         this->_upper_integer_part = 1;
                     } else {
-                        this->_lhs_it_ptr = new const_iterator(this->_real_ptr->_lhs_ptr->begin());
-                        this->_rhs_it_ptr = new const_iterator(this->_real_ptr->_rhs_ptr->begin());
+                        this->_lhs_it_ptr = new const_iterator(this->_real_ptr->_lhs_ptr->cbegin());
+                        this->_rhs_it_ptr = new const_iterator(this->_real_ptr->_rhs_ptr->cbegin());
                     }
 
                     ++(*this);
@@ -227,12 +227,14 @@ namespace boost {
             }
 
             void print(int precision) {
-                auto it = this->begin();
+                auto it = this->cbegin();
                 for (int i = 1; i <= precision; i++) { ++it; }
                 it.print();
             }
 
-            const_iterator begin() { return const_iterator(this); }
+            const_iterator cbegin() const {
+                return const_iterator(this);
+            }
 
             /************** Operators ******************/
 
@@ -253,10 +255,9 @@ namespace boost {
                 return *this;
             };
 
-            //TODO: make this const for operands, the problem is that iterators should be const
-            bool operator<(real& other) {
-                auto this_it = this->begin();
-                auto other_it = other.begin();
+            bool operator<(const real& other) const {
+                auto this_it = this->cbegin();
+                auto other_it = other.cbegin();
 
 
                 int current_precision = std::max(this->_precision, other._precision);

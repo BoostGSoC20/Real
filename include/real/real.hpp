@@ -51,7 +51,7 @@ namespace boost {
 
         public:
 
-            class const_iterator {
+            class const_precision_iterator {
             private:
 
                 // Iterator precision
@@ -60,9 +60,9 @@ namespace boost {
                 // Internal number to iterate
                 real const* _real_ptr = nullptr;
 
-                // If the number is a composition, the const_iterator uses the operand iterators
-                const_iterator* _lhs_it_ptr = nullptr;
-                const_iterator* _rhs_it_ptr = nullptr;
+                // If the number is a composition, the const_precision_iterator uses the operand iterators
+                const_precision_iterator* _lhs_it_ptr = nullptr;
+                const_precision_iterator* _rhs_it_ptr = nullptr;
 
             public:
 
@@ -72,19 +72,19 @@ namespace boost {
                 int _lower_integer_part = 0;
                 int _upper_integer_part = 0;
 
-                const_iterator() = default;
+                const_precision_iterator() = default;
 
-                const_iterator(const const_iterator& other) = default;
+                const_precision_iterator(const const_precision_iterator& other) = default;
 
-                explicit const_iterator(real const* ptr) : _real_ptr(ptr) {
+                explicit const_precision_iterator(real const* ptr) : _real_ptr(ptr) {
                     if (this->_real_ptr->_operation == OP::NONE) {
                         this->_lower_bound.push_back(0);
                         this->_upper_bound.push_back(0);
                         this->_lower_integer_part = 1;
                         this->_upper_integer_part = 1;
                     } else {
-                        this->_lhs_it_ptr = new const_iterator(this->_real_ptr->_lhs_ptr->cbegin());
-                        this->_rhs_it_ptr = new const_iterator(this->_real_ptr->_rhs_ptr->cbegin());
+                        this->_lhs_it_ptr = new const_precision_iterator(this->_real_ptr->_lhs_ptr->cbegin());
+                        this->_rhs_it_ptr = new const_precision_iterator(this->_real_ptr->_rhs_ptr->cbegin());
                     }
 
                     ++(*this);
@@ -232,8 +232,8 @@ namespace boost {
                 it.print();
             }
 
-            const_iterator cbegin() const {
-                return const_iterator(this);
+            const_precision_iterator cbegin() const {
+                return const_precision_iterator(this);
             }
 
             /************** Operators ******************/

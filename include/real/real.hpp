@@ -279,8 +279,7 @@ namespace boost {
                 // know if they are equals or other es less than this and we throw an error.
                 throw boost::real::precision_exception();
             }
-
-
+            
             friend std::ostream& operator<<(std::ostream&, const real&);
         };
 

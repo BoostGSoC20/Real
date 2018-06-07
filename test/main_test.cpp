@@ -6,28 +6,23 @@ int main() {
     int i;
     boost::real::real a,b,c,d,e,f,g,g2,h,j,k;
 
-    a = boost::real::real(boost::real::third_part());
+    /*
+        std::function<int(int)> fff = boost::real::third_part();
+        a = boost::real::real(fff);
+        a.get_nth_digit(2);
+        std::cout << "a: ";
+     */
+
     c = boost::real::real({9,9,9,9,9,9});
     d = boost::real::real({9,9,9,9,9,9});
     e = c + d;
 
-    std::cout << "a get_nth_digit: " << a.get_nth_digit(2) << std::endl;
-    std::cout << "function: " << boost::real::third_part()(2) << std::endl;
-
-    std::cout << "a: ";
-    a.print(3);
-    std::cout << std::endl;
-    std::cout << "c: ";
-    c.print(3);
-    std::cout << std::endl;
-    std::cout << "d: ";
-    d.print(3);
-    std::cout << std::endl;
+    std::cout << "c: " << c << std::endl;
+    std::cout << "d: " << d << std::endl;
 
     boost::real::real::const_precision_iterator it = e.cbegin();
     for(i = 0; i < 10; ++i) {
-        it.print();
-        std::cout << std::endl;
+        std::cout << it << std::endl;
         ++it;
     }
 
@@ -42,30 +37,24 @@ int main() {
 
     h = f - g;
 
-    std::cout << "h: ";
-    h.print(15);
-    std::cout << std::endl;
-    std::cout << "f: ";
-    f.print(15);
-    std::cout << std::endl;
-    std::cout << "g: ";
-    g.print(15);
-    std::cout << std::endl;
+    std::cout << "h: " << h << std::endl;
+    std::cout << "f: " << f << std::endl;
+    std::cout << "g: " << g << std::endl;
 
     j = boost::real::real({9,9,9,8,9,9,9});
 
+    it = j.cbegin();
     for (i = 0; i < 10; ++i) {
-        std::cout << "j:";
-        j.print(i);
-        std::cout << std::endl;
+        std::cout << "j:" << it << std::endl;
+        ++it;
     }
 
     k = boost::real::real({9,9,9,7,9,9,9});
 
+    it = k.cbegin();
     for (i = 0; i < 10; ++i) {
-        std::cout << "k:";
-        k.print(i);
-        std::cout << std::endl;
+        std::cout << "j:" << it << std::endl;
+        ++it;
     }
 
     g2 = g;

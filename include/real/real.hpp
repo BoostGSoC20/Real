@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <initializer_list>
 #include <utility>
+#include <functional>
 
 #include <real/number.hpp>
 #include <real/real_exception.hpp>
@@ -63,6 +64,28 @@ namespace boost {
                 // If the number is a composition, the const_precision_iterator uses the operand iterators
                 const_precision_iterator* _lhs_it_ptr = nullptr;
                 const_precision_iterator* _rhs_it_ptr = nullptr;
+
+                std::ostream& print(std::ostream& os) const {
+                    os << '[';
+                    int before_dot = this->lower_integer_part;
+                    for (auto& d : this->lower_bound) {
+                        os << d;
+                        before_dot--;
+                        if (before_dot == 0) os << '.';
+                    }
+
+                    os << ", ";
+
+                    before_dot = this->upper_integer_part;
+                    for (auto& d : this->upper_bound) {
+                        os << d;
+                        before_dot--;
+                        if (before_dot == 0) os << '.';
+                    }
+
+                    os << ']';
+                    return os;
+                }
 
             public:
 
@@ -153,26 +176,9 @@ namespace boost {
                     }
                 }
 
-                void print() {
-                    std::cout << '[';
-                    int before_dot = this->lower_integer_part;
-                    for (auto& d : this->lower_bound) {
-                        std::cout << d;
-                        before_dot--;
-                        if (before_dot == 0) std::cout << '.';
-                    }
+                void print() const { }
 
-                    std::cout << ", ";
-
-                    before_dot = this->upper_integer_part;
-                    for (auto& d : this->upper_bound) {
-                        std::cout << d;
-                        before_dot--;
-                        if (before_dot == 0) std::cout << '.';
-                    }
-
-                    std::cout << ']';
-                }
+                friend std::ostream& operator<<(std::ostream&, const const_precision_iterator&);
             };
 
             real() = default;
@@ -226,12 +232,6 @@ namespace boost {
                 this->_number_ptr = new NUMBER(std::forward<Args>(args)...);
             }
 
-            void print(int precision) {
-                auto it = this->cbegin();
-                for (int i = 1; i <= precision; i++) { ++it; }
-                it.print();
-            }
-
             const_precision_iterator cbegin() const {
                 return const_precision_iterator(this);
             }
@@ -253,7 +253,7 @@ namespace boost {
                 this->_precision = other._precision;
                 this->copy_operands(other);
                 return *this;
-            };
+            }
 
             bool operator<(const real& other) const {
                 auto this_it = this->cbegin();
@@ -279,7 +279,22 @@ namespace boost {
                 // know if they are equals or other es less than this and we throw an error.
                 throw boost::real::precision_exception();
             }
+
+
+            friend std::ostream& operator<<(std::ostream&, const real&);
         };
+
+        inline std::ostream& operator<<(std::ostream& os, const real::const_precision_iterator& r_it) {
+            r_it.print(os);
+            return os;
+        }
+
+        inline std::ostream& operator<<(std::ostream& os, const real& r) {
+            auto it = r.cbegin();
+            for (int i = 1; i <= r._precision; i++) { ++it; }
+            os << it;
+            return os;
+        }
     }
 }
 

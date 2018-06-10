@@ -35,13 +35,13 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
   
 > (1) **Default constructor** 
 > Creates a real instance that represents the number 0.
-
+>
 > (2) **Initializer list constructor** 
 > Creates a real instance that represents the number where 0 is the integer part and the elements of the il list are the digits of the fractional part in the same order.
-
+>
 >(3) **Copy constructor** 
 > Creates a copy of the number x, if the number is an operation, then, the constructor creates new copies of the x operands.
-
+>
 > (4) **Default destructor** 
 > If the number is an operator, the destructor destroys its operands.
 
@@ -54,13 +54,13 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
     5. std::ostream& operator<<(std::ostream& os, const boost::real& x)
 
 > (1) Creates a new boost::real number using the third representation. For this purpose, the operator creates copies of *this and x to use as the new real number operands and defines the addition as the operation.
-
+>
 > (2) Creates a new boost::real number using the third representation. For this purpose, the operator creates copies of *this and x to use as the new real number operands and defines the subtraction as the operation.
-
+>
 > (3) Uses the copy constructor to create a copy of x stored in *this
-
+>
 > (4) Compares *this with x to check if *this is lower than x. This operator creates two precision iterators (one for each number) and iterates until the number ranges stop overlapping when that happens, it compares the ranges bounds to determine if *this is less than x. **WARNING:** If *this is equal to x, then the ranges will always overlap, because of this, the operator uses a max precision limit and if that limit is reached, the operator throws a boost::real::precision_exception.
-
+>
 > (5) Creates a const_precision_iterator to print the number using the iterator << operator.
 
 ### Other methods
@@ -78,9 +78,9 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
     
 > (1) ** Default constructor **
 > Create an empty iterator that does not point any number and thus, cannot yet be iterated.
-
+>
 > (2) Creates an iterator that points to the x number and iterates the number precision. If the number is deleted, the iterator behaviour is undefined.
-
+>
 > (3) ** Copy constructor ** 
 > Creates an iterator that points the same number than the x iterator does and is initialized in the same precision that x.
 
@@ -90,7 +90,7 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
     2. std::ostream& operator<<(std::ostream& os, const boost::real::const_precision_iterator& x)
 
 > (1) Increases the pointer to the next precision range o the pointed number. If the pointed number is represented by (1) and the full number precision is reached, then the operator has no effect because the number approximation lower and upper bounds are equals and the number range is the number itself.
-
+>
 > (2) Prints the number range with the next formats depending on the number representation: If the number is represented by (1), the operator prints the full number and separates the integer and the fractional parts by a dot. If the number is represented by (2), the operator truncates the number considering the first max precision limit digits and prints the interval [a, b] where a is the truncation and b is the next number considering the same amount of digits. If the representation is (3), the operator uses the precision iterator to get an approximation of max precision limit, and prints those bounds in the format [a, b].
 
 ## Examples

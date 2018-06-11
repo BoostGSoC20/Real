@@ -7,7 +7,7 @@ namespace boost {
     namespace real {
         namespace helper {
 
-            bool is_lower(const std::list<int>& lhs, const std::list<int>& rhs) {
+            bool is_lower(const std::vector<int>& lhs, const std::vector<int>& rhs) {
 
                 // Check if lhs is lower than rhs
                 auto lhs_it = lhs.cbegin();
@@ -23,14 +23,14 @@ namespace boost {
             /*
              * Align two numbers so the digits positions corresponds
              */
-            void align_numbers(std::list<int>& lhs, int& lhs_integers, std::list<int>& rhs, int& rhs_integers) {
+            void align_numbers(std::vector<int>& lhs, int& lhs_integers, std::vector<int>& rhs, int& rhs_integers) {
                 while (lhs_integers < rhs_integers) {
-                    lhs.push_front(0);
+                    lhs.insert(lhs.begin(), 0);
                     lhs_integers++;
                 }
 
                 while (rhs_integers < lhs_integers) {
-                    lhs.push_front(0);
+                    lhs.insert(lhs.begin(), 0);
                     rhs_integers++;
                 }
 
@@ -43,7 +43,23 @@ namespace boost {
                 }
             }
 
-            int add_bounds(std::list<int>& lhs, int lhs_integers, std::list<int>& rhs, int rhs_integers, std::list<int>& result) {
+            std::string print_digits(const std::vector<int>& digits, int integer_part) {
+                std::string result = "";
+
+                for (int i = 0; i < integer_part; ++i) {
+                    result += std::to_string(digits[i]);
+                }
+
+                result += ".";
+
+                for (int i = integer_part; i < (int)digits.size(); ++i) {
+                    result += digits[i];
+                }
+
+                return result;
+            }
+
+            int add_bounds(std::vector<int>& lhs, int lhs_integers, std::vector<int>& rhs, int rhs_integers, std::vector<int>& result) {
                 int carry = 0;
                 int digit;
 
@@ -63,13 +79,13 @@ namespace boost {
                         carry = 0;
                     }
 
-                    result.push_front(digit);
+                    result.insert(result.begin(), digit);
                     ++lhs_it;
                     ++rhs_it;
                 }
 
                 if (carry == 1) {
-                    result.push_front(1);
+                    result.insert(result.begin(), 1);
                     return rhs_integers + 1;
                 }
 
@@ -79,7 +95,7 @@ namespace boost {
             /*
              * Pre-condition: lhs >= rhs
              */
-            int subtract_bounds(std::list<int>& lhs, int lhs_integers, std::list<int>& rhs, int rhs_integers, std::list<int>& result) {
+            int subtract_bounds(std::vector<int>& lhs, int lhs_integers, std::vector<int>& rhs, int rhs_integers, std::vector<int>& result) {
                 int borrow = 0;
 
                 boost::real::helper::align_numbers(lhs, lhs_integers, rhs, rhs_integers);
@@ -101,7 +117,7 @@ namespace boost {
                         borrow++;
                     }
 
-                    result.push_front(*lhs_it - *rhs_it);
+                    result.insert(result.begin(), *lhs_it - *rhs_it);
                     ++lhs_it;
                     ++rhs_it;
                 }
@@ -109,7 +125,7 @@ namespace boost {
 
                 // Remove possible 0 prefix if more significant digits were canceled.
                 while (result.front() == 0 && lhs_integers > 0) {
-                    result.pop_front();
+                    result.erase(result.begin());
                     --lhs_integers;
                 }
 

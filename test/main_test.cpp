@@ -6,19 +6,16 @@ int main() {
     int i;
     boost::real::real a,b,c,d,e,f,g,g2,h,j,k;
 
-    /*
-        std::function<int(int)> fff = boost::real::third_part();
-        a = boost::real::real(fff);
-        a.get_nth_digit(2);
-        std::cout << "a: ";
-     */
-
     c = boost::real::real({9,9,9,9,9,9});
     d = boost::real::real({9,9,9,9,9,9});
     e = c + d;
 
-    std::cout << "c: " << c << std::endl;
+
+    std::cout << "c: " << std::endl;
+    std::cout << c << std::endl;
+    /*
     std::cout << "d: " << d << std::endl;
+
 
     boost::real::real::const_precision_iterator it = e.cbegin();
     for(i = 0; i < 10; ++i) {
@@ -66,6 +63,6 @@ int main() {
     } catch (boost::real::precision_exception& e) {
         std::cout << "g < g correctly throws: " << e.what() << std::endl;
     }
-
+    */
     return 0;
 }

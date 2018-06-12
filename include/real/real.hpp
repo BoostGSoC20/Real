@@ -138,7 +138,7 @@ namespace boost {
 
                         this->upper_bound.resize(this->lower_bound.size());
                         int carry = 1;
-                        for (int i = (int)this->lower_bound.size() - 1; i >= 0; ++i) {
+                        for (int i = (int)this->lower_bound.size() - 1; i >= 0; --i) {
                             if (this->lower_bound[i] + carry == 10) {
                                 this->upper_bound[i] = 0;
                             } else {

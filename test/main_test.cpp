@@ -11,9 +11,7 @@ int main() {
     e = c + d;
 
 
-    std::cout << "c: " << std::endl;
-    std::cout << c << std::endl;
-    /*
+    std::cout << "c: " << c << std::endl;
     std::cout << "d: " << d << std::endl;
 
 
@@ -63,6 +61,6 @@ int main() {
     } catch (boost::real::precision_exception& e) {
         std::cout << "g < g correctly throws: " << e.what() << std::endl;
     }
-    */
+
     return 0;
 }

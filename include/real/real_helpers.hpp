@@ -53,7 +53,11 @@ namespace boost {
                 result += ".";
 
                 for (int i = integer_part; i < (int)digits.size(); ++i) {
-                    result += digits[i];
+                    result += std::to_string(digits[i]);
+                }
+
+                if (result.back() == '.') {
+                    result.pop_back();
                 }
 
                 return result;

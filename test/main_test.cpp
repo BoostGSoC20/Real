@@ -5,6 +5,7 @@
 int main() {
     int i;
     boost::real::real a,b,c,d,e,f,g,g2,h,j,k;
+    boost::real::real::const_precision_iterator it;
 
     c = boost::real::real({9,9,9,9,9,9});
     d = boost::real::real({9,9,9,9,9,9});
@@ -12,12 +13,16 @@ int main() {
 
 
     std::cout << "c: " << c << std::endl;
-    std::cout << "d: " << d << std::endl;
 
-
-    boost::real::real::const_precision_iterator it = e.cbegin();
+    it = d.cbegin();
     for(i = 0; i < 10; ++i) {
-        std::cout << it << std::endl;
+        std::cout << "d: " << it << std::endl;
+        ++it;
+    }
+
+    it = e.cbegin();
+    for(i = 0; i < 10; ++i) {
+        std::cout << "e: " << it << std::endl;
         ++it;
     }
 
@@ -40,7 +45,7 @@ int main() {
 
     it = j.cbegin();
     for (i = 0; i < 10; ++i) {
-        std::cout << "j:" << it << std::endl;
+        std::cout << "j: " << it << std::endl;
         ++it;
     }
 

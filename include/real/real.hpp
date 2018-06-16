@@ -17,7 +17,7 @@ namespace boost {
         class real {
 
             // Available operations
-            enum class OP {ADDITION, SUBTRACT, EXPLICIT, ALGORITHMIC};
+            enum class OP {ADDITION, SUBTRACT, RATIONAL, ALGORITHMIC};
 
             // Explicit number definition
             std::vector<int> _digits = {0};
@@ -27,19 +27,18 @@ namespace boost {
             number* _number_ptr = nullptr;
 
             // Composed number
-            OP _operation = OP::EXPLICIT;
+            OP _operation = OP::RATIONAL;
             real* _lhs_ptr = nullptr;
             real* _rhs_ptr = nullptr;
 
-            // TODO: raneme to max_precision
-            // Precision to witch compare numbers, set by default in two.
-            int _precision = 1;
+            // TODO: put as template parameter
+            int max_precision = 1;
 
             real(OP operation, const real& lhs, const real& rhs) {
                 this->_lhs_ptr = new real(lhs);
                 this->_rhs_ptr = new real(rhs);
                 this->_operation = operation;
-                this->_precision = std::max(lhs._precision, rhs._precision);
+                this->max_precision = std::max(lhs.max_precision, rhs.max_precision);
             };
 
             void copy_operands(const real& other) {
@@ -67,17 +66,17 @@ namespace boost {
                 const_precision_iterator* _lhs_it_ptr = nullptr;
                 const_precision_iterator* _rhs_it_ptr = nullptr;
 
-                std::ostream& print(std::ostream& os) const {
-
-                    std::string lb = boost::real::helper::print_digits(this->lower_bound, this->lower_integer_part);
-                    std::string ub = boost::real::helper::print_digits(this->upper_bound, this->upper_integer_part);
-
-                    if (lb == ub) {
-                        os << lb;
-                    } else {
-                        os << '[' << lb << ", " << ub << ']';
+                // TODO: This is only considering addition and subtraction between positive numbers.
+                // TODO: The subtraction assumes lhs >= rhs, otherwise fails.
+                // TODO: positive-negative leq and geq number combination must be considered to get correct result for all the cases.
+                void calculate_bounds() {
+                    if (this->_real_ptr->_operation == OP::ADDITION) {
+                        this->lower_integer_part = boost::real::helper::add_bounds(this->_lhs_it_ptr->lower_bound, this->_lhs_it_ptr->lower_integer_part, this->_rhs_it_ptr->lower_bound, this->_rhs_it_ptr->lower_integer_part, this->lower_bound);
+                        this->upper_integer_part = boost::real::helper::add_bounds(this->_lhs_it_ptr->upper_bound, this->_lhs_it_ptr->upper_integer_part, this->_rhs_it_ptr->upper_bound, this->_rhs_it_ptr->upper_integer_part, this->upper_bound);
+                    } else if (this->_real_ptr->_operation == OP::SUBTRACT) {
+                        this->lower_integer_part = boost::real::helper::subtract_bounds(this->_lhs_it_ptr->lower_bound, this->_lhs_it_ptr->lower_integer_part, this->_rhs_it_ptr->upper_bound, this->_rhs_it_ptr->lower_integer_part, this->lower_bound);
+                        this->upper_integer_part = boost::real::helper::subtract_bounds(this->_lhs_it_ptr->upper_bound, this->_lhs_it_ptr->upper_integer_part, this->_rhs_it_ptr->lower_bound, this->_rhs_it_ptr->upper_integer_part, this->upper_bound);
                     }
-                    return os;
                 }
 
             public:
@@ -94,31 +93,34 @@ namespace boost {
 
                 explicit const_precision_iterator(real const* ptr) : _real_ptr(ptr) {
 
-                    if (this->_real_ptr->_operation == OP::EXPLICIT) {
+                    if (this->_real_ptr->_operation == OP::RATIONAL) {
                         auto first_integer = this->_real_ptr->_digits.cbegin();
                         auto last_integer = this->_real_ptr->_digits.cbegin();
+
+                        // Lower bound and upper bounds of the number integer part
                         for (int i = 0; i < this->_real_ptr->_integer_part; i++) ++last_integer;
                         this->lower_bound.insert(this->lower_bound.end(), first_integer, last_integer);
                         this->upper_bound.insert(this->upper_bound.end(), first_integer, last_integer);
-                        // TODO: iterator should calculate the upper bounds as in the ++ operator
+                        this->upper_bound.at(this->_real_ptr->_integer_part - 1)++;
                         this->lower_integer_part = this->_real_ptr->_integer_part;
                         this->upper_integer_part = this->_real_ptr->_integer_part;
                         this->_n = this->_real_ptr->_integer_part;
                     } else if (this->_real_ptr->_operation == OP::ALGORITHMIC) {
                         this->lower_bound.push_back(0);
-                        this->upper_bound.push_back(0);
+                        this->upper_bound.push_back(1);
                         this->lower_integer_part = 1;
                         this->upper_integer_part = 1;
                         this->_n = 1;
                     } else {
                         this->_lhs_it_ptr = new const_precision_iterator(this->_real_ptr->_lhs_ptr->cbegin());
                         this->_rhs_it_ptr = new const_precision_iterator(this->_real_ptr->_rhs_ptr->cbegin());
+                        this->calculate_bounds();
                     }
                 }
 
                 void operator++() {
 
-                    if (this->_real_ptr->_operation == OP::EXPLICIT) {
+                    if (this->_real_ptr->_operation == OP::RATIONAL) {
                         // Explicit number iteration
 
                         if (this->_n == (int)this->_real_ptr->_digits.size()) {
@@ -166,16 +168,7 @@ namespace boost {
                         ++(*this->_lhs_it_ptr);
                         ++(*this->_rhs_it_ptr);
 
-                        // TODO: This is only considering addition and subtraction between positive numbers.
-                        // TODO: The subtraction assumes lhs >= rhs, otherwise fails.
-                        // TODO: positive-negative leq and geq number combination must be considered to get correct result for all the cases.
-                        if (this->_real_ptr->_operation == OP::ADDITION) {
-                            this->lower_integer_part = boost::real::helper::add_bounds(this->_lhs_it_ptr->lower_bound, this->_lhs_it_ptr->lower_integer_part, this->_rhs_it_ptr->lower_bound, this->_rhs_it_ptr->lower_integer_part, this->lower_bound);
-                            this->upper_integer_part = boost::real::helper::add_bounds(this->_lhs_it_ptr->upper_bound, this->_lhs_it_ptr->upper_integer_part, this->_rhs_it_ptr->upper_bound, this->_rhs_it_ptr->upper_integer_part, this->upper_bound);
-                        } else if (this->_real_ptr->_operation == OP::SUBTRACT) {
-                            this->lower_integer_part = boost::real::helper::subtract_bounds(this->_lhs_it_ptr->lower_bound, this->_lhs_it_ptr->lower_integer_part, this->_rhs_it_ptr->upper_bound, this->_rhs_it_ptr->lower_integer_part, this->lower_bound);
-                            this->upper_integer_part = boost::real::helper::subtract_bounds(this->_lhs_it_ptr->upper_bound, this->_lhs_it_ptr->upper_integer_part, this->_rhs_it_ptr->lower_bound, this->_rhs_it_ptr->upper_integer_part, this->upper_bound);
-                        }
+                        this->calculate_bounds();
                     }
                 }
 
@@ -189,12 +182,12 @@ namespace boost {
                     _integer_part(other._integer_part),
                     _number_ptr(other._number_ptr),
                     _operation(other._operation),
-                    _precision(other._precision) { this->copy_operands(other); };
+                    max_precision(other.max_precision) { this->copy_operands(other); };
 
             real(std::initializer_list<int> l) {
-                this->_operation = OP::EXPLICIT;
+                this->_operation = OP::RATIONAL;
                 this->_digits.insert(this->_digits.end(), l.begin(), l.end());
-                this->_precision = (int)this->_digits.size();
+                this->max_precision = (int)this->_digits.size();
             };
 
             ~real() {
@@ -250,7 +243,7 @@ namespace boost {
                 this->_digits = other._digits;
                 this->_number_ptr = other._number_ptr;
                 this->_operation = other._operation;
-                this->_precision = other._precision;
+                this->max_precision = other.max_precision;
                 this->copy_operands(other);
                 return *this;
             }
@@ -260,7 +253,7 @@ namespace boost {
                 auto other_it = other.cbegin();
 
 
-                int current_precision = std::max(this->_precision, other._precision);
+                int current_precision = std::max(this->max_precision, other.max_precision);
                 for (int p = 0; p < current_precision; ++p) {
                     // Get more precision
                     ++this_it;
@@ -284,13 +277,20 @@ namespace boost {
         };
 
         inline std::ostream& operator<<(std::ostream& os, const real::const_precision_iterator& r_it) {
-            r_it.print(os);
+            std::string lb = boost::real::helper::print_digits(r_it.lower_bound, r_it.lower_integer_part);
+            std::string ub = boost::real::helper::print_digits(r_it.upper_bound, r_it.upper_integer_part);
+
+            if (lb == ub) {
+                os << lb;
+            } else {
+                os << '[' << lb << ", " << ub << ']';
+            }
             return os;
         }
 
         inline std::ostream& operator<<(std::ostream& os, const real& r) {
             auto it = r.cbegin();
-            for (int i = 0; i < r._precision; i++) { ++it; }
+            for (int i = 0; i < r.max_precision; i++) { ++it; }
             os << it;
             return os;
         }

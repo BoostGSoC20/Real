@@ -63,7 +63,13 @@ namespace boost {
                 return result;
             }
 
-            int add_bounds(std::vector<int>& lhs, int lhs_integers, std::vector<int>& rhs, int rhs_integers, std::vector<int>& result) {
+            int add_vectors(
+                    std::vector<int> &lhs,
+                    int lhs_integers,
+                    std::vector<int> &rhs,
+                    int rhs_integers,
+                    std::vector<int> &result
+            ) {
                 int carry = 0;
                 int digit;
 
@@ -99,7 +105,13 @@ namespace boost {
             /*
              * Pre-condition: lhs >= rhs
              */
-            int subtract_bounds(std::vector<int>& lhs, int lhs_integers, std::vector<int>& rhs, int rhs_integers, std::vector<int>& result) {
+            int subtract_vectors(
+                    std::vector<int> &lhs,
+                    int lhs_integers,
+                    std::vector<int> &rhs,
+                    int rhs_integers,
+                    std::vector<int> &result
+            ) {
                 int borrow = 0;
 
                 boost::real::helper::align_numbers(lhs, lhs_integers, rhs, rhs_integers);
@@ -134,6 +146,54 @@ namespace boost {
                 }
 
                 return lhs_integers;
+            }
+
+            void add_bounds(
+                    std::vector<int> &lhs,
+                    int lhs_integers,
+                    bool lhs_positive,
+                    std::vector<int> &rhs,
+                    int rhs_integers,
+                    bool rhs_positive,
+                    std::vector<int> &result,
+                    int &result_integer_part,
+                    bool &result_positive
+            ) {
+                if (lhs_positive == rhs_positive) {
+                    result_integer_part = add_vectors(lhs, lhs_integers, rhs, rhs_integers, result);
+                    result_positive = lhs_positive;
+                } else if (is_lower(rhs, lhs)) {
+                    result_integer_part = subtract_vectors(lhs, lhs_integers, rhs, rhs_integers, result);
+                    result_positive = lhs_positive;
+                } else {
+                    result_integer_part = subtract_vectors(rhs, rhs_integers, lhs, lhs_integers, result);
+                    result_positive = rhs_positive;
+                }
+            }
+
+            void subtract_bounds(
+                    std::vector<int> &lhs,
+                    int lhs_integers,
+                    bool lhs_positive,
+                    std::vector<int> &rhs,
+                    int rhs_integers,
+                    bool rhs_positive,
+                    std::vector<int> &result,
+                    int &result_integer_part,
+                    bool &result_positive
+            ) {
+                if (lhs_positive != rhs_positive) {
+                    result_integer_part = add_vectors(lhs, lhs_integers, rhs, rhs_integers, result);
+                    result_positive = lhs_positive;
+                } else {
+                    if (is_lower(rhs, lhs)) {
+                        result_integer_part = subtract_vectors(lhs, lhs_integers, rhs, rhs_integers, result);
+                        result_positive = lhs_positive;
+                    } else {
+                        result_integer_part = subtract_vectors(rhs, rhs_integers, lhs, lhs_integers, result);
+                        result_positive = !lhs_positive;
+                    }
+                }
             }
         }
     }

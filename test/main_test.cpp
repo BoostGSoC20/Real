@@ -58,20 +58,25 @@ int main() {
 
     g2 = g;
 
-    /*
     try {
         if (g < g2) {
             std::cout << "Error, equal numbers should throw precision_exception" << std::endl;
         }
     } catch (boost::real::precision_exception& e) {
         std::cout << "g < g correctly throws: " << e.what() << std::endl;
-    } */
+    }
 
     l = boost::real::real({1,1,1}, false);
     m = boost::real::real({1,2}, false);
 
     std::cout << "l: " << l << std::endl;
     std::cout << "l: " << (l + m) << std::endl;
+
+    if (m < l) {
+        std::cout << "m < l --> True" << std::endl;
+    } else {
+        std::cout << "m < l --> Falses" << std::endl;
+    }
 
     return 0;
 }

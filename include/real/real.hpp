@@ -94,27 +94,34 @@ namespace boost {
                         );
                     } else if (this->_real_ptr->_operation == OP::SUBTRACT) {
                         boost::real::helper::subtract_bounds(
-                                this->_lhs_it_ptr->upper_bound,
-                                this->_lhs_it_ptr->upper_integer_part,
-                                this->_lhs_it_ptr->upper_positive,
+                                this->_lhs_it_ptr->lower_bound,
+                                this->_lhs_it_ptr->lower_integer_part,
+                                this->_lhs_it_ptr->lower_positive,
                                 this->_rhs_it_ptr->upper_bound,
                                 this->_rhs_it_ptr->upper_integer_part,
                                 this->_rhs_it_ptr->upper_positive,
-                                this->upper_bound,
-                                this->upper_integer_part,
-                                this->upper_positive
+                                this->lower_bound,
+                                this->lower_integer_part,
+                                this->lower_positive
                         );
                         boost::real::helper::subtract_bounds(
                                 this->_lhs_it_ptr->upper_bound,
                                 this->_lhs_it_ptr->upper_integer_part,
                                 this->_lhs_it_ptr->upper_positive,
-                                this->_rhs_it_ptr->upper_bound,
-                                this->_rhs_it_ptr->upper_integer_part,
-                                this->_rhs_it_ptr->upper_positive,
+                                this->_rhs_it_ptr->lower_bound,
+                                this->_rhs_it_ptr->lower_integer_part,
+                                this->_rhs_it_ptr->lower_positive,
                                 this->upper_bound,
                                 this->upper_integer_part,
                                 this->upper_positive
                         );
+                    }
+                }
+
+                void check_and_swap_bounds() {
+                    if (!this->_real_ptr->_positive) {
+                        this->lower_bound.swap(this->upper_bound);
+                        std::swap(this->lower_integer_part, this->upper_integer_part);
                     }
                 }
 
@@ -148,6 +155,8 @@ namespace boost {
                         this->lower_positive = this->_real_ptr->_positive;
                         this->upper_positive = this->_real_ptr->_positive;
                         this->_n = this->_real_ptr->_integer_part;
+                        this->check_and_swap_bounds();
+
                     } else if (this->_real_ptr->_operation == OP::ALGORITHMIC) {
                         this->lower_bound.push_back(0);
                         this->upper_bound.push_back(1);
@@ -166,45 +175,47 @@ namespace boost {
                     if (this->_real_ptr->_operation == OP::RATIONAL) {
                         // Explicit number iteration
 
-                        if (this->_n == (int)this->_real_ptr->_digits.size()) {
-                            // There is no more precision to achieve
+                        if (this->_n >= (int)this->_real_ptr->_digits.size()) {
+                            this->lower_bound.push_back(0);
+                            this->upper_bound.push_back(0);
                             return;
                         }
 
-                        this->_n++;
+                        // If the number is negative, the bounds are interpreted as mirrored:
+                        // First, the operation is made as positive, and after bound calculation
+                        // bounds are swapped to come back to the negative representation.
+                        this->check_and_swap_bounds();
 
                         this->upper_bound.clear();
                         this->lower_bound.push_back(this->_real_ptr->_digits[this->_n]);
 
-                        if (this->_n == (int)this->_real_ptr->_digits.size()) {
-                            this->upper_bound.insert(this->upper_bound.begin(), this->lower_bound.cbegin(), this->lower_bound.cend());
-                            return;
-                        }
+                        if (this->_n == (int)this->_real_ptr->_digits.size() - 1) {
 
-                        this->upper_bound.resize(this->lower_bound.size());
-                        int carry = 1;
-                        for (int i = (int)this->lower_bound.size() - 1; i >= 0; --i) {
-                            if (this->lower_bound[i] + carry == 10) {
-                                this->upper_bound[i] = 0;
+                            this->upper_bound.insert(this->upper_bound.begin(), this->lower_bound.cbegin(), this->lower_bound.cend());
+                        } else {
+
+                            this->upper_bound.resize(this->lower_bound.size());
+                            int carry = 1;
+                            for (int i = (int)this->lower_bound.size() - 1; i >= 0; --i) {
+                                if (this->lower_bound[i] + carry == 10) {
+                                    this->upper_bound[i] = 0;
+                                } else {
+                                    this->upper_bound[i] = this->lower_bound[i] + carry;
+                                    carry = 0;
+                                }
+                            }
+
+                            if (carry > 0) {
+                                this->upper_bound.insert(this->upper_bound.begin(), carry);
+                                this->upper_integer_part = this->lower_integer_part + 1;
                             } else {
-                                this->upper_bound[i] = this->lower_bound[i] + carry;
-                                carry = 0;
+                                this->upper_integer_part = this->lower_integer_part;
                             }
                         }
 
-                        if (carry > 0) {
-                            this->upper_bound.insert(this->upper_bound.begin(),carry);
-                            this->upper_integer_part = this->lower_integer_part + 1;
-                        } else {
-                            this->upper_integer_part = this->lower_integer_part;
-                        }
-
                         // If the number is negative, the bounds are interpreted as mirrored.
-                        if (!this->_real_ptr->_positive) {
-                            this->lower_bound.swap(this->upper_bound);
-                            std::swap(this->lower_integer_part, this->upper_integer_part);
-                        }
-
+                        this->check_and_swap_bounds();
+                        this->_n++;
                         return;
                     } else if (this->_real_ptr->_operation == OP::ALGORITHMIC) {
                         // Algorithmic number iteration
@@ -300,6 +311,8 @@ namespace boost {
 
             real& operator=(const real& other) {
                 this->_digits = other._digits;
+                this->_integer_part = other._integer_part;
+                this->_positive = other._positive;
                 this->_number_ptr = other._number_ptr;
                 this->_operation = other._operation;
                 this->max_precision = other.max_precision;
@@ -311,19 +324,17 @@ namespace boost {
                 auto this_it = this->cbegin();
                 auto other_it = other.cbegin();
 
-                // TODO: number sign must be considered
-
                 int current_precision = std::max(this->max_precision, other.max_precision);
                 for (int p = 0; p < current_precision; ++p) {
                     // Get more precision
                     ++this_it;
                     ++other_it;
 
-                    if (boost::real::helper::is_lower(this_it.upper_bound, other_it.lower_bound)) {
+                    if (boost::real::helper::is_lower(this_it.upper_bound, this_it.upper_positive, other_it.lower_bound, other_it.lower_positive)) {
                         return true;
                     }
 
-                    if (boost::real::helper::is_lower(other_it.upper_bound, this_it.lower_bound)) {
+                    if (boost::real::helper::is_lower(other_it.upper_bound, other_it.upper_positive, this_it.lower_bound, this_it.lower_positive)) {
                         return false;
                     }
                 }
@@ -337,8 +348,8 @@ namespace boost {
         };
 
         inline std::ostream& operator<<(std::ostream& os, const real::const_precision_iterator& r_it) {
-            std::string lb = boost::real::helper::print_digits(r_it.lower_bound, r_it.lower_integer_part);
-            std::string ub = boost::real::helper::print_digits(r_it.upper_bound, r_it.upper_integer_part);
+            std::string lb = boost::real::helper::print_digits(r_it.lower_bound, r_it.lower_integer_part, r_it.lower_positive);
+            std::string ub = boost::real::helper::print_digits(r_it.upper_bound, r_it.upper_integer_part, r_it.upper_positive);
 
             if (lb == ub) {
                 os << lb;
@@ -350,7 +361,9 @@ namespace boost {
 
         inline std::ostream& operator<<(std::ostream& os, const real& r) {
             auto it = r.cbegin();
-            for (int i = 0; i < r.max_precision; i++) { ++it; }
+            for (int i = 0; i <= r.max_precision; i++) {
+                ++it;
+            }
             os << it;
             return os;
         }

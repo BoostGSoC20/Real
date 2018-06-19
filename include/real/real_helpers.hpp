@@ -7,7 +7,7 @@ namespace boost {
     namespace real {
         namespace helper {
 
-            bool is_lower(const std::vector<int>& lhs, const std::vector<int>& rhs) {
+            bool vector_is_lower(const std::vector<int> &lhs, const std::vector<int> &rhs) {
 
                 // Check if lhs is lower than rhs
                 auto lhs_it = lhs.cbegin();
@@ -18,6 +18,19 @@ namespace boost {
                 }
 
                 return rhs_it != rhs.end() && lhs_it != lhs.end() && *lhs_it < *rhs_it;
+            }
+
+            bool is_lower(const std::vector<int> &lhs, bool lhs_positive, const std::vector<int> &rhs, bool rhs_positive) {
+
+                if (lhs_positive != rhs_positive) {
+                    return !lhs_positive;
+                }
+
+                if (lhs_positive) {
+                    return vector_is_lower(lhs, rhs);
+                }
+
+                return vector_is_lower(rhs, lhs);
             }
 
             /*
@@ -43,8 +56,12 @@ namespace boost {
                 }
             }
 
-            std::string print_digits(const std::vector<int>& digits, int integer_part) {
+            std::string print_digits(const std::vector<int>& digits, int integer_part, bool positive) {
                 std::string result = "";
+
+                if (!positive) {
+                    result = "-";
+                }
 
                 for (int i = 0; i < integer_part; ++i) {
                     result += std::to_string(digits[i]);
@@ -140,7 +157,7 @@ namespace boost {
 
 
                 // Remove possible 0 prefix if more significant digits were canceled.
-                while (result.front() == 0 && lhs_integers > 0) {
+                while (result.front() == 0 && lhs_integers > 1) {
                     result.erase(result.begin());
                     --lhs_integers;
                 }
@@ -162,7 +179,7 @@ namespace boost {
                 if (lhs_positive == rhs_positive) {
                     result_integer_part = add_vectors(lhs, lhs_integers, rhs, rhs_integers, result);
                     result_positive = lhs_positive;
-                } else if (is_lower(rhs, lhs)) {
+                } else if (vector_is_lower(rhs, lhs)) {
                     result_integer_part = subtract_vectors(lhs, lhs_integers, rhs, rhs_integers, result);
                     result_positive = lhs_positive;
                 } else {
@@ -186,7 +203,7 @@ namespace boost {
                     result_integer_part = add_vectors(lhs, lhs_integers, rhs, rhs_integers, result);
                     result_positive = lhs_positive;
                 } else {
-                    if (is_lower(rhs, lhs)) {
+                    if (vector_is_lower(rhs, lhs)) {
                         result_integer_part = subtract_vectors(lhs, lhs_integers, rhs, rhs_integers, result);
                         result_positive = lhs_positive;
                     } else {

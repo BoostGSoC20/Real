@@ -4,13 +4,12 @@
 
 int main() {
     int i;
-    boost::real::real a,b,c,d,e,f,g,g2,h,j,k;
+    boost::real::real a,b,c,d,e,f,g,g2,h,j,k,l,m;
     boost::real::real::const_precision_iterator it;
 
     c = boost::real::real({9,9,9,9,9,9});
     d = boost::real::real({9,9,9,9,9,9});
     e = c + d;
-
 
     std::cout << "c: " << c << std::endl;
 
@@ -59,13 +58,20 @@ int main() {
 
     g2 = g;
 
+    /*
     try {
         if (g < g2) {
             std::cout << "Error, equal numbers should throw precision_exception" << std::endl;
         }
     } catch (boost::real::precision_exception& e) {
         std::cout << "g < g correctly throws: " << e.what() << std::endl;
-    }
+    } */
+
+    l = boost::real::real({1,1,1}, false);
+    m = boost::real::real({1,2}, false);
+
+    std::cout << "l: " << l << std::endl;
+    std::cout << "l: " << (l + m) << std::endl;
 
     return 0;
 }

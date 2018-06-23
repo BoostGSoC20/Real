@@ -20,7 +20,7 @@ namespace boost {
             int _integer_part = 1;
             bool _positive = true;
 
-            // The number max presition is the same as the explicit number digits size
+            // The number max precision is the same as the explicit number digits size
             int _max_precision = 1;
         public:
 

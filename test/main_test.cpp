@@ -1,6 +1,5 @@
 #include <iostream>
 #include <real/real.hpp>
-#include <real/real_algorithm.hpp>
 
 int main() {
     int i;
@@ -78,7 +77,7 @@ int main() {
     if (m < l) {
         std::cout << "m < l --> True" << std::endl;
     } else {
-        std::cout << "m < l --> Falses" << std::endl;
+        std::cout << "m < l --> False" << std::endl;
     }
 
     boost::real::real t_a([](uint n) { if (n == 0) return 0; else return 3; }, 1);

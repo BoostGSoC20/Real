@@ -15,20 +15,8 @@ namespace boost {
                     ++rhs_it;
                 }
 
+                //TODO: if it reaches the end of only one number, then that number continues as zeros and comparizon must be done considering that.
                 return rhs_it != rhs.end() && lhs_it != lhs.end() && *lhs_it < *rhs_it;
-            }
-
-            bool is_lower(const std::vector<int> &lhs, bool lhs_positive, const std::vector<int> &rhs, bool rhs_positive) {
-
-                if (lhs_positive != rhs_positive) {
-                    return !lhs_positive;
-                }
-
-                if (lhs_positive) {
-                    return vector_is_lower(lhs, rhs);
-                }
-
-                return vector_is_lower(rhs, lhs);
             }
 
             /*

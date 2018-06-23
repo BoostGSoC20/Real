@@ -20,22 +20,23 @@ namespace boost {
 
             bool operator<(const boost::real::Bound& other) {
 
-                boost::real::helper::align_numbers(
-                        this->digits,
-                        this->integer_part,
-                        other.digits,
-                        other.integer_part
-                );
-
                 if (this->positive != other.positive) {
                     return !this->positive;
                 }
 
                 if (this->positive) {
-                    return boost::real::helper::vector_is_lower(this->digits, other.digits);
+                    if (this->integer_part == other.integer_part) {
+                        return boost::real::helper::vector_is_lower(this->digits, other.digits);
+                    }
+
+                    return this->integer_part < other.integer_part;
                 }
 
-                return boost::real::helper::vector_is_lower(other.digits, this->digits);
+                if (this->integer_part == other.integer_part) {
+                    return boost::real::helper::vector_is_lower(other.digits, this->digits);
+                }
+
+                return other.integer_part < this->integer_part;
             }
 
             std::string as_string() {
@@ -95,6 +96,10 @@ namespace boost {
 
             void swap_bounds() {
                 this->lower_bound.swap(this->upper_bound);
+            }
+
+            bool operator<(const boost::real::Range& other) const {
+                return this->upper_bound < other.lower_bound;
             }
         };
     }

@@ -56,7 +56,7 @@ namespace boost {
                     for (int i = 0; i < this->_real_ptr->_integer_part; i++) ++last_integer;
                     this->range.lower_bound.digits.insert(this->range.lower_bound.digits.end(), first_integer, last_integer);
                     this->range.upper_bound.digits.insert(this->range.upper_bound.digits.end(), first_integer, last_integer);
-                    this->range.upper_bound.digits.at(this->_real_ptr->_integer_part - 1)++;
+                    this->range.upper_bound.digits.at((uint)this->_real_ptr->_integer_part - 1)++;
                     this->range.lower_bound.integer_part = this->_real_ptr->_integer_part;
                     this->range.upper_bound.integer_part = this->_real_ptr->_integer_part;
                     this->range.lower_bound.positive = this->_real_ptr->_positive;
@@ -135,7 +135,7 @@ namespace boost {
                 return const_precision_iterator(this);
             }
 
-            int operator[](int n) const {
+            int operator[](unsigned int n) const {
                 if (n < (int)this->_digits.size()) {
                     return this->_digits.at(n);
                 }

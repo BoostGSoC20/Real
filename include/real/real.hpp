@@ -166,7 +166,7 @@ namespace boost {
 
             /************** Operators ******************/
 
-            int operator[](int n) const {
+            int operator[](unsigned int n) const {
                 switch (this->_kind) {
                     case KIND::EXPLICIT:
                         return this->_explicit_number[n];
@@ -225,11 +225,11 @@ namespace boost {
                     ++this_it;
                     ++other_it;
 
-                    if (boost::real::helper::is_lower(this_it.upper_bound, this_it.upper_positive, other_it.lower_bound, other_it.lower_positive)) {
+                    if (this_it.range < other_it.range) {
                         return true;
                     }
 
-                    if (boost::real::helper::is_lower(other_it.upper_bound, other_it.upper_positive, this_it.lower_bound, this_it.lower_positive)) {
+                    if (other_it.range < this_it.range) {
                         return false;
                     }
                 }

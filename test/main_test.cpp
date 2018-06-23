@@ -19,6 +19,8 @@ int main() {
         ++it;
     }
 
+    std::cout << "e: " << e << std::endl;
+
     it = e.cbegin();
     for(i = 0; i < 10; ++i) {
         std::cout << "e: " << it.range << std::endl;
@@ -85,6 +87,9 @@ int main() {
     std::cout << "t_a: " << t_a << std::endl;
     std::cout << "t_b: " << t_b << std::endl;
     std::cout << "t_b + t_a: " << (t_b + t_a) << std::endl;
+    std::cout << "t_a + t_b: " << (t_a + t_b) << std::endl;
+    std::cout << "t_b - t_a: " << (t_b - t_a) << std::endl;
+    std::cout << "t_a - t_b: " << (t_a - t_b) << std::endl;
 
 
     return 0;

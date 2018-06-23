@@ -113,7 +113,7 @@ namespace boost {
 
                         case KIND::ALGORITHM:
                             this->_algorithmic_it = this->_real_ptr->_algorithmic_number.cbegin();
-                            this->range = this->_explicit_it.range;
+                            this->range = this->_algorithmic_it.range;
                             break;
 
                         case KIND::OPERATION:

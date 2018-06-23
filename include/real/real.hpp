@@ -157,7 +157,9 @@ namespace boost {
             real() = default;
 
             real(const real& other)  :
+                    _kind(other._kind),
                     _explicit_number(other._explicit_number),
+                    _algorithmic_number(other._algorithmic_number),
                     _operation(other._operation) { this->copy_operands(other); };
 
             real(std::initializer_list<int> digits, int integer_part)
@@ -240,9 +242,9 @@ namespace boost {
             };
 
             real& operator+=(const real& other) {
-                this->_kind = KIND::OPERATION;
                 this->_lhs_ptr = new real(*this);
                 this->_rhs_ptr = new real(other);
+                this->_kind = KIND::OPERATION;
                 this->_operation = OPERATION::ADDITION;
                 return *this;
             }
@@ -254,9 +256,9 @@ namespace boost {
             }
 
             real& operator-=(const real& other) {
-                this->_kind = KIND::OPERATION;
                 this->_lhs_ptr = new real(*this);
                 this->_rhs_ptr = new real(other);
+                this->_kind = KIND::OPERATION;
                 this->_operation = OPERATION::SUBTRACT;
                 return *this;
             }

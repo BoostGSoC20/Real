@@ -7,26 +7,26 @@ int main() {
     boost::real::real a,b,c,d,e,f,g,g2,h,j,k,l,m;
     boost::real::real::const_precision_iterator it;
 
-    c = boost::real::real({9,9,9,9,9,9});
-    d = boost::real::real({9,9,9,9,9,9});
+    c = boost::real::real({0,9,9,9,9,9,9}, 1);
+    d = boost::real::real({0,9,9,9,9,9,9}, 1);
     e = c + d;
 
     std::cout << "c: " << c << std::endl;
 
     it = d.cbegin();
     for(i = 0; i < 10; ++i) {
-        std::cout << "d: " << it << std::endl;
+        std::cout << "d: " << it.range << std::endl;
         ++it;
     }
 
     it = e.cbegin();
     for(i = 0; i < 10; ++i) {
-        std::cout << "e: " << it << std::endl;
+        std::cout << "e: " << it.range << std::endl;
         ++it;
     }
 
-    f = boost::real::real({9,9,9,9,9,9});
-    g = boost::real::real({9,9,9,9,9,8});
+    f = boost::real::real({0,9,9,9,9,9,9}, 1);
+    g = boost::real::real({0,9,9,9,9,9,8}, 1);
 
     if (g < f) {
         std::cout << "g < f --> true" << std::endl;
@@ -34,25 +34,26 @@ int main() {
         std::cout << "g < f --> false" << std::endl;
     }
 
-    h = f - g;
-
-    std::cout << "h: " << h << std::endl;
     std::cout << "f: " << f << std::endl;
     std::cout << "g: " << g << std::endl;
+    std::cout << "f - g: " << (f - g) << std::endl;
+    std::cout << "g - f: " << (g - f) << std::endl;
+    std::cout << "f + g: " << (f + g) << std::endl;
+    std::cout << "g + f: " << (g + f) << std::endl;
 
-    j = boost::real::real({9,9,9,8,9,9,9});
+    j = boost::real::real({0,9,9,9,8,9,9,9}, 1);
 
     it = j.cbegin();
     for (i = 0; i < 10; ++i) {
-        std::cout << "j: " << it << std::endl;
+        std::cout << "j: " << it.range << std::endl;
         ++it;
     }
 
-    k = boost::real::real({9,9,9,7,9,9,9});
+    k = boost::real::real({0,9,9,9,7,9,9,9}, 1);
 
     it = k.cbegin();
     for (i = 0; i < 10; ++i) {
-        std::cout << "j:" << it << std::endl;
+        std::cout << "j:" << it.range << std::endl;
         ++it;
     }
 
@@ -66,8 +67,8 @@ int main() {
         std::cout << "g < g correctly throws: " << e.what() << std::endl;
     }
 
-    l = boost::real::real({1,1,1}, false);
-    m = boost::real::real({1,2}, false);
+    l = boost::real::real({0,1,1,1}, 1, false);
+    m = boost::real::real({0,1,2}, 1, false);
 
     std::cout << "l: " << l << std::endl;
     std::cout << "l: " << (l + m) << std::endl;

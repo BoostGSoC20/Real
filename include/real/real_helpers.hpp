@@ -10,22 +10,29 @@ namespace boost {
     namespace real {
         namespace helper {
 
-            int add_vectors(
-                    std::vector<int> &lhs,
-                    int lhs_integers,
-                    std::vector<int> &rhs,
-                    int rhs_integers,
-                    std::vector<int> &result
-            ) {
+            Boundary abs(const boost::real::Boundary& boundary) {
+                Boundary result = boundary;
+                result.positive = true;
+                return result;
+            }
+
+            int add_vectors(const std::vector<int> &lhs,
+                            int lhs_integers,
+                            const std::vector<int> &rhs,
+                            int rhs_integers,
+                            std::vector<int> &result) {
                 int carry = 0;
                 int digit;
 
-                boost::real::helper::align_numbers(lhs, lhs_integers, rhs, rhs_integers);
+                std::vector<int> aligned_lhs = lhs;
+                std::vector<int> aligned_rhs = rhs;
 
-                auto lhs_it = lhs.crbegin();
-                auto rhs_it = rhs.crbegin();
+                boost::real::helper::align_numbers(aligned_lhs, lhs_integers, aligned_rhs, rhs_integers);
 
-                while(lhs_it != lhs.crend() and rhs_it != rhs.crend()) {
+                auto lhs_it = aligned_lhs.crbegin();
+                auto rhs_it = aligned_rhs.crbegin();
+
+                while(lhs_it != aligned_lhs.crend() and rhs_it != aligned_rhs.crend()) {
 
                     digit = carry + *lhs_it + *rhs_it;
 
@@ -52,21 +59,22 @@ namespace boost {
             /*
              * Pre-condition: lhs >= rhs
              */
-            int subtract_vectors(
-                    std::vector<int> &lhs,
-                    int lhs_integers,
-                    std::vector<int> &rhs,
-                    int rhs_integers,
-                    std::vector<int> &result
-            ) {
+            int subtract_vectors(const std::vector<int> &lhs,
+                                 int lhs_integers,
+                                 const std::vector<int> &rhs,
+                                 int rhs_integers,
+                                 std::vector<int> &result) {
                 int borrow = 0;
 
-                boost::real::helper::align_numbers(lhs, lhs_integers, rhs, rhs_integers);
+                std::vector<int> aligned_lhs = lhs;
+                std::vector<int> aligned_rhs = rhs;
 
-                auto lhs_it = lhs.rbegin();
-                auto rhs_it = rhs.rbegin();
+                boost::real::helper::align_numbers(aligned_lhs, lhs_integers, aligned_rhs, rhs_integers);
 
-                while(lhs_it != lhs.rend() and rhs_it != rhs.rend()) {
+                auto lhs_it = aligned_lhs.rbegin();
+                auto rhs_it = aligned_rhs.rbegin();
+
+                while(lhs_it != aligned_lhs.rend() and rhs_it != aligned_rhs.rend()) {
 
                     if (*lhs_it < borrow) {
                         *lhs_it += (10 - borrow); // Borrow is always 0 or 1, then it is never greater than 10
@@ -95,8 +103,9 @@ namespace boost {
                 return lhs_integers;
             }
 
-            //TODO: make lhs and rhs const
-            void add_bounds(boost::real::Bound& lhs, boost::real::Bound& rhs, boost::real::Bound& result) {
+            void add_boundaries(const boost::real::Boundary &lhs,
+                                const boost::real::Boundary &rhs,
+                                boost::real::Boundary &result) {
                 if (lhs.positive == rhs.positive) {
                     result.integer_part = add_vectors(lhs.digits, lhs.integer_part, rhs.digits, rhs.integer_part, result.digits);
                     result.positive = lhs.positive;
@@ -109,16 +118,19 @@ namespace boost {
                 }
             }
 
-            void subtract_bounds(boost::real::Bound& lhs, boost::real::Bound& rhs, boost::real::Bound& result) {
+            void subtract_boundaries(const boost::real::Boundary &lhs,
+                                     const boost::real::Boundary &rhs,
+                                     boost::real::Boundary &result) {
                 if (lhs.positive != rhs.positive) {
-                    result.integer_part = add_vectors(lhs, lhs.integer_part, rhs, rhs.integer_part, result);
+                    result.integer_part = add_vectors(lhs.digits, lhs.integer_part, rhs.digits, rhs.integer_part, result.digits);
                     result.positive = lhs.positive;
                 } else {
-                    if (vector_is_lower(rhs, lhs)) {
-                        result.integer_part = subtract_vectors(lhs, lhs.integer_part, rhs, rhs.integer_part, result);
+
+                    if (abs(rhs) < abs(lhs)) {
+                        result.integer_part = subtract_vectors(lhs.digits, lhs.integer_part, rhs.digits, rhs.integer_part, result.digits);
                         result.positive = lhs.positive;
                     } else {
-                        result.integer_part = subtract_vectors(rhs, rhs.integer_part, lhs, lhs.integer_part, result);
+                        result.integer_part = subtract_vectors(rhs.digits, rhs.integer_part, lhs.digits, lhs.integer_part, result.digits);
                         result.positive = !lhs.positive;
                     }
                 }

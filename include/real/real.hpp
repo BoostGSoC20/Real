@@ -31,8 +31,6 @@ namespace boost {
             real* _lhs_ptr = nullptr;
             real* _rhs_ptr = nullptr;
 
-            int _max_precision = 1;
-
             void copy_operands(const real& other) {
                 if (other._lhs_ptr != nullptr) {
                     this->_lhs_ptr = new real(*other._lhs_ptr);
@@ -62,25 +60,25 @@ namespace boost {
 
                     if (this->_real_ptr->_operation == OPERATION::ADDITION) {
 
-                        boost::real::helper::add_bounds(
+                        boost::real::helper::add_boundaries(
                                 this->_lhs_it_ptr->range.lower_bound,
                                 this->_rhs_it_ptr->range.lower_bound,
                                 this->range.lower_bound
                         );
 
-                        boost::real::helper::add_bounds(
+                        boost::real::helper::add_boundaries(
                                 this->_lhs_it_ptr->range.upper_bound,
                                 this->_rhs_it_ptr->range.upper_bound,
                                 this->range.upper_bound
                         );
                     } else if (this->_real_ptr->_operation == OPERATION::SUBTRACT) {
-                        boost::real::helper::subtract_bounds(
+                        boost::real::helper::subtract_boundaries(
                                 this->_lhs_it_ptr->range.lower_bound,
                                 this->_rhs_it_ptr->range.upper_bound,
                                 this->range.lower_bound
                         );
 
-                        boost::real::helper::subtract_bounds(
+                        boost::real::helper::subtract_boundaries(
                                 this->_lhs_it_ptr->range.upper_bound,
                                 this->_rhs_it_ptr->range.lower_bound,
                                 this->range.upper_bound
@@ -143,8 +141,7 @@ namespace boost {
 
             real(const real& other)  :
                     _explicit_number(other._explicit_number),
-                    _operation(other._operation),
-                    _max_precision(other._max_precision) { this->copy_operands(other); };
+                    _operation(other._operation) { this->copy_operands(other); };
 
             real(std::initializer_list<int> digits, int integer_part)
                     : _explicit_number(digits, integer_part) {};
@@ -158,6 +155,23 @@ namespace boost {
 
                 delete this->_rhs_ptr;
                 this->_rhs_ptr = nullptr;
+            }
+
+            int max_precision() const {
+
+                int precision;
+                switch (this->_kind) {
+
+                    case KIND::EXPLICIT:
+                        precision = this->_explicit_number.max_precision();
+                        break;
+
+                    case KIND::OPERATION:
+                        precision = std::max(this->_lhs_ptr->max_precision(), this->_rhs_ptr->max_precision());
+                        break;
+                }
+
+                return precision;
             }
 
             const_precision_iterator cbegin() const {
@@ -181,7 +195,6 @@ namespace boost {
                 this->_lhs_ptr = new real(*this);
                 this->_rhs_ptr = new real(other);
                 this->_operation = OPERATION::ADDITION;
-                this->_max_precision = std::max(this->_max_precision, other._max_precision);
                 return *this;
             }
 
@@ -196,7 +209,6 @@ namespace boost {
                 this->_lhs_ptr = new real(*this);
                 this->_rhs_ptr = new real(other);
                 this->_operation = OPERATION::SUBTRACT;
-                this->_max_precision = std::max(this->_max_precision, other._max_precision);
                 return *this;
             }
 
@@ -210,7 +222,6 @@ namespace boost {
                 this->_kind = other._kind;
                 this->_explicit_number = other._explicit_number;
                 this->_operation = other._operation;
-                this->_max_precision = other._max_precision;
                 this->copy_operands(other);
                 return *this;
             }
@@ -219,7 +230,7 @@ namespace boost {
                 auto this_it = this->cbegin();
                 auto other_it = other.cbegin();
 
-                int current_precision = std::max(this->_max_precision, other._max_precision);
+                int current_precision = std::max(this->max_precision(), other.max_precision());
                 for (int p = 0; p < current_precision; ++p) {
                     // Get more precision
                     ++this_it;
@@ -244,7 +255,7 @@ namespace boost {
 
 std::ostream& operator<<(std::ostream& os, const boost::real::real& r) {
     auto it = r.cbegin();
-    for (int i = 0; i <= r._max_precision; i++) {
+    for (int i = 0; i <= r.max_precision(); i++) {
         ++it;
     }
     os << it.range;

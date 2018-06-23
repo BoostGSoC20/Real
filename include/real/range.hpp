@@ -7,18 +7,18 @@
 
 namespace boost {
     namespace real {
-        struct Bound {
+        struct Boundary {
             std::vector<int> digits = {};
             int integer_part = 0;
             bool positive = true;
 
-            Bound() = default;
+            Boundary() = default;
 
-            Bound(const boost::real::Bound& other) = default;
+            Boundary(const boost::real::Boundary& other) = default;
 
-            Bound& operator=(const boost::real::Bound& other) = default;
+            Boundary& operator=(const boost::real::Boundary& other) = default;
 
-            bool operator<(const boost::real::Bound& other) {
+            bool operator<(const boost::real::Boundary& other) const {
 
                 if (this->positive != other.positive) {
                     return !this->positive;
@@ -39,7 +39,7 @@ namespace boost {
                 return other.integer_part < this->integer_part;
             }
 
-            std::string as_string() {
+            std::string as_string() const {
                 std::string result = "";
 
                 if (!this->positive) {
@@ -63,7 +63,7 @@ namespace boost {
                 return result;
             }
 
-            void swap(boost::real::Bound& other) {
+            void swap(boost::real::Boundary& other) {
                 this->digits.swap(other.digits);
                 std::swap(this->integer_part, other.integer_part);
                 std::swap(this->positive, other.positive);
@@ -81,7 +81,7 @@ namespace boost {
                 this->digits.clear();
             }
 
-            int operator[](int n) {
+            int& operator[](int n) {
                 return this->digits[n];
             }
 
@@ -91,8 +91,8 @@ namespace boost {
         };
 
         struct Range {
-            boost::real::Bound lower_bound;
-            boost::real::Bound upper_bound;
+            boost::real::Boundary lower_bound;
+            boost::real::Boundary upper_bound;
 
             void swap_bounds() {
                 this->lower_bound.swap(this->upper_bound);

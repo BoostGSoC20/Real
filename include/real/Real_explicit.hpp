@@ -131,12 +131,16 @@ namespace boost {
                     _max_precision((int)this->_digits.size())
             {};
 
+            int max_precision() const {
+                return this->_max_precision;
+            }
+
             const_precision_iterator cbegin() const {
                 return const_precision_iterator(this);
             }
 
             int operator[](unsigned int n) const {
-                if (n < (int)this->_digits.size()) {
+                if (n < this->_digits.size()) {
                     return this->_digits.at(n);
                 }
 
@@ -150,7 +154,7 @@ namespace boost {
 
 std::ostream& operator<<(std::ostream& os, const boost::real::Real_explicit& r) {
     auto it = r.cbegin();
-    for (int i = 0; i <= r._max_precision; i++) {
+    for (int i = 0; i <= r.max_precision(); i++) {
         ++it;
     }
     os << it.range;

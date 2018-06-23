@@ -1,6 +1,6 @@
 #include <iostream>
 #include <real/real.hpp>
-#include <real/third_part.hpp>
+#include <real/real_algorithm.hpp>
 
 int main() {
     int i;
@@ -78,6 +78,14 @@ int main() {
     } else {
         std::cout << "m < l --> Falses" << std::endl;
     }
+
+    boost::real::real t_a([](uint n) { if (n == 0) return 0; else return 3; }, 1);
+    boost::real::real t_b([](uint n) { if (n == 0) return 0; else return 9; }, 1);
+
+    std::cout << "t_a: " << t_a << std::endl;
+    std::cout << "t_b: " << t_b << std::endl;
+    std::cout << "t_b + t_a: " << (t_b + t_a) << std::endl;
+
 
     return 0;
 }

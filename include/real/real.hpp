@@ -9,7 +9,8 @@
 
 #include <real/real_exception.hpp>
 #include <real/real_helpers.hpp>
-#include <real/Real_explicit.hpp>
+#include <real/real_explicit.hpp>
+#include <real/real_algorithm.hpp>
 
 
 namespace boost {
@@ -19,12 +20,15 @@ namespace boost {
 
             // Available operations
             enum class OPERATION {ADDITION, SUBTRACT, NONE};
-            enum class KIND {EXPLICIT, OPERATION};
+            enum class KIND {EXPLICIT, OPERATION, ALGORITHM};
 
             KIND _kind = KIND::EXPLICIT;
 
             // Explicit number
-            Real_explicit _explicit_number;
+            real_explicit _explicit_number;
+
+            // Algorithmic number
+            real_algorithm _algorithmic_number;
 
             // Composed number
             OPERATION _operation = OPERATION::NONE;
@@ -50,7 +54,10 @@ namespace boost {
                 real const* _real_ptr = nullptr;
 
                 // Explicit number iterator
-                boost::real::Real_explicit::const_precision_iterator _explicit_it;
+                boost::real::real_explicit::const_precision_iterator _explicit_it;
+
+                // Algorithmic number iterator
+                boost::real::real_algorithm::const_precision_iterator _algorithmic_it;
 
                 // If the number is a composition, the const_precision_iterator uses the operand iterators
                 const_precision_iterator* _lhs_it_ptr = nullptr;
@@ -104,6 +111,11 @@ namespace boost {
                             this->range = this->_explicit_it.range;
                             break;
 
+                        case KIND::ALGORITHM:
+                            this->_algorithmic_it = this->_real_ptr->_algorithmic_number.cbegin();
+                            this->range = this->_explicit_it.range;
+                            break;
+
                         case KIND::OPERATION:
                             this->_lhs_it_ptr = new const_precision_iterator(this->_real_ptr->_lhs_ptr->cbegin());
                             this->_rhs_it_ptr = new const_precision_iterator(this->_real_ptr->_rhs_ptr->cbegin());
@@ -119,6 +131,11 @@ namespace boost {
                         case KIND::EXPLICIT:
                             ++this->_explicit_it;
                             this->range = this->_explicit_it.range;
+                            break;
+
+                        case KIND::ALGORITHM:
+                            ++this->_algorithmic_it;
+                            this->range = this->_algorithmic_it.range;
                             break;
 
                         case KIND::OPERATION:
@@ -149,6 +166,22 @@ namespace boost {
             real(std::initializer_list<int> digits, int integer_part, bool positive)
                     : _explicit_number(digits, integer_part, positive) {};
 
+            real(int (*get_nth_digit)(unsigned int), int integer_part)
+                    : _kind(KIND::ALGORITHM), _algorithmic_number(get_nth_digit, integer_part) {}
+
+            real(int (*get_nth_digit)(unsigned int),
+                 int integer_part,
+                 bool positive)
+                    : _kind(KIND::ALGORITHM),
+                      _algorithmic_number(get_nth_digit, integer_part, positive) {}
+
+            real(int (*get_nth_digit)(unsigned int),
+                 int integer_part,
+                 bool positive,
+                 int max_precision)
+                    : _kind(KIND::ALGORITHM),
+                      _algorithmic_number(get_nth_digit, integer_part, positive, max_precision) {}
+
             ~real() {
                 delete this->_lhs_ptr;
                 this->_lhs_ptr = nullptr;
@@ -166,6 +199,10 @@ namespace boost {
                         precision = this->_explicit_number.max_precision();
                         break;
 
+                    case KIND::ALGORITHM:
+                        precision = this->_algorithmic_number.max_precision();
+                        break;
+
                     case KIND::OPERATION:
                         precision = std::max(this->_lhs_ptr->max_precision(), this->_rhs_ptr->max_precision());
                         break;
@@ -181,13 +218,25 @@ namespace boost {
             /************** Operators ******************/
 
             int operator[](unsigned int n) const {
+                int result;
+
                 switch (this->_kind) {
+
                     case KIND::EXPLICIT:
-                        return this->_explicit_number[n];
+                        result = this->_explicit_number[n];
+                        break;
+
+                    case KIND::ALGORITHM:
+                        result = this->_algorithmic_number[n];
+                        break;
+
                     case KIND::OPERATION:
                         //TODO: implement
-                        return 0;
+                        result = 0;
+                        break;
                 }
+
+                return result;
             };
 
             real& operator+=(const real& other) {

@@ -13,7 +13,7 @@ namespace boost {
     namespace real {
 
         // Explicit number definition
-        class Real_explicit {
+        class real_explicit {
 
             // Number representation as a vector of digits with an integer part and a sign (+/-)
             std::vector<int> _digits = {0};
@@ -31,7 +31,7 @@ namespace boost {
                 int _n = 0;
 
                 // Internal number to iterate
-                Real_explicit const* _real_ptr = nullptr;
+                real_explicit const* _real_ptr = nullptr;
 
                 void check_and_swap_bounds() {
                     if (!this->_real_ptr->_positive) {
@@ -48,7 +48,7 @@ namespace boost {
 
                 const_precision_iterator(const const_precision_iterator& other) = default;
 
-                explicit const_precision_iterator(Real_explicit const* ptr) : _real_ptr(ptr) {
+                explicit const_precision_iterator(real_explicit const* ptr) : _real_ptr(ptr) {
                     auto first_integer = this->_real_ptr->_digits.cbegin();
                     auto last_integer = this->_real_ptr->_digits.cbegin();
 
@@ -67,8 +67,8 @@ namespace boost {
 
                 void operator++() {
 
-                    // If the explicit number full precision is reached,
-                    // then just add zeros at the bounds ends
+                    // If the explicit number full precision has been already reached,
+                    // then just add zeros at the boundaries ends
                     if (this->_n >= (int)this->_real_ptr->_digits.size()) {
                         this->range.lower_bound.push_back(0);
                         this->range.upper_bound.push_back(0);
@@ -76,21 +76,25 @@ namespace boost {
                         return;
                     }
 
-                    this->range.lower_bound.push_back(this->_real_ptr->_digits[this->_n]);
-
+                    // If the explicit number just reaches the full precision
+                    // then set both boundaries equals
                     if (this->_n == (int)this->_real_ptr->_digits.size() - 1) {
+                        this->range.lower_bound.push_back(this->_real_ptr->_digits[this->_n]);
                         this->range.upper_bound = this->range.lower_bound;
                         this->_n++;
                         return;
                     }
 
-                    // If the number is negative, bounds are interpreted as mirrored:
+                    // If the number is negative, boundaries are interpreted as mirrored:
                     // First, the operation is made as positive, and after bound calculation
                     // bounds are swapped to come back to the negative representation.
                     this->check_and_swap_bounds();
 
+                    this->range.lower_bound.push_back(this->_real_ptr->_digits[this->_n]);
+
                     this->range.upper_bound.clear();
                     this->range.upper_bound.digits.resize(this->range.lower_bound.size());
+
                     int carry = 1;
                     for (int i = (int)this->range.lower_bound.size() - 1; i >= 0; --i) {
                         if (this->range.lower_bound[i] + carry == 10) {
@@ -108,23 +112,22 @@ namespace boost {
                         this->range.upper_bound.integer_part = this->range.lower_bound.integer_part;
                     }
 
-                    // If the number is negative, the bounds are interpreted as mirrored.
                     this->check_and_swap_bounds();
                     this->_n++;
                 }
             };
 
-            Real_explicit() = default;
+            real_explicit() = default;
 
-            Real_explicit(const Real_explicit& other)  = default;
+            real_explicit(const real_explicit& other)  = default;
 
-            Real_explicit(std::initializer_list<int> digits, int integer_part) :
+            real_explicit(std::initializer_list<int> digits, int integer_part) :
                     _digits(digits),
                     _integer_part(integer_part),
                     _max_precision((int)this->_digits.size())
             {};
 
-            Real_explicit(std::initializer_list<int> digits, int integer_part, bool positive):
+            real_explicit(std::initializer_list<int> digits, int integer_part, bool positive):
                     _digits(digits),
                     _integer_part(integer_part),
                     _positive(positive),
@@ -147,12 +150,12 @@ namespace boost {
                 return 0;
             }
 
-            Real_explicit& operator=(const Real_explicit& other) = default;
+            real_explicit& operator=(const real_explicit& other) = default;
         };
     }
 }
 
-std::ostream& operator<<(std::ostream& os, const boost::real::Real_explicit& r) {
+std::ostream& operator<<(std::ostream& os, const boost::real::real_explicit& r) {
     auto it = r.cbegin();
     for (int i = 0; i <= r.max_precision(); i++) {
         ++it;

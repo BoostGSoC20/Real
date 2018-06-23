@@ -1,0 +1,142 @@
+#ifndef BOOST_REAL_REAL_ALGORITHM_HPP
+#define BOOST_REAL_REAL_ALGORITHM_HPP
+
+#include <real/range.hpp>
+
+namespace boost {
+    namespace real {
+
+        class real_algorithm {
+
+            // Number representation as a function that return the number digits
+            // an integer part and a sign (+/-)
+            int (*_get_nth_digit)(unsigned int) = [](unsigned int n) { return 0; };
+            int _integer_part = 1;
+            bool _positive = true;
+
+            // The number max precision is the same as the explicit number digits size
+            int _max_precision = 10;
+
+        public:
+
+            class const_precision_iterator {
+            private:
+
+                // Iterator precision
+                int _n = 0;
+
+                // Internal number to iterate
+                real_algorithm const* _real_ptr = nullptr;
+
+                void check_and_swap_bounds() {
+                    if (!this->_real_ptr->_positive) {
+                        this->range.swap_bounds();
+                    }
+                }
+
+            public:
+
+                // Number range boundaries
+                boost::real::Range range;
+
+                const_precision_iterator() = default;
+
+                const_precision_iterator(const const_precision_iterator& other) = default;
+
+                explicit const_precision_iterator(real_algorithm const* ptr) : _real_ptr(ptr) {
+
+                    for (int i = 0; i < this->_real_ptr->_integer_part; i++) {
+                        this->range.lower_bound.push_back((*this->_real_ptr)[i]);
+                        this->range.upper_bound.push_back((*this->_real_ptr)[i]);
+                    }
+
+                    this->range.upper_bound.digits.at((uint)this->_real_ptr->_integer_part - 1)++;
+                    this->range.lower_bound.integer_part = this->_real_ptr->_integer_part;
+                    this->range.upper_bound.integer_part = this->_real_ptr->_integer_part;
+                    this->range.lower_bound.positive = this->_real_ptr->_positive;
+                    this->range.upper_bound.positive = this->_real_ptr->_positive;
+                    this->_n = this->_real_ptr->_integer_part;
+                    this->check_and_swap_bounds();
+                }
+
+                void operator++() {
+
+                    // If the number is negative, bounds are interpreted as mirrored:
+                    // First, the operation is made as positive, and after bound calculation
+                    // bounds are swapped to come back to the negative representation.
+                    this->check_and_swap_bounds();
+
+                    this->range.lower_bound.push_back((*this->_real_ptr)[this->_n]);
+
+                    this->range.upper_bound.clear();
+                    this->range.upper_bound.digits.resize(this->range.lower_bound.size());
+                    int carry = 1;
+                    for (int i = (int)this->range.lower_bound.size() - 1; i >= 0; --i) {
+                        if (this->range.lower_bound[i] + carry == 10) {
+                            this->range.upper_bound[i] = 0;
+                        } else {
+                            this->range.upper_bound[i] = this->range.lower_bound[i] + carry;
+                            carry = 0;
+                        }
+                    }
+
+                    if (carry > 0) {
+                        this->range.upper_bound.push_front(carry);
+                        this->range.upper_bound.integer_part = this->range.lower_bound.integer_part + 1;
+                    } else {
+                        this->range.upper_bound.integer_part = this->range.lower_bound.integer_part;
+                    }
+
+                    this->check_and_swap_bounds();
+                    this->_n++;
+                }
+            };
+
+            real_algorithm() = default;
+
+            real_algorithm(const real_algorithm& other) = default;
+
+            explicit real_algorithm(int (*get_nth_digit)(unsigned int), int integer_part)
+                    : _get_nth_digit(get_nth_digit), _integer_part(integer_part) {}
+
+            explicit real_algorithm(int (*get_nth_digit)(unsigned int),
+                                    int integer_part,
+                                    bool positive)
+                    : _get_nth_digit(get_nth_digit),
+                      _integer_part(integer_part),
+                      _positive(positive) {}
+
+            explicit real_algorithm(int (*get_nth_digit)(unsigned int),
+                                    int integer_part,
+                                    bool positive,
+                                    int max_precision)
+                    : _get_nth_digit(get_nth_digit),
+                      _integer_part(integer_part),
+                      _positive(positive),
+                      _max_precision(max_precision) {}
+
+            int max_precision() const {
+                return this->_max_precision;
+            }
+
+            const_precision_iterator cbegin() const {
+                return const_precision_iterator(this);
+            }
+
+            int operator[](unsigned int n) const { return this->_get_nth_digit(n); }
+
+            real_algorithm& operator=(const real_algorithm& other) = default;
+        };
+    }
+}
+
+std::ostream& operator<<(std::ostream& os, const boost::real::real_algorithm& r) {
+    auto it = r.cbegin();
+    for (int i = 0; i <= r.max_precision(); i++) {
+        ++it;
+    }
+    os << it.range;
+    return os;
+}
+
+#endif //BOOST_REAL_REAL_ALGORITHM_HPP

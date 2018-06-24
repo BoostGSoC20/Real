@@ -1,2 +1,11 @@
 .idea/
+
+#cmake products
 cmake-build-debug/
+Boost.Real.build/
+Boost.Real.xcodeproj/
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+CTestTestfile.cmake
+cmake_install.cmake

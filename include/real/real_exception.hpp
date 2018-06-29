@@ -11,6 +11,13 @@ namespace boost {
                 return "The boost::real number precision is to slow to compare both numbers";
             }
         };
+
+        struct none_operation_exception : public std::exception {
+
+            const char * what () const throw () override {
+                return "The boost::real number operation cannot be NONE";
+            }
+        };
     }
 }
 

@@ -2,6 +2,22 @@
 #include <real/real.hpp>
 
 int main() {
+
+    std::vector<int> aa = {3,2};
+    std::vector<int> bb = {1,2};
+    std::vector<int> cc;
+    int integer_part_cc = boost::real::helper::multiply_vectors(aa,2,bb,2,cc);
+
+
+    std::cout << "cc: " << integer_part_cc << " - ";
+    for (auto& c: cc) {
+        std::cout << c;
+    }
+
+    std::cout << std::endl;
+
+
+
     int i;
     boost::real::real a,b,c,d,e,f,g,g2,h,j,k,l,m;
     boost::real::real::const_precision_iterator it;

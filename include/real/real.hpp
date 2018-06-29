@@ -19,7 +19,7 @@ namespace boost {
         class real {
 
             // Available operations
-            enum class OPERATION {ADDITION, SUBTRACT, NONE};
+            enum class OPERATION {ADDITION, SUBTRACT, MULTIPLICATION, NONE};
             enum class KIND {EXPLICIT, OPERATION, ALGORITHM};
 
             KIND _kind = KIND::EXPLICIT;
@@ -65,31 +65,44 @@ namespace boost {
 
                 void calculate_operation_bounds() {
 
-                    if (this->_real_ptr->_operation == OPERATION::ADDITION) {
+                    switch (this->_real_ptr->_operation) {
 
-                        boost::real::helper::add_boundaries(
-                                this->_lhs_it_ptr->range.lower_bound,
-                                this->_rhs_it_ptr->range.lower_bound,
-                                this->range.lower_bound
-                        );
+                        case OPERATION::ADDITION:
+                            boost::real::helper::add_boundaries(
+                                    this->_lhs_it_ptr->range.lower_bound,
+                                    this->_rhs_it_ptr->range.lower_bound,
+                                    this->range.lower_bound
+                            );
 
-                        boost::real::helper::add_boundaries(
-                                this->_lhs_it_ptr->range.upper_bound,
-                                this->_rhs_it_ptr->range.upper_bound,
-                                this->range.upper_bound
-                        );
-                    } else if (this->_real_ptr->_operation == OPERATION::SUBTRACT) {
-                        boost::real::helper::subtract_boundaries(
-                                this->_lhs_it_ptr->range.lower_bound,
-                                this->_rhs_it_ptr->range.upper_bound,
-                                this->range.lower_bound
-                        );
+                            boost::real::helper::add_boundaries(
+                                    this->_lhs_it_ptr->range.upper_bound,
+                                    this->_rhs_it_ptr->range.upper_bound,
+                                    this->range.upper_bound
+                            );
+                            break;
 
-                        boost::real::helper::subtract_boundaries(
-                                this->_lhs_it_ptr->range.upper_bound,
-                                this->_rhs_it_ptr->range.lower_bound,
-                                this->range.upper_bound
-                        );
+
+                        case OPERATION::SUBTRACT:
+                            boost::real::helper::subtract_boundaries(
+                                    this->_lhs_it_ptr->range.lower_bound,
+                                    this->_rhs_it_ptr->range.upper_bound,
+                                    this->range.lower_bound
+                            );
+
+                            boost::real::helper::subtract_boundaries(
+                                    this->_lhs_it_ptr->range.upper_bound,
+                                    this->_rhs_it_ptr->range.lower_bound,
+                                    this->range.upper_bound
+                            );
+                            break;
+
+
+                        case OPERATION::MULTIPLICATION:
+                            //TODO: implement
+                            break;
+
+                        case OPERATION::NONE:
+                            throw boost::real::none_operation_exception();
                     }
                 }
 

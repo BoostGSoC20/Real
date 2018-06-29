@@ -138,35 +138,35 @@ namespace boost {
 
             // Multiplies str1 and str2, and prints result.
             int multiply_vectors(
-                    const std::vector<int>& num1,
-                    int num1_integer_part,
-                    const std::vector<int>& num2,
-                    int num2_integer_part,
+                    const std::vector<int>& lhs,
+                    int lhs_integer_part,
+                    const std::vector<int>& rhs,
+                    int rhs_integer_part,
                     std::vector<int>& result
             ) {
 
                 // will keep the result number in vector
                 // in reverse order
-                result.assign(num1.size() + num2.size(), 0);
+                result.assign(lhs.size() + rhs.size(), 0);
 
                 // Below two indexes are used to find positions
                 // in result.
                 auto i_n1 = (int) result.size() - 1;
 
-                // Go from right to left in num1
-                for (int i = (int)num1.size()-1; i>=0; i--) {
+                // Go from right to left in lhs
+                for (int i = (int)lhs.size()-1; i>=0; i--) {
                     int carry = 0;
 
                     // To shift position to left after every
-                    // multiplication of a digit in num2
+                    // multiplication of a digit in rhs
                     int i_n2 = 0;
 
-                    // Go from right to left in num2
-                    for (int j = (int)num2.size()-1; j>=0; j--) {
+                    // Go from right to left in rhs
+                    for (int j = (int)rhs.size()-1; j>=0; j--) {
 
                         // Multiply current digit of second number with current digit of first number
                         // and add result to previously stored result at current position.
-                        int sum = num1[i]*num2[j] + result[i_n1 - i_n2] + carry;
+                        int sum = lhs[i]*rhs[j] + result[i_n1 - i_n2] + carry;
 
                         // Carry for next iteration
                         carry = sum / 10;
@@ -183,11 +183,11 @@ namespace boost {
                     }
 
                     // To shift position to left after every
-                    // multiplication of a digit in num1.
+                    // multiplication of a digit in lhs.
                     i_n1--;
                 }
 
-                int fractional_part = ((int)num1.size() - num1_integer_part) + ((int)num2.size() - num2_integer_part);
+                int fractional_part = ((int)lhs.size() - lhs_integer_part) + ((int)rhs.size() - rhs_integer_part);
 
                 // ignore 0s from the most right of the integer part
                 auto it = result.begin();
@@ -202,6 +202,7 @@ namespace boost {
 
                 return (int)result.size() - fractional_part;
             }
+            
         }
     }
 }

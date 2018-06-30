@@ -98,7 +98,17 @@ namespace boost {
 
 
                         case OPERATION::MULTIPLICATION:
-                            //TODO: implement
+                            boost::real::helper::multiply_boundaries(
+                                    this->_lhs_it_ptr->range.lower_bound,
+                                    this->_rhs_it_ptr->range.lower_bound,
+                                    this->range.lower_bound
+                            );
+
+                            boost::real::helper::multiply_boundaries(
+                                    this->_lhs_it_ptr->range.upper_bound,
+                                    this->_rhs_it_ptr->range.upper_bound,
+                                    this->range.upper_bound
+                            );
                             break;
 
                         case OPERATION::NONE:
@@ -219,7 +229,17 @@ namespace boost {
                         break;
 
                     case KIND::OPERATION:
-                        precision = std::max(this->_lhs_ptr->max_precision(), this->_rhs_ptr->max_precision());
+                        switch (this->_operation) {
+                            case OPERATION::SUBTRACT:
+                            case OPERATION::ADDITION:
+                                precision = std::max(this->_lhs_ptr->max_precision(), this->_rhs_ptr->max_precision());
+                                break;
+                            case OPERATION::MULTIPLICATION:
+                                precision = this->_lhs_ptr->max_precision() + this->_rhs_ptr->max_precision();
+                                break;
+                            case OPERATION::NONE:
+                                throw boost::real::none_operation_exception();
+                        }
                         break;
                 }
 
@@ -279,6 +299,20 @@ namespace boost {
             real operator-(const real& other) const {
                 real result = *this;
                 result -= other;
+                return result;
+            }
+
+            real& operator*=(const real& other) {
+                this->_lhs_ptr = new real(*this);
+                this->_rhs_ptr = new real(other);
+                this->_kind = KIND::OPERATION;
+                this->_operation = OPERATION::MULTIPLICATION;
+                return *this;
+            }
+
+            real operator*(const real& other) const {
+                real result = *this;
+                result *= other;
                 return result;
             }
 

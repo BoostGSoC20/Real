@@ -57,6 +57,8 @@ int main() {
     std::cout << "g - f: " << (g - f) << std::endl;
     std::cout << "f + g: " << (f + g) << std::endl;
     std::cout << "g + f: " << (g + f) << std::endl;
+    std::cout << "g * f: " << (g * f) << std::endl;
+    std::cout << "f * g: " << (f * g) << std::endl;
 
     j = boost::real::real({0,9,9,9,8,9,9,9}, 1);
 

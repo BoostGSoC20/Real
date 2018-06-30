@@ -107,13 +107,25 @@ namespace boost {
                                 const boost::real::Boundary &rhs,
                                 boost::real::Boundary &result) {
                 if (lhs.positive == rhs.positive) {
-                    result.integer_part = add_vectors(lhs.digits, lhs.integer_part, rhs.digits, rhs.integer_part, result.digits);
+                    result.integer_part = add_vectors(lhs.digits,
+                                                      lhs.integer_part,
+                                                      rhs.digits,
+                                                      rhs.integer_part,
+                                                      result.digits);
                     result.positive = lhs.positive;
                 } else if (vector_is_lower(rhs.digits, lhs.digits)) {
-                    result.integer_part = subtract_vectors(lhs.digits, lhs.integer_part, rhs.digits, rhs.integer_part, result.digits);
+                    result.integer_part = subtract_vectors(lhs.digits,
+                                                           lhs.integer_part,
+                                                           rhs.digits,
+                                                           rhs.integer_part,
+                                                           result.digits);
                     result.positive = lhs.positive;
                 } else {
-                    result.integer_part = subtract_vectors(rhs.digits, rhs.integer_part, lhs.digits, lhs.integer_part, result.digits);
+                    result.integer_part = subtract_vectors(rhs.digits,
+                                                           rhs.integer_part,
+                                                           lhs.digits,
+                                                           lhs.integer_part,
+                                                           result.digits);
                     result.positive = rhs.positive;
                 }
             }
@@ -122,15 +134,27 @@ namespace boost {
                                      const boost::real::Boundary &rhs,
                                      boost::real::Boundary &result) {
                 if (lhs.positive != rhs.positive) {
-                    result.integer_part = add_vectors(lhs.digits, lhs.integer_part, rhs.digits, rhs.integer_part, result.digits);
+                    result.integer_part = add_vectors(lhs.digits,
+                                                      lhs.integer_part,
+                                                      rhs.digits,
+                                                      rhs.integer_part,
+                                                      result.digits);
                     result.positive = lhs.positive;
                 } else {
 
                     if (abs(rhs) < abs(lhs)) {
-                        result.integer_part = subtract_vectors(lhs.digits, lhs.integer_part, rhs.digits, rhs.integer_part, result.digits);
+                        result.integer_part = subtract_vectors(lhs.digits,
+                                                               lhs.integer_part,
+                                                               rhs.digits,
+                                                               rhs.integer_part,
+                                                               result.digits);
                         result.positive = lhs.positive;
                     } else {
-                        result.integer_part = subtract_vectors(rhs.digits, rhs.integer_part, lhs.digits, lhs.integer_part, result.digits);
+                        result.integer_part = subtract_vectors(rhs.digits,
+                                                               rhs.integer_part,
+                                                               lhs.digits,
+                                                               lhs.integer_part,
+                                                               result.digits);
                         result.positive = !lhs.positive;
                     }
                 }
@@ -202,7 +226,19 @@ namespace boost {
 
                 return (int)result.size() - fractional_part;
             }
-            
+
+
+            void multiply_boundaries(const boost::real::Boundary &lhs,
+                                     const boost::real::Boundary &rhs,
+                                     boost::real::Boundary &result) {
+
+                result.positive = lhs.positive == rhs.positive;
+                result.integer_part = multiply_vectors(lhs.digits,
+                                                       lhs.integer_part,
+                                                       rhs.digits,
+                                                       rhs.integer_part,
+                                                       result.digits);
+            }
         }
     }
 }

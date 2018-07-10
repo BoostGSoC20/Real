@@ -1,5 +1,5 @@
 # Real
-Boost numerical data type for real numbers representation using range arithmetic.
+Boost numerical data type for real numbers representation using interval arithmetic.
 
 ## Introduction
 
@@ -9,16 +9,16 @@ Several times, when dealing with complex mathematical calculus, numerical errors
 Another major problem when dealing with real numbers is the representation of the irrational number as the number π or e<sup>π</sup>, they are not handled by the native number data types causing limitations when calculations are based on those numbers. Normally we define a truncation of those numbers that are good enough for our purposes, but many times, the needed precision depends on the operation to do and to the composition of multiple operations, therefore, we are unable to determine which is the correct precision until we run the programme.
 
 ### The boost::real solution
-Boost::real is a real number representation data type that address the mentioned issues using range arithmetic [1] and defining the precision as dynamical to be determined in run-time. The main goal of this data type is to represent a real number "a" as a programme that returns a finite or infinite set of intervals a(k) = [m<sub>k</sub> - e<sub>k</sub>, m<sub>k</sub> + e<sub>k</sub>], K ∈ N ≥ 0, e<sub>k</sub> ≥ 0. Where K1 < K2 ⇒ a(k2) &sub; a(k1). For this purposes, any Boost::real number has a precision const iterator that iterates the series of intervals representing the number. The series if interval are sorted from larger to smaller, thus, each time the iterator is increased, the number precision increases becuase the new calculated interval is smaller until the interval is the number itself (if possible).
+Boost::real is a real number representation data type that address the mentioned issues using interval arithmetic [1] and defining the precision as dynamical to be determined in run-time. The main goal of this data type is to represent a real number "a" as a programme that returns a finite or infinite set of intervals a(k) = [m<sub>k</sub> - e<sub>k</sub>, m<sub>k</sub> + e<sub>k</sub>], K ∈ N ≥ 0, e<sub>k</sub> ≥ 0. Where K1 < K2 ⇒ a(k2) &sub; a(k1). For this purposes, any Boost::real number has a precision const iterator that iterates the series of intervals representing the number. The series if interval are sorted from larger to smaller, thus, each time the iterator is increased, the number precision increases becuase the new calculated interval is smaller until the interval is the number itself (if possible).
 
 Also, to allow representing irrational numbers as π or e<sup>π</sup>, boost::real has a constructor that takes as parameter a function pointer, functor (function object with the operator ()) or lambda expression that for any integer n > 0, the function returns the n-th digit of the represented number. For example, the number &frac13 can easily be represented by a program that for any input n > 0, the function returns 3.
 
 ## The boost::real numbers representation
 In boost::real, a number has one of the next three representations:
 
-    1. Explicit number: A number is a vector of digits sorted as in the number natural representation. To determine where the integer part ends and the fractional part starts, an integer is used as the exponent of a floating point number and determines where the integer part start and the fractional ends. Also a boolean is used to set the number as positive (True) or negative (False)
-    2. Algorithmic number: This representation is equal to the Explicit number but instead of using a vector of digits, a lambda function must be provided. The lambda function takes an unsigned integer "n" as parameter and returns the n-th digit of the number.
-    3. A number is a composition of two numbers related by an operator (+, -, *, /), the number creates pointers to the operands and each time the number is used, the operation is evaluated to return the result.
+1. Explicit number: A number is a vector of digits sorted as in the number natural representation. To determine where the integer part ends and the fractional part starts, an integer is used as the exponent of a floating point number and determines where the integer part start and the fractional ends. Also a boolean is used to set the number as positive (True) or negative (False)
+2. Algorithmic number: This representation is equal to the Explicit number but instead of using a vector of digits, a lambda function must be provided. The lambda function takes an unsigned integer "n" as parameter and returns the n-th digit of the number.
+3. A number is a composition of two numbers related by an operator (+, -, *, /), the number creates pointers to the operands and each time the number is used, the operation is evaluated to return the result.
 
 Because of the third representation type, a number resulting from a complex calculus is a binary tree where each internal vertex is an operation and the vertex children are its operands. The tree leaves are those numbers represented by either (1) or (2) while the internal vertex are those numbers represented by (3). More information about the used number representation can be found in [3]
 
@@ -28,37 +28,33 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
 ## Interface
 
 ### Constructors and destructors
-    1. boost::real()
-    2. boost::real(initializer_vector<int> il)
-    3. boost::real(initializer_vector<int> il, int exponent)
-    4. boost::real(initializer_vector<int> il, int exponent, bool positive)
-    5. boost::real((unsigned int) -> int digits, int exponent)
+    1. boost::real(initializer_vector<int> il)
+    2. boost::real(initializer_vector<int> il, int exponent)
+    3. boost::real(initializer_vector<int> il, int exponent, bool positive)
+    4. boost::real((unsigned int) -> int digits, int exponent)
     5. boost::real((unsigned int) -> int digits, int exponent, bool positive)
-    3. boost::real(const boost::real& x)
-    4. boost::~real()
+    6. boost::real(const boost::real& x)
+    7. boost::~real()
   
-> (1) **Default constructor** 
-> Creates a real instance that represents the number 0.
->
-> (2) **Initializer list constructor** 
+> (1) **Initializer list constructor** 
 > Creates a real instance that represents an integer number where all the il numbers are form the integer part in the same order.
 >
-> (3) **Initializer list constructor with exponent** 
+> (2) **Initializer list constructor with exponent** 
 > Creates a real instance that represents the number where the exponent is used to set the number integer part and the elements of the il list are the digits the number in the same order.
 >
-> (4) **Initializer list constructor with exponent and sign** 
+> (3) **Initializer list constructor with exponent and sign** 
 > Creates a real instance that represents the number where the exponent is used to set the number integer part and the elements of the il list are the digits the number in the same order. This constructor uses the sign to determine if the number is positive or negative.
 >
-> (3) **Lambda function constructor with exponent** 
+> (4) **Lambda function constructor with exponent** 
 > Creates a real instance that represents the number where the exponent is used to set the number integer part and the lambda function digits is used to know the number digit, this function returns the n-th number digit.
 >
-> (4) **Lambda function constructor with exponent and sign** 
+> (5) **Lambda function constructor with exponent and sign** 
 > Creates a real instance that represents the number where the exponent is used to set the number integer part and the lambda function digits is used to know the number digit, this function returns the n-th number digit. This constructor uses the sign to determine if the number is positive or negative.
 >
->(3) **Copy constructor** 
+> (6) **Copy constructor** 
 > Creates a copy of the number x, if the number is an operation, then, the constructor creates new copies of the x operands.
 >
-> (4) **Default destructor** 
+> (7) **Default destructor** 
 > If the number is an operator, the destructor destroys its operands.
 
 ### Operators
@@ -88,7 +84,7 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
 >
 > (7) Uses the copy constructor to create a copy of x stored in *this
 >
-> (8) Compares *this with x to check if *this is lower than x. This operator creates two precision iterators (one for each number) and iterates until the number ranges stop overlapping when that happens, it compares the ranges bounds to determine if *this is less than x. **WARNING:** If *this is equal to x, then the ranges will always overlap, because of this, the operator uses a max precision limit and if that limit is reached, the operator throws a boost::real::precision_exception.
+> (8) Compares *this with x to check if *this is lower than x. This operator creates two precision iterators (one for each number) and iterates until the number intervals stop overlapping when that happens, it compares the intervals bounds to determine if *this is less than x. **WARNING:** If *this is equal to x, then the intervals will always overlap, because of this, the operator uses a max precision limit and if that limit is reached, the operator throws a boost::real::precision_exception.
 >
 > (9) Creates a const_precision_iterator to print the number using the iterator << operator.
 >
@@ -119,7 +115,7 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
 ### Operators
     1. void operator++()
     
-> (1) Increases the pointer to the next precision range o the pointed number. If the pointed number is represented by (1) and the full number precision is reached, then the operator has no effect because the number approximation lower and upper bounds are equals and the number range is the number itself.
+> (1) Increases the pointer to the next precision interval of the pointed number. If the pointed number is represented by (1) and the full number precision is reached, then the operator has no effect because the number approximation lower and upper bounds are equals and the number interval is the number itself.
 >
 
 ## Examples
@@ -183,6 +179,12 @@ f: 0.999999
 g: 0.999998
 h: 0.000001
 ```
+
+## Current limitations
+1. The number digits are of type int between 0 and 9, number representation must be correctly handled in a higher base to improve memory performance.
+2. The const_precision_iterator does not implement cend, this could be defined for explicit numbers as the minimum between the max_precision and the precision at witch the number can be entirely represented. For algorithmic and periodic numbers it could be set as the max_precision.
+3. More constructors must be implemented to allow a more natural initialization. For example, a constructor using a sing int or double number should exist.
+4. The division algorithm is under implementation but is not currently available.
 
 ## References
     1. Computable calculus / Oliver Aberth, San Diego : Academic Press, c2001

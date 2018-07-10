@@ -54,6 +54,8 @@ namespace boost {
                     // Lower bound and upper bounds of the number integer part
                     this->range.lower_bound.integer_part = this->_real_ptr->_integer_part;
                     this->range.upper_bound.integer_part = this->_real_ptr->_integer_part;
+                    this->range.lower_bound.positive = this->_real_ptr->_positive;
+                    this->range.upper_bound.positive = this->_real_ptr->_positive;
                     for(int i = 0; i < this->_real_ptr->_integer_part; i++) {
                         ++(*this);
                     }

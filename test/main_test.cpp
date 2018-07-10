@@ -108,6 +108,19 @@ int main() {
     std::cout << "t_b - t_a: " << (t_b - t_a) << std::endl;
     std::cout << "t_a - t_b: " << (t_a - t_b) << std::endl;
 
+    // Some non trivial tree operation number
+
+    boost::real::real c_a({2}, 1);
+    boost::real::real c_b({1,5}, 1);
+    boost::real::real c_c({0,5}, 1);
+    boost::real::real c_d({3,5}, 1, false);
+    boost::real::real c_e({2}, 1, false);
+    boost::real::real c_f({1}, 1, false);
+
+    std::cout << "0.5 + 2 * 1.5 --> " << (c_c + c_a * c_b) << std::endl;
+    std::cout << "-1 * (0.5 + 2 * 1.5) --> " << (c_f * (c_c + c_a * c_b)) << std::endl;
+    std::cout << "-3.5 + -2.0 --> " << (c_d + c_e) << std::endl;
+    std::cout << "-3.5 * -2.0 --> " << (c_d * c_e) << std::endl;
 
     return 0;
 }

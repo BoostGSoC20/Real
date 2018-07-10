@@ -235,7 +235,7 @@ namespace boost {
                     switch (this->_real_ptr->_kind) {
 
                         case KIND::EXPLICIT:
-                            this->_explicit_it = this->_real_ptr->_explicit_number.cbegin();
+                                this->_explicit_it = this->_real_ptr->_explicit_number.cbegin();
                             this->range = this->_explicit_it.range;
                             break;
 
@@ -289,6 +289,14 @@ namespace boost {
                     _explicit_number(other._explicit_number),
                     _algorithmic_number(other._algorithmic_number),
                     _operation(other._operation) { this->copy_operands(other); };
+
+            // TODO: Check that the digits size can be casted to int, if not, throw exception
+            real(std::initializer_list<int> digits)
+                    : _explicit_number(digits, digits.size()) {}
+
+            // TODO: Check that the digits size can be casted to int, if not, throw exception
+            real(std::initializer_list<int> digits, bool positive)
+                    : _explicit_number(digits, digits.size(), positive) {}
 
             real(std::initializer_list<int> digits, int integer_part)
                     : _explicit_number(digits, integer_part) {};
@@ -371,8 +379,7 @@ namespace boost {
                         break;
 
                     case KIND::OPERATION:
-                        //TODO: implement
-                        result = 0;
+                        throw boost::real::invalid_representation_exception();
                         break;
                 }
 

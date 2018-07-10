@@ -18,6 +18,13 @@ namespace boost {
                 return "The boost::real number operation cannot be NONE";
             }
         };
+
+        struct invalid_representation_exception : public std::exception {
+
+            const char * what () const throw () override {
+                return "The boost::real number method cannot be called for real number for the current representation";
+            }
+        };
     }
 }
 

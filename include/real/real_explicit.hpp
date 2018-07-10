@@ -48,32 +48,16 @@ namespace boost {
 
                 const_precision_iterator(const const_precision_iterator& other) = default;
 
-                // TODO(bug): if the number is an integer number, then the iterator should already set both boundaries equals as in the n == digits.size() case of the ++ operator.
-                // This bug could be nicely fixed by just using the ++operator.
                 explicit const_precision_iterator(real_explicit const* ptr) : _real_ptr(ptr) {
                     // Lower bound and upper bounds of the number integer part
                     this->range.lower_bound.integer_part = this->_real_ptr->_integer_part;
                     this->range.upper_bound.integer_part = this->_real_ptr->_integer_part;
                     this->range.lower_bound.positive = this->_real_ptr->_positive;
                     this->range.upper_bound.positive = this->_real_ptr->_positive;
+
                     for(int i = 0; i < this->_real_ptr->_integer_part; i++) {
                         ++(*this);
                     }
-
-                    /*
-                    auto first_integer = this->_real_ptr->_digits.cbegin();
-                    auto last_integer = this->_real_ptr->_digits.cbegin();
-                    for (int i = 0; i < this->_real_ptr->_integer_part; i++) ++last_integer;
-                    this->range.lower_bound.digits.insert(this->range.lower_bound.digits.end(), first_integer, last_integer);
-                    this->range.upper_bound.digits.insert(this->range.upper_bound.digits.end(), first_integer, last_integer);
-                    this->range.upper_bound.digits.at((uint)this->_real_ptr->_integer_part - 1)++;
-                    this->range.lower_bound.integer_part = this->_real_ptr->_integer_part;
-                    this->range.upper_bound.integer_part = this->_real_ptr->_integer_part;
-                    this->range.lower_bound.positive = this->_real_ptr->_positive;
-                    this->range.upper_bound.positive = this->_real_ptr->_positive;
-                    this->_n = this->_real_ptr->_integer_part;
-                    this->check_and_swap_bounds();
-                     */
                 }
 
                 /**

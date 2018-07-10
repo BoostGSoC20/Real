@@ -31,9 +31,9 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
     1. boost::real()
     2. boost::real(initializer_vector<int> il)
     3. boost::real(initializer_vector<int> il, int exponent)
-    4. boost::real(initializer_vector<int> il, int exponent, bool sign)
+    4. boost::real(initializer_vector<int> il, int exponent, bool positive)
     5. boost::real((unsigned int) -> int il, int exponent)
-    5. boost::real((unsigned int) -> int il, int exponent, bool sign)
+    5. boost::real((unsigned int) -> int il, int exponent, bool positive)
     3. boost::real(const boost::real& x)
     4. boost::~real()
   
@@ -47,13 +47,13 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
 > Creates a real instance that represents the number where the exponent is used to set the number integer part and the elements of the il list are the digits the number in the same order.
 >
 > (4) **Initializer list constructor with exponent and sign** 
-> Creates a real instance that represents the number where the exponent is used to set the number integer part and the elements of the il list are the digits the number in the same order. This constructor uses the sign to determine if the number is positive (sign == True) or negative.
+> Creates a real instance that represents the number where the exponent is used to set the number integer part and the elements of the il list are the digits the number in the same order. This constructor uses the sign to determine if the number is positive or negative.
 >
 > (3) **Lambda function constructor with exponent** 
 > Creates a real instance that represents the number where the exponent is used to set the number integer part and the lambda function digits is used to know the number digit, this function returns the n-th number digit.
 >
 > (4) **Lambda function constructor with exponent and sign** 
-> Creates a real instance that represents the number where the exponent is used to set the number integer part and the lambda function digits is used to know the number digit, this function returns the n-th number digit. This constructor uses the sign to determine if the number is positive (sign == True) or negative.
+> Creates a real instance that represents the number where the exponent is used to set the number integer part and the lambda function digits is used to know the number digit, this function returns the n-th number digit. This constructor uses the sign to determine if the number is positive or negative.
 >
 >(3) **Copy constructor** 
 > Creates a copy of the number x, if the number is an operation, then, the constructor creates new copies of the x operands.

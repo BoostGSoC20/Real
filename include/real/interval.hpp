@@ -9,7 +9,7 @@ namespace boost {
     namespace real {
         struct Boundary {
             std::vector<int> digits = {};
-            int integer_part = 0;
+            int exponent = 0;
             bool positive = true;
 
             Boundary() = default;
@@ -25,18 +25,18 @@ namespace boost {
                 }
 
                 if (this->positive) {
-                    if (this->integer_part == other.integer_part) {
+                    if (this->exponent == other.exponent) {
                         return boost::real::helper::vector_is_lower(this->digits, other.digits);
                     }
 
-                    return this->integer_part < other.integer_part;
+                    return this->exponent < other.exponent;
                 }
 
-                if (this->integer_part == other.integer_part) {
+                if (this->exponent == other.exponent) {
                     return boost::real::helper::vector_is_lower(other.digits, this->digits);
                 }
 
-                return other.integer_part < this->integer_part;
+                return other.exponent < this->exponent;
             }
 
             std::string as_string() const {
@@ -46,13 +46,13 @@ namespace boost {
                     result = "-";
                 }
 
-                for (int i = 0; i < this->integer_part; ++i) {
+                for (int i = 0; i < this->exponent; ++i) {
                     result += std::to_string(this->digits[i]);
                 }
 
                 result += ".";
 
-                for (int i = this->integer_part; i < (int)this->digits.size(); ++i) {
+                for (int i = this->exponent; i < (int)this->digits.size(); ++i) {
                     result += std::to_string(this->digits[i]);
                 }
 
@@ -65,7 +65,7 @@ namespace boost {
 
             void swap(boost::real::Boundary& other) {
                 this->digits.swap(other.digits);
-                std::swap(this->integer_part, other.integer_part);
+                std::swap(this->exponent, other.exponent);
                 std::swap(this->positive, other.positive);
             }
 
@@ -90,7 +90,7 @@ namespace boost {
             }
         };
 
-        struct Range {
+        struct interval {
             boost::real::Boundary lower_bound;
             boost::real::Boundary upper_bound;
 
@@ -98,7 +98,7 @@ namespace boost {
                 this->lower_bound.swap(this->upper_bound);
             }
 
-            bool operator<(const boost::real::Range& other) const {
+            bool operator<(const boost::real::interval& other) const {
                 return this->upper_bound < other.lower_bound;
             }
 
@@ -117,7 +117,7 @@ namespace boost {
     }
 }
 
-std::ostream& operator<<(std::ostream& os, const boost::real::Range& range) {
+std::ostream& operator<<(std::ostream& os, const boost::real::interval& range) {
     std::string lb = range.lower_bound.as_string();
     std::string ub = range.upper_bound.as_string();
 

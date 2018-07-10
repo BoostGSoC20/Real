@@ -3,7 +3,7 @@
 
 #include <list>
 
-#include <real/range.hpp>
+#include <real/interval.hpp>
 #include <real/range_helper.hpp>
 
 namespace boost {
@@ -107,24 +107,24 @@ namespace boost {
                                 const boost::real::Boundary &rhs,
                                 boost::real::Boundary &result) {
                 if (lhs.positive == rhs.positive) {
-                    result.integer_part = add_vectors(lhs.digits,
-                                                      lhs.integer_part,
+                    result.exponent = add_vectors(lhs.digits,
+                                                      lhs.exponent,
                                                       rhs.digits,
-                                                      rhs.integer_part,
+                                                      rhs.exponent,
                                                       result.digits);
                     result.positive = lhs.positive;
                 } else if (vector_is_lower(rhs.digits, lhs.digits)) {
-                    result.integer_part = subtract_vectors(lhs.digits,
-                                                           lhs.integer_part,
+                    result.exponent = subtract_vectors(lhs.digits,
+                                                           lhs.exponent,
                                                            rhs.digits,
-                                                           rhs.integer_part,
+                                                           rhs.exponent,
                                                            result.digits);
                     result.positive = lhs.positive;
                 } else {
-                    result.integer_part = subtract_vectors(rhs.digits,
-                                                           rhs.integer_part,
+                    result.exponent = subtract_vectors(rhs.digits,
+                                                           rhs.exponent,
                                                            lhs.digits,
-                                                           lhs.integer_part,
+                                                           lhs.exponent,
                                                            result.digits);
                     result.positive = rhs.positive;
                 }
@@ -134,26 +134,26 @@ namespace boost {
                                      const boost::real::Boundary &rhs,
                                      boost::real::Boundary &result) {
                 if (lhs.positive != rhs.positive) {
-                    result.integer_part = add_vectors(lhs.digits,
-                                                      lhs.integer_part,
+                    result.exponent = add_vectors(lhs.digits,
+                                                      lhs.exponent,
                                                       rhs.digits,
-                                                      rhs.integer_part,
+                                                      rhs.exponent,
                                                       result.digits);
                     result.positive = lhs.positive;
                 } else {
 
                     if (abs(rhs) < abs(lhs)) {
-                        result.integer_part = subtract_vectors(lhs.digits,
-                                                               lhs.integer_part,
+                        result.exponent = subtract_vectors(lhs.digits,
+                                                               lhs.exponent,
                                                                rhs.digits,
-                                                               rhs.integer_part,
+                                                               rhs.exponent,
                                                                result.digits);
                         result.positive = lhs.positive;
                     } else {
-                        result.integer_part = subtract_vectors(rhs.digits,
-                                                               rhs.integer_part,
+                        result.exponent = subtract_vectors(rhs.digits,
+                                                               rhs.exponent,
                                                                lhs.digits,
-                                                               lhs.integer_part,
+                                                               lhs.exponent,
                                                                result.digits);
                         result.positive = !lhs.positive;
                     }
@@ -163,9 +163,9 @@ namespace boost {
             // Multiplies str1 and str2, and prints result.
             int multiply_vectors(
                     const std::vector<int>& lhs,
-                    int lhs_integer_part,
+                    int lhs_exponent,
                     const std::vector<int>& rhs,
-                    int rhs_integer_part,
+                    int rhs_exponent,
                     std::vector<int>& result
             ) {
 
@@ -216,7 +216,7 @@ namespace boost {
                     i_n1--;
                 }
 
-                int fractional_part = ((int)lhs.size() - lhs_integer_part) + ((int)rhs.size() - rhs_integer_part);
+                int fractional_part = ((int)lhs.size() - lhs_exponent) + ((int)rhs.size() - rhs_exponent);
 
                 // ignore 0s from the most right of the integer part
                 auto it = result.begin();
@@ -238,10 +238,10 @@ namespace boost {
                                      boost::real::Boundary &result) {
 
                 result.positive = lhs.positive == rhs.positive;
-                result.integer_part = multiply_vectors(lhs.digits,
-                                                       lhs.integer_part,
+                result.exponent = multiply_vectors(lhs.digits,
+                                                       lhs.exponent,
                                                        rhs.digits,
-                                                       rhs.integer_part,
+                                                       rhs.exponent,
                                                        result.digits);
             }
         }

@@ -7,7 +7,7 @@
 
 #include <real/real_exception.hpp>
 #include <real/real_helpers.hpp>
-#include <real/range.hpp>
+#include <real/interval.hpp>
 
 namespace boost {
     namespace real {
@@ -17,7 +17,7 @@ namespace boost {
 
             // Number representation as a vector of digits with an integer part and a sign (+/-)
             std::vector<int> _digits = {0};
-            int _integer_part = 1;
+            int _exponent = 1;
             bool _positive = true;
 
             // The number max precision is the same as the explicit number digits size
@@ -42,7 +42,7 @@ namespace boost {
             public:
 
                 // Number range boundaries
-                boost::real::Range range;
+                boost::real::interval range;
 
                 const_precision_iterator() = default;
 
@@ -50,12 +50,12 @@ namespace boost {
 
                 explicit const_precision_iterator(real_explicit const* ptr) : _real_ptr(ptr) {
                     // Lower bound and upper bounds of the number integer part
-                    this->range.lower_bound.integer_part = this->_real_ptr->_integer_part;
-                    this->range.upper_bound.integer_part = this->_real_ptr->_integer_part;
+                    this->range.lower_bound.exponent = this->_real_ptr->_exponent;
+                    this->range.upper_bound.exponent = this->_real_ptr->_exponent;
                     this->range.lower_bound.positive = this->_real_ptr->_positive;
                     this->range.upper_bound.positive = this->_real_ptr->_positive;
 
-                    for(int i = 0; i < this->_real_ptr->_integer_part; i++) {
+                    for(int i = 0; i < this->_real_ptr->_exponent; i++) {
                         ++(*this);
                     }
                 }
@@ -113,9 +113,9 @@ namespace boost {
 
                         if (carry > 0) {
                             this->range.upper_bound.push_front(carry);
-                            this->range.upper_bound.integer_part = this->range.lower_bound.integer_part + 1;
+                            this->range.upper_bound.exponent = this->range.lower_bound.exponent + 1;
                         } else {
-                            this->range.upper_bound.integer_part = this->range.lower_bound.integer_part;
+                            this->range.upper_bound.exponent = this->range.lower_bound.exponent;
                         }
                     }
 
@@ -128,15 +128,15 @@ namespace boost {
 
             real_explicit(const real_explicit& other)  = default;
 
-            real_explicit(std::initializer_list<int> digits, int integer_part) :
+            real_explicit(std::initializer_list<int> digits, int exponent) :
                     _digits(digits),
-                    _integer_part(integer_part),
+                    _exponent(exponent),
                     _max_precision((int)this->_digits.size())
             {};
 
-            real_explicit(std::initializer_list<int> digits, int integer_part, bool positive):
+            real_explicit(std::initializer_list<int> digits, int exponent, bool positive):
                     _digits(digits),
-                    _integer_part(integer_part),
+                    _exponent(exponent),
                     _positive(positive),
                     _max_precision((int)this->_digits.size())
             {};

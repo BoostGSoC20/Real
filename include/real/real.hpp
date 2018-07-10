@@ -224,7 +224,7 @@ namespace boost {
             public:
 
                 // Number range boundaries
-                boost::real::Range range;
+                boost::real::interval range;
 
                 const_precision_iterator() = default;
 
@@ -298,27 +298,27 @@ namespace boost {
             real(std::initializer_list<int> digits, bool positive)
                     : _explicit_number(digits, digits.size(), positive) {}
 
-            real(std::initializer_list<int> digits, int integer_part)
-                    : _explicit_number(digits, integer_part) {};
+            real(std::initializer_list<int> digits, int exponent)
+                    : _explicit_number(digits, exponent) {};
 
-            real(std::initializer_list<int> digits, int integer_part, bool positive)
-                    : _explicit_number(digits, integer_part, positive) {};
+            real(std::initializer_list<int> digits, int exponent, bool positive)
+                    : _explicit_number(digits, exponent, positive) {};
 
-            real(int (*get_nth_digit)(unsigned int), int integer_part)
-                    : _kind(KIND::ALGORITHM), _algorithmic_number(get_nth_digit, integer_part) {}
+            real(int (*get_nth_digit)(unsigned int), int exponent)
+                    : _kind(KIND::ALGORITHM), _algorithmic_number(get_nth_digit, exponent) {}
 
             real(int (*get_nth_digit)(unsigned int),
-                 int integer_part,
+                 int exponent,
                  bool positive)
                     : _kind(KIND::ALGORITHM),
-                      _algorithmic_number(get_nth_digit, integer_part, positive) {}
+                      _algorithmic_number(get_nth_digit, exponent, positive) {}
 
             real(int (*get_nth_digit)(unsigned int),
-                 int integer_part,
+                 int exponent,
                  bool positive,
                  int max_precision)
                     : _kind(KIND::ALGORITHM),
-                      _algorithmic_number(get_nth_digit, integer_part, positive, max_precision) {}
+                      _algorithmic_number(get_nth_digit, exponent, positive, max_precision) {}
 
             ~real() {
                 delete this->_lhs_ptr;

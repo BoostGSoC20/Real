@@ -1,7 +1,7 @@
 #ifndef BOOST_REAL_RANGE_HELPER_HPP
 #define BOOST_REAL_RANGE_HELPER_HPP
 
-#include "range.hpp"
+#include "interval.hpp"
 
 namespace boost {
     namespace real {

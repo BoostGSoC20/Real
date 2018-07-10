@@ -6,10 +6,10 @@ int main() {
     std::vector<int> aa = {3,2};
     std::vector<int> bb = {1,2};
     std::vector<int> cc;
-    int integer_part_cc = boost::real::helper::multiply_vectors(aa,2,bb,2,cc);
+    int exponent_cc = boost::real::helper::multiply_vectors(aa,2,bb,2,cc);
 
 
-    std::cout << "cc: " << integer_part_cc << " - ";
+    std::cout << "cc: " << exponent_cc << " - ";
     for (auto& c: cc) {
         std::cout << c;
     }

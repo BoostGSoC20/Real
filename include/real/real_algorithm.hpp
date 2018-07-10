@@ -1,7 +1,7 @@
 #ifndef BOOST_REAL_REAL_ALGORITHM_HPP
 #define BOOST_REAL_REAL_ALGORITHM_HPP
 
-#include <real/range.hpp>
+#include <real/interval.hpp>
 
 namespace boost {
     namespace real {
@@ -11,7 +11,7 @@ namespace boost {
             // Number representation as a function that return the number digits
             // an integer part and a sign (+/-)
             int (*_get_nth_digit)(unsigned int) = [](unsigned int n) { return 0; };
-            int _integer_part = 1;
+            int _exponent = 1;
             bool _positive = true;
 
             // The number max precision is the same as the explicit number digits size
@@ -37,7 +37,7 @@ namespace boost {
             public:
 
                 // Number range boundaries
-                boost::real::Range range;
+                boost::real::interval range;
 
                 const_precision_iterator() = default;
 
@@ -45,17 +45,17 @@ namespace boost {
 
                 explicit const_precision_iterator(real_algorithm const* ptr) : _real_ptr(ptr) {
 
-                    for (int i = 0; i < this->_real_ptr->_integer_part; i++) {
+                    for (int i = 0; i < this->_real_ptr->_exponent; i++) {
                         this->range.lower_bound.push_back((*this->_real_ptr)[i]);
                         this->range.upper_bound.push_back((*this->_real_ptr)[i]);
                     }
 
-                    this->range.upper_bound.digits.at((uint)this->_real_ptr->_integer_part - 1)++;
-                    this->range.lower_bound.integer_part = this->_real_ptr->_integer_part;
-                    this->range.upper_bound.integer_part = this->_real_ptr->_integer_part;
+                    this->range.upper_bound.digits.at((uint)this->_real_ptr->_exponent - 1)++;
+                    this->range.lower_bound.exponent = this->_real_ptr->_exponent;
+                    this->range.upper_bound.exponent = this->_real_ptr->_exponent;
                     this->range.lower_bound.positive = this->_real_ptr->_positive;
                     this->range.upper_bound.positive = this->_real_ptr->_positive;
-                    this->_n = this->_real_ptr->_integer_part;
+                    this->_n = this->_real_ptr->_exponent;
                     this->check_and_swap_bounds();
                 }
 
@@ -82,9 +82,9 @@ namespace boost {
 
                     if (carry > 0) {
                         this->range.upper_bound.push_front(carry);
-                        this->range.upper_bound.integer_part = this->range.lower_bound.integer_part + 1;
+                        this->range.upper_bound.exponent = this->range.lower_bound.exponent + 1;
                     } else {
-                        this->range.upper_bound.integer_part = this->range.lower_bound.integer_part;
+                        this->range.upper_bound.exponent = this->range.lower_bound.exponent;
                     }
 
                     this->check_and_swap_bounds();
@@ -96,22 +96,22 @@ namespace boost {
 
             real_algorithm(const real_algorithm& other) = default;
 
-            explicit real_algorithm(int (*get_nth_digit)(unsigned int), int integer_part)
-                    : _get_nth_digit(get_nth_digit), _integer_part(integer_part) {}
+            explicit real_algorithm(int (*get_nth_digit)(unsigned int), int exponent)
+                    : _get_nth_digit(get_nth_digit), _exponent(exponent) {}
 
             explicit real_algorithm(int (*get_nth_digit)(unsigned int),
-                                    int integer_part,
+                                    int exponent,
                                     bool positive)
                     : _get_nth_digit(get_nth_digit),
-                      _integer_part(integer_part),
+                      _exponent(exponent),
                       _positive(positive) {}
 
             explicit real_algorithm(int (*get_nth_digit)(unsigned int),
-                                    int integer_part,
+                                    int exponent,
                                     bool positive,
                                     int max_precision)
                     : _get_nth_digit(get_nth_digit),
-                      _integer_part(integer_part),
+                      _exponent(exponent),
                       _positive(positive),
                       _max_precision(max_precision) {}
 

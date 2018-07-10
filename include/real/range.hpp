@@ -101,6 +101,18 @@ namespace boost {
             bool operator<(const boost::real::Range& other) const {
                 return this->upper_bound < other.lower_bound;
             }
+
+            bool positive() const {
+                // If the lower bound of a range is positive, then the upper bound is also positive
+                // and the range is fully contained in the positive number line
+                return this->lower_bound.positive;
+            }
+
+            bool negative() const {
+                // If the upper bound of a range is negative, then the lower bound is also negative
+                // and the range is fully contained in the negative number line
+                return !this->upper_bound.positive;
+            }
         };
     }
 }

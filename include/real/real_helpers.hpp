@@ -171,7 +171,12 @@ namespace boost {
 
                 // will keep the result number in vector
                 // in reverse order
-                result.assign(lhs.size() + rhs.size(), 0);
+                size_t new_size = lhs.size() + rhs.size();
+
+                if (!result.empty()) result.clear();
+                for (int i = 0; i < (int)new_size; i++) result.push_back(0);
+                // TODO: Check why the assign method crashes.
+                //result.assign(new_size, 0);
 
                 // Below two indexes are used to find positions
                 // in result.
@@ -203,7 +208,7 @@ namespace boost {
 
                     // store carry in next cell
                     if (carry > 0) {
-                        result[i_n1 + i_n2] += carry;
+                        result[i_n1 - i_n2] += carry;
                     }
 
                     // To shift position to left after every

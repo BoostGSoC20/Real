@@ -48,11 +48,19 @@ namespace boost {
 
                 const_precision_iterator(const const_precision_iterator& other) = default;
 
+                // TODO(bug): if the number is an integer number, then the iterator should already set both boundaries equals as in the n == digits.size() case of the ++ operator.
+                // This bug could be nicely fixed by just using the ++operator.
                 explicit const_precision_iterator(real_explicit const* ptr) : _real_ptr(ptr) {
+                    // Lower bound and upper bounds of the number integer part
+                    this->range.lower_bound.integer_part = this->_real_ptr->_integer_part;
+                    this->range.upper_bound.integer_part = this->_real_ptr->_integer_part;
+                    for(int i = 0; i < this->_real_ptr->_integer_part; i++) {
+                        ++(*this);
+                    }
+
+                    /*
                     auto first_integer = this->_real_ptr->_digits.cbegin();
                     auto last_integer = this->_real_ptr->_digits.cbegin();
-
-                    // Lower bound and upper bounds of the number integer part
                     for (int i = 0; i < this->_real_ptr->_integer_part; i++) ++last_integer;
                     this->range.lower_bound.digits.insert(this->range.lower_bound.digits.end(), first_integer, last_integer);
                     this->range.upper_bound.digits.insert(this->range.upper_bound.digits.end(), first_integer, last_integer);
@@ -63,8 +71,17 @@ namespace boost {
                     this->range.upper_bound.positive = this->_real_ptr->_positive;
                     this->_n = this->_real_ptr->_integer_part;
                     this->check_and_swap_bounds();
+                     */
                 }
 
+                /**
+                 * @brief Increases the interval number precision, the interval becomes smaller and
+                 * the number error is decreased.
+                 *
+                 * WARNING: This method asumes the current precision is greater than the integer part
+                 * of the number. Otherwise, the number will be miss-represented because the tuncation
+                 * is made before the fractional part.
+                 */
                 void operator++() {
 
                     // If the explicit number full precision has been already reached,
@@ -76,40 +93,44 @@ namespace boost {
                         return;
                     }
 
-                    // If the explicit number just reaches the full precision
-                    // then set both boundaries equals
-                    if (this->_n == (int)this->_real_ptr->_digits.size() - 1) {
-                        this->range.lower_bound.push_back(this->_real_ptr->_digits[this->_n]);
-                        this->range.upper_bound = this->range.lower_bound;
-                        this->_n++;
-                        return;
-                    }
-
                     // If the number is negative, boundaries are interpreted as mirrored:
                     // First, the operation is made as positive, and after bound calculation
                     // bounds are swapped to come back to the negative representation.
                     this->check_and_swap_bounds();
 
-                    this->range.lower_bound.push_back(this->_real_ptr->_digits[this->_n]);
+                    // If the explicit number just reaches the full precision
+                    // then set both boundaries equals
+                    if (this->_n == (int)this->_real_ptr->_digits.size() - 1) {
 
-                    this->range.upper_bound.clear();
-                    this->range.upper_bound.digits.resize(this->range.lower_bound.size());
+                        this->range.lower_bound.push_back(this->_real_ptr->_digits[this->_n]);
+                        this->range.upper_bound = this->range.lower_bound;
 
-                    int carry = 1;
-                    for (int i = (int)this->range.lower_bound.size() - 1; i >= 0; --i) {
-                        if (this->range.lower_bound[i] + carry == 10) {
-                            this->range.upper_bound[i] = 0;
-                        } else {
-                            this->range.upper_bound[i] = this->range.lower_bound[i] + carry;
-                            carry = 0;
-                        }
-                    }
 
-                    if (carry > 0) {
-                        this->range.upper_bound.push_front(carry);
-                        this->range.upper_bound.integer_part = this->range.lower_bound.integer_part + 1;
                     } else {
-                        this->range.upper_bound.integer_part = this->range.lower_bound.integer_part;
+
+                        // If the explicit number didn't reaches the full precision
+                        // then the number interval is defined by truncation.
+                        this->range.lower_bound.push_back(this->_real_ptr->_digits[this->_n]);
+
+                        this->range.upper_bound.clear();
+                        this->range.upper_bound.digits.resize(this->range.lower_bound.size());
+
+                        int carry = 1;
+                        for (int i = (int)this->range.lower_bound.size() - 1; i >= 0; --i) {
+                            if (this->range.lower_bound[i] + carry == 10) {
+                                this->range.upper_bound[i] = 0;
+                            } else {
+                                this->range.upper_bound[i] = this->range.lower_bound[i] + carry;
+                                carry = 0;
+                            }
+                        }
+
+                        if (carry > 0) {
+                            this->range.upper_bound.push_front(carry);
+                            this->range.upper_bound.integer_part = this->range.lower_bound.integer_part + 1;
+                        } else {
+                            this->range.upper_bound.integer_part = this->range.lower_bound.integer_part;
+                        }
                     }
 
                     this->check_and_swap_bounds();

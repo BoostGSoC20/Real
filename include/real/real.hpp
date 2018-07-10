@@ -97,19 +97,124 @@ namespace boost {
                             break;
 
 
-                        case OPERATION::MULTIPLICATION:
-                            boost::real::helper::multiply_boundaries(
-                                    this->_lhs_it_ptr->range.lower_bound,
-                                    this->_rhs_it_ptr->range.lower_bound,
-                                    this->range.lower_bound
-                            );
+                        case OPERATION::MULTIPLICATION: {
+                            bool lhs_positive = this->_lhs_it_ptr->range.positive();
+                            bool rhs_positive = this->_rhs_it_ptr->range.positive();
+                            bool lhs_negative = this->_lhs_it_ptr->range.negative();
+                            bool rhs_negative = this->_rhs_it_ptr->range.negative();
 
-                            boost::real::helper::multiply_boundaries(
-                                    this->_lhs_it_ptr->range.upper_bound,
-                                    this->_rhs_it_ptr->range.upper_bound,
-                                    this->range.upper_bound
-                            );
+                            if (lhs_positive && rhs_positive) { // Positive - Positive
+                                boost::real::helper::multiply_boundaries(
+                                        this->_lhs_it_ptr->range.lower_bound,
+                                        this->_rhs_it_ptr->range.lower_bound,
+                                        this->range.lower_bound
+                                );
+
+                                boost::real::helper::multiply_boundaries(
+                                        this->_lhs_it_ptr->range.upper_bound,
+                                        this->_rhs_it_ptr->range.upper_bound,
+                                        this->range.upper_bound
+                                );
+
+                            } else if (lhs_negative && rhs_negative) { // Negative - Negative
+                                boost::real::helper::multiply_boundaries(
+                                        this->_lhs_it_ptr->range.upper_bound,
+                                        this->_rhs_it_ptr->range.upper_bound,
+                                        this->range.lower_bound
+                                );
+
+                                boost::real::helper::multiply_boundaries(
+                                        this->_lhs_it_ptr->range.lower_bound,
+                                        this->_rhs_it_ptr->range.lower_bound,
+                                        this->range.upper_bound
+                                );
+                            } else if (lhs_negative && rhs_positive) { // Negative - Positive
+                                boost::real::helper::multiply_boundaries(
+                                        this->_lhs_it_ptr->range.lower_bound,
+                                        this->_rhs_it_ptr->range.upper_bound,
+                                        this->range.lower_bound
+                                );
+
+                                boost::real::helper::multiply_boundaries(
+                                        this->_lhs_it_ptr->range.upper_bound,
+                                        this->_rhs_it_ptr->range.lower_bound,
+                                        this->range.upper_bound
+                                );
+
+                            } else if (lhs_positive && rhs_negative) { // Positive - Negative
+                                boost::real::helper::multiply_boundaries(
+                                        this->_lhs_it_ptr->range.upper_bound,
+                                        this->_rhs_it_ptr->range.lower_bound,
+                                        this->range.lower_bound
+                                );
+
+                                boost::real::helper::multiply_boundaries(
+                                        this->_lhs_it_ptr->range.lower_bound,
+                                        this->_rhs_it_ptr->range.upper_bound,
+                                        this->range.upper_bound
+                                );
+
+                            } else { // One is around zero all possible combinations are be tested
+
+                                boost::real::Boundary current_boundary;
+
+                                // Lower * Lower
+                                boost::real::helper::multiply_boundaries(
+                                        this->_lhs_it_ptr->range.lower_bound,
+                                        this->_rhs_it_ptr->range.lower_bound,
+                                        current_boundary
+                                );
+
+                                this->range.lower_bound = current_boundary;
+                                this->range.upper_bound = current_boundary;
+
+                                // Upper * upper
+                                boost::real::helper::multiply_boundaries(
+                                        this->_lhs_it_ptr->range.upper_bound,
+                                        this->_rhs_it_ptr->range.upper_bound,
+                                        current_boundary
+                                );
+
+                                if (current_boundary < this->range.lower_bound) {
+                                    this->range.lower_bound = current_boundary;
+                                }
+
+                                if (this->range.upper_bound < current_boundary) {
+                                    this->range.upper_bound = current_boundary;
+                                }
+
+                                // Lower * upper
+                                boost::real::helper::multiply_boundaries(
+                                        this->_lhs_it_ptr->range.lower_bound,
+                                        this->_rhs_it_ptr->range.upper_bound,
+                                        current_boundary
+                                );
+
+                                if (current_boundary < this->range.lower_bound) {
+                                    this->range.lower_bound = current_boundary;
+                                }
+
+                                if (this->range.upper_bound < current_boundary) {
+                                    this->range.upper_bound = current_boundary;
+                                }
+
+                                // Upper * lower
+                                boost::real::helper::multiply_boundaries(
+                                        this->_lhs_it_ptr->range.upper_bound,
+                                        this->_rhs_it_ptr->range.lower_bound,
+                                        current_boundary
+                                );
+
+                                if (current_boundary < this->range.lower_bound) {
+                                    this->range.lower_bound = current_boundary;
+                                }
+
+                                if (this->range.upper_bound < current_boundary) {
+                                    this->range.upper_bound = current_boundary;
+                                }
+                            }
                             break;
+                        }
 
                         case OPERATION::NONE:
                             throw boost::real::none_operation_exception();

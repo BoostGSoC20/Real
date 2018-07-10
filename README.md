@@ -32,8 +32,8 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
     2. boost::real(initializer_vector<int> il)
     3. boost::real(initializer_vector<int> il, int exponent)
     4. boost::real(initializer_vector<int> il, int exponent, bool positive)
-    5. boost::real((unsigned int) -> int il, int exponent)
-    5. boost::real((unsigned int) -> int il, int exponent, bool positive)
+    5. boost::real((unsigned int) -> int digits, int exponent)
+    5. boost::real((unsigned int) -> int digits, int exponent, bool positive)
     3. boost::real(const boost::real& x)
     4. boost::~real()
   

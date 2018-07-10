@@ -10,8 +10,8 @@ namespace boost {
     namespace real {
         namespace helper {
 
-            Boundary abs(const boost::real::Boundary& boundary) {
-                Boundary result = boundary;
+            boundary abs(const boost::real::boundary& boundary) {
+                boundary result = boundary;
                 result.positive = true;
                 return result;
             }
@@ -103,9 +103,9 @@ namespace boost {
                 return lhs_integers;
             }
 
-            void add_boundaries(const boost::real::Boundary &lhs,
-                                const boost::real::Boundary &rhs,
-                                boost::real::Boundary &result) {
+            void add_boundaries(const boost::real::boundary &lhs,
+                                const boost::real::boundary &rhs,
+                                boost::real::boundary &result) {
                 if (lhs.positive == rhs.positive) {
                     result.exponent = add_vectors(lhs.digits,
                                                       lhs.exponent,
@@ -130,9 +130,9 @@ namespace boost {
                 }
             }
 
-            void subtract_boundaries(const boost::real::Boundary &lhs,
-                                     const boost::real::Boundary &rhs,
-                                     boost::real::Boundary &result) {
+            void subtract_boundaries(const boost::real::boundary &lhs,
+                                     const boost::real::boundary &rhs,
+                                     boost::real::boundary &result) {
                 if (lhs.positive != rhs.positive) {
                     result.exponent = add_vectors(lhs.digits,
                                                       lhs.exponent,
@@ -233,9 +233,9 @@ namespace boost {
             }
 
 
-            void multiply_boundaries(const boost::real::Boundary &lhs,
-                                     const boost::real::Boundary &rhs,
-                                     boost::real::Boundary &result) {
+            void multiply_boundaries(const boost::real::boundary &lhs,
+                                     const boost::real::boundary &rhs,
+                                     boost::real::boundary &result) {
 
                 result.positive = lhs.positive == rhs.positive;
                 result.exponent = multiply_vectors(lhs.digits,

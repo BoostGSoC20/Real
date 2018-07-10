@@ -7,18 +7,18 @@
 
 namespace boost {
     namespace real {
-        struct Boundary {
+        struct boundary {
             std::vector<int> digits = {};
             int exponent = 0;
             bool positive = true;
 
-            Boundary() = default;
+            boundary() = default;
 
-            Boundary(const boost::real::Boundary& other) = default;
+            boundary(const boost::real::boundary& other) = default;
 
-            Boundary& operator=(const boost::real::Boundary& other) = default;
+            boundary& operator=(const boost::real::boundary& other) = default;
 
-            bool operator<(const boost::real::Boundary& other) const {
+            bool operator<(const boost::real::boundary& other) const {
 
                 if (this->positive != other.positive) {
                     return !this->positive;
@@ -63,7 +63,7 @@ namespace boost {
                 return result;
             }
 
-            void swap(boost::real::Boundary& other) {
+            void swap(boost::real::boundary& other) {
                 this->digits.swap(other.digits);
                 std::swap(this->exponent, other.exponent);
                 std::swap(this->positive, other.positive);
@@ -91,8 +91,8 @@ namespace boost {
         };
 
         struct interval {
-            boost::real::Boundary lower_bound;
-            boost::real::Boundary upper_bound;
+            boost::real::boundary lower_bound;
+            boost::real::boundary upper_bound;
 
             void swap_bounds() {
                 this->lower_bound.swap(this->upper_bound);

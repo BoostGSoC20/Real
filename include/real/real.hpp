@@ -156,7 +156,7 @@ namespace boost {
 
                             } else { // One is around zero all possible combinations are be tested
 
-                                boost::real::Boundary current_boundary;
+                                boost::real::boundary current_boundary;
 
                                 // Lower * Lower
                                 boost::real::helper::multiply_boundaries(

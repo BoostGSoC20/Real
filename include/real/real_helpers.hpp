@@ -10,8 +10,8 @@ namespace boost {
     namespace real {
         namespace helper {
 
-            boundary abs(const boost::real::boundary& boundary) {
-                boundary result = boundary;
+            boost::real::boundary abs(const boost::real::boundary& b) {
+                boost::real::boundary result = b;
                 result.positive = true;
                 return result;
             }
@@ -108,24 +108,24 @@ namespace boost {
                                 boost::real::boundary &result) {
                 if (lhs.positive == rhs.positive) {
                     result.exponent = add_vectors(lhs.digits,
-                                                      lhs.exponent,
-                                                      rhs.digits,
-                                                      rhs.exponent,
-                                                      result.digits);
+                                                  lhs.exponent,
+                                                  rhs.digits,
+                                                  rhs.exponent,
+                                                  result.digits);
                     result.positive = lhs.positive;
                 } else if (vector_is_lower(rhs.digits, lhs.digits)) {
                     result.exponent = subtract_vectors(lhs.digits,
-                                                           lhs.exponent,
-                                                           rhs.digits,
-                                                           rhs.exponent,
-                                                           result.digits);
+                                                       lhs.exponent,
+                                                       rhs.digits,
+                                                       rhs.exponent,
+                                                       result.digits);
                     result.positive = lhs.positive;
                 } else {
                     result.exponent = subtract_vectors(rhs.digits,
-                                                           rhs.exponent,
-                                                           lhs.digits,
-                                                           lhs.exponent,
-                                                           result.digits);
+                                                       rhs.exponent,
+                                                       lhs.digits,
+                                                       lhs.exponent,
+                                                       result.digits);
                     result.positive = rhs.positive;
                 }
             }
@@ -243,6 +243,95 @@ namespace boost {
                                                        rhs.digits,
                                                        rhs.exponent,
                                                        result.digits);
+            }
+
+            int divide_vectors(
+                    const std::vector<int>& dividend,
+                    int dividend_exponent,
+                    const std::vector<int>& divisor,
+                    int divisor_exponent,
+                    std::vector<int>& cotient
+            ) {
+
+                // NOTE: All the alignment must be replaced by a logical alignment
+                // Align decimal parts
+                int dividend_decimal_part = (int)dividend.size() - dividend_exponent;
+                int divisor_decimal_part = (int)divisor.size() - divisor_exponent;
+
+                std::vector<int> aligned_dividend = dividend;
+                std::vector<int> aligned_divisor = divisor;
+
+
+                while (dividend_decimal_part < divisor_decimal_part) {
+                    aligned_dividend.push_back(0);
+                    dividend_decimal_part++;
+                }
+
+                while (dividend_decimal_part > divisor_decimal_part) {
+                    aligned_divisor.push_back(0);
+                    divisor_decimal_part++;
+                }
+
+                // NOTE: when logical alignment will be implemented numbers have no extra zeros and this is not necessary
+                while(aligned_dividend.front() == 0) {
+                    aligned_dividend.erase(aligned_dividend.begin());
+                }
+
+                while(aligned_divisor.front() == 0) {
+                    aligned_divisor.erase(aligned_divisor.begin());
+                }
+
+                std::vector<int> current_dividend(
+                        aligned_dividend.begin(),
+                        aligned_dividend.begin() + aligned_divisor.size()
+                );
+                auto next_digit = aligned_dividend.begin() + aligned_divisor.size();
+                std::vector<int> residual = aligned_dividend;
+
+                // TODO: This loop end criteria generate a whole division, a precision stop criteria
+                // TODO: must be implemented for numbers like 1/3 that are periodic numbers to allow
+                // TODO: calculate floating point result with some desired precision
+                while ((residual.size() > 1 || residual.front() != 0) && next_digit != aligned_dividend.end()) {
+
+                    // Obtain the smaller part of the dividend that is greater than the divisor
+                    while (aligned_divisor.size() > current_dividend.size()) {
+                        current_dividend.push_back(*next_digit);
+                        ++next_digit;
+                    }
+
+                    if (aligned_divisor.size() == current_dividend.size() && boost::real::helper::vector_is_lower(current_dividend, aligned_divisor)) {
+                        current_dividend.push_back(*next_digit);
+                        ++next_digit;
+                    }
+
+                    // Obtaining the greater digit by which the divisor can be multiplied and still be lower than the dividend
+                    // TODO: when using a higher base, this search could be done using binary search to improve performance
+                    std::vector<int> closest;
+                    int digit = 0;
+                    do {
+                        digit++;
+                        std::vector<int> multiplier = {digit};
+                        multiply_vectors(aligned_divisor, (int)aligned_divisor.size(), multiplier, 1, closest);
+
+                    } while(
+                            closest.size() < current_dividend.size() ||
+                            (closest.size() == current_dividend.size() && !boost::real::helper::vector_is_lower(current_dividend, closest)) // closes <= current_dividend
+                    );
+
+                    // i should be in [1, 10] and i - 1 in [0, 9]
+                    // The found digit is the next digit in the cotient result
+                    cotient.push_back(digit-1);
+
+                    // Update the residual for the next iteration where more digits of the dividend will be considered
+                    std::vector<int> multiplier = {digit-1};
+                    multiply_vectors(aligned_divisor, (int)aligned_divisor.size(), multiplier, 1, closest);
+                    residual.clear();
+                    subtract_vectors(current_dividend, (int)current_dividend.size(), closest, (int)closest.size(), residual);
+                    current_dividend = residual;
+                }
+
+                // TODO: once the stop criteria is improved, the integer part is not the whole number
+                return (int)cotient.size();
             }
         }
     }

@@ -13,6 +13,7 @@ namespace boost {
              *
              * Note: lhs and rhs must be aligned, i.e. two digits in the same index represent the same unit.
              */
+            // TODO: when using logical alignment the sizes should not care, vector_is_slower should consider the logical unit of the numbers
             bool vector_is_lower(const std::vector<int> &lhs, const std::vector<int> &rhs) {
 
                 // Check if lhs is lower than rhs
@@ -46,7 +47,7 @@ namespace boost {
                 }
 
                 while (rhs_integers < lhs_integers) {
-                    lhs.insert(lhs.begin(), 0);
+                    rhs.insert(rhs.begin(), 0);
                     rhs_integers++;
                 }
 

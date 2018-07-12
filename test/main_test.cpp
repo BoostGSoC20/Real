@@ -122,5 +122,17 @@ int main() {
     std::cout << "-3.5 + -2.0 --> " << (c_d + c_e) << std::endl;
     std::cout << "-3.5 * -2.0 --> " << (c_d * c_e) << std::endl;
 
+    std::vector<int> d_a = {4,8,0};
+    std::vector<int> d_b = {1,5};
+    std::vector<int> result;
+
+    boost::real::helper::divide_vectors(d_a, 3, d_b, 2, result);
+
+    std::cout << "r: ";
+    for(auto& r: result) {
+        std::cout << r;
+    }
+    std::cout << std::endl;
+
     return 0;
 }

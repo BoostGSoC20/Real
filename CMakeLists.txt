@@ -3,9 +3,21 @@ project(Boost.Real)
 set (Boost.Real 1)
 set (Boost.Real 0)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -std=c++11")
+add_library(Boost.Real INTERFACE)
 
-include_directories(include)
+# Check for standard to use
+include(CheckCXXCompilerFlag)
+check_cxx_compiler_flag(-std=c++17 HAVE_FLAG_STD_CXX17)
+if(HAVE_FLAG_STD_CXX17)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic --std=c++17")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic --std=c++1z")
+endif()
+
+#Detect Boost.Test framework
+find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+
+include_directories(include ${Boost_INCLUDE_DIRS})
 
 # Unit tests
 enable_testing()
@@ -15,3 +27,10 @@ foreach(testSrc ${TestSources})
     add_executable(${testName} ${testSrc})
     add_test(${testName} ${testName})
 endforeach(testSrc)
+
+#Library Headers
+add_executable(Boost.Real_headers include)
+set_target_properties(Boost.Real_headers PROPERTIES
+                                                 EXCLUDE_FROM_ALL TRUE
+                                                 EXCLUDE_FROM_DEFAULT_BUILD TRUE
+                                                 LINKER_LANGUAGE CXX)

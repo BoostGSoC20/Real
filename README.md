@@ -1,4 +1,4 @@
-# Real
+# Real [![Build Status](https://travis-ci.org/sdavtaker/Real.svg?branch=master)](https://travis-ci.org/sdavtaker/Real)
 Boost numerical data type for real numbers representation using interval arithmetic.
 
 ## Introduction

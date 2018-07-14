@@ -1,0 +1,46 @@
+language: cpp
+sudo: required
+env: 
+  global:
+# Workaround for https://github.com/travis-ci/travis-ci/issues/4681
+  matrix:
+    - TRAVIS_EMPTY_JOB_WORKAROUND=true
+
+matrix:
+  exclude:
+    - env: TRAVIS_EMPTY_JOB_WORKAROUND=true
+
+  include:
+    - os: linux
+      dist: trusty
+      env: CC=gcc-7 CXX=g++-7 BOOST_ROOT=/usr/include/boost 
+      compiler: gcc
+      before_install:
+          - sudo -E apt-add-repository -y "ppa:ubuntu-toolchain-r/test"
+          - sudo apt-get update
+          - sudo apt-get install g++-7
+          - export BOOST_URL="https://downloads.sourceforge.net/project/boost/boost/1.67.0/boost_1_67_0.tar.gz"
+          - mkdir -p /tmp/boost
+          - wget --quiet -O - ${BOOST_URL} | tar --strip-components=1 -xz -C /tmp/boost  || exit 1
+          - cd /tmp/boost/tools/build && ./bootstrap.sh && ./b2 install --prefix=/tmp/b2
+          - export PATH=/tmp/b2/bin:${PATH}
+          - cd /tmp/boost && b2 toolset=gcc cxxflags="-std=c++14 ${CXXFLAGS}"
+    - os: osx
+      osx_image: xcode9.4
+      env:
+      before_install:
+          - brew install lcov
+      after_success:
+          # Creating report
+          - cd ${TRAVIS_BUILD_DIR}
+          - lcov --directory . --capture --output-file coverage.info # capture coverage info
+          - lcov --remove coverage.info '/usr/*' --output-file coverage.info # filter out system
+          - lcov --list coverage.info #debug info
+          # Uploading report to CodeCov
+          - bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
+
+  allow_failures:
+          - os: linux
+
+script:
+  - cmake -DCMAKE_BUILD_TYPE=Debug -G "Unix Makefiles" . && make && make test  

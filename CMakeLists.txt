@@ -1,9 +1,15 @@
 cmake_minimum_required(VERSION 3.8)
 project(Boost.Real)
-set (Boost.Real 1)
-set (Boost.Real 0)
+set (Boost.Real_VERSION_MAJOR 1)
+set (Boost.Real_VERSION_MINOR 0)
 
-add_library(Boost.Real INTERFACE)
+#Add coverage support to CMAKE in debug mode
+IF(CMAKE_BUILD_TYPE MATCHES Debug)
+    message("debug mode adding coverage report tools and flags")
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake-modules")
+    include(CodeCoverage)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} -Wall -g -O0 -fprofile-arcs -ftest-coverage")
+ENDIF(CMAKE_BUILD_TYPE MATCHES Debug)
 
 # Check for standard to use
 include(CheckCXXCompilerFlag)
@@ -15,9 +21,12 @@ else()
 endif()
 
 #Detect Boost.Test framework
+set(Boost_USE_MULTITHREADED OFF)
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 
 include_directories(include ${Boost_INCLUDE_DIRS})
+
+add_library(Boost.Real INTERFACE)
 
 # Unit tests
 enable_testing()

@@ -1,6 +1,7 @@
 #ifndef BOOST_REAL_RANGE_HELPER_HPP
 #define BOOST_REAL_RANGE_HELPER_HPP
 
+#include <algorithm>
 #include "interval.hpp"
 
 namespace boost {

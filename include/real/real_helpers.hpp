@@ -23,13 +23,13 @@ namespace boost {
                             std::vector<int> &result) {
                 int carry = 0;
 
-                int lower_digit = std::max((int)lhs.size() - lhs_exponent, (int)rhs.size() - rhs_exponent);
-                int upper_digit = std::max(lhs_exponent, rhs_exponent);
+                int fractional_length = std::max((int)lhs.size() - lhs_exponent, (int)rhs.size() - rhs_exponent);
+                int integral_length = std::max(lhs_exponent, rhs_exponent);
 
-                for (int i = lower_digit; i > -upper_digit; i--) {
+                // we walk the numbers from the lowest to the highest digit
+                for (int i = fractional_length - 1; i >= -integral_length; i--) {
 
-                    int lhs_digit = 0
-
+                    int lhs_digit = 0;
                     if (0 <= lhs_exponent + i && lhs_exponent + i < (int)lhs.size()) {
                         lhs_digit = lhs[lhs_exponent + i];
                     }
@@ -53,19 +53,19 @@ namespace boost {
 
                 if (carry == 1) {
                     result.insert(result.begin(), 1);
-                    upper_digit++;
+                    integral_length++;
                 }
 
                 while (result.front() == 0) {
                     result.erase(result.begin());
-                    upper_digit--;
+                    integral_length--;
                 }
 
                 while (result.back() == 0) {
                     result.pop_back();
                 }
 
-                return upper_digit;
+                return integral_length;
             }
 
             /*

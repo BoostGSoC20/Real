@@ -17,24 +17,29 @@ namespace boost {
             }
 
             int add_vectors(const std::vector<int> &lhs,
-                            int lhs_integers,
+                            int lhs_exponent,
                             const std::vector<int> &rhs,
-                            int rhs_integers,
+                            int rhs_exponent,
                             std::vector<int> &result) {
                 int carry = 0;
-                int digit;
 
-                std::vector<int> aligned_lhs = lhs;
-                std::vector<int> aligned_rhs = rhs;
+                int lower_digit = std::max((int)lhs.size() - lhs_exponent, (int)rhs.size() - rhs_exponent);
+                int upper_digit = std::max(lhs_exponent, rhs_exponent);
 
-                boost::real::helper::align_numbers(aligned_lhs, lhs_integers, aligned_rhs, rhs_integers);
+                for (int i = lower_digit; i > -upper_digit; i--) {
 
-                auto lhs_it = aligned_lhs.crbegin();
-                auto rhs_it = aligned_rhs.crbegin();
+                    int lhs_digit = 0
 
-                while(lhs_it != aligned_lhs.crend() and rhs_it != aligned_rhs.crend()) {
+                    if (0 <= lhs_exponent + i && lhs_exponent + i < (int)lhs.size()) {
+                        lhs_digit = lhs[lhs_exponent + i];
+                    }
 
-                    digit = carry + *lhs_it + *rhs_it;
+                    int rhs_digit = 0;
+                    if (0 <= rhs_exponent + i && rhs_exponent + i < (int)rhs.size()) {
+                        rhs_digit = rhs[rhs_exponent + i];
+                    }
+
+                    int digit = carry + lhs_digit + rhs_digit;
 
                     if (digit > 9) {
                         carry = 1;
@@ -44,16 +49,23 @@ namespace boost {
                     }
 
                     result.insert(result.begin(), digit);
-                    ++lhs_it;
-                    ++rhs_it;
                 }
 
                 if (carry == 1) {
                     result.insert(result.begin(), 1);
-                    return rhs_integers + 1;
+                    upper_digit++;
                 }
 
-                return rhs_integers;
+                while (result.front() == 0) {
+                    result.erase(result.begin());
+                    upper_digit--;
+                }
+
+                while (result.back() == 0) {
+                    result.pop_back();
+                }
+
+                return upper_digit;
             }
 
             /*

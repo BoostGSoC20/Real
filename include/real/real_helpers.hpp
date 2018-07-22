@@ -56,12 +56,12 @@ namespace boost {
                     integral_length++;
                 }
 
-                while (result.front() == 0) {
+                while (result.front() == 0 && result.size() > 1) {
                     result.erase(result.begin());
                     integral_length--;
                 }
 
-                while (result.back() == 0) {
+                while (result.back() == 0 && result.size() > 1) {
                     result.pop_back();
                 }
 
@@ -72,47 +72,61 @@ namespace boost {
              * Pre-condition: lhs >= rhs
              */
             int subtract_vectors(const std::vector<int> &lhs,
-                                 int lhs_integers,
+                                 int lhs_exponent,
                                  const std::vector<int> &rhs,
-                                 int rhs_integers,
+                                 int rhs_exponent,
                                  std::vector<int> &result) {
+
+                //std::vector<int> aligned_lhs = lhs;
+                //std::vector<int> aligned_rhs = rhs;
+                //boost::real::helper::align_numbers(aligned_lhs, lhs_integers, aligned_rhs, rhs_integers);
+
+                //auto lhs_it = aligned_lhs.rbegin();
+                //auto rhs_it = aligned_rhs.rbegin();
+
+                int fractional_length = std::max((int)lhs.size() - lhs_exponent, (int)rhs.size() - rhs_exponent);
+                int integral_length = std::max(lhs_exponent, rhs_exponent);
+
                 int borrow = 0;
+                // we walk the numbers from the lowest to the highest digit
+                for (int i = fractional_length - 1; i >= -integral_length; i--) {
 
-                std::vector<int> aligned_lhs = lhs;
-                std::vector<int> aligned_rhs = rhs;
+                    int lhs_digit = 0;
+                    if (0 <= lhs_exponent + i && lhs_exponent + i < (int)lhs.size()) {
+                        lhs_digit = lhs[lhs_exponent + i];
+                    }
 
-                boost::real::helper::align_numbers(aligned_lhs, lhs_integers, aligned_rhs, rhs_integers);
+                    int rhs_digit = 0;
+                    if (0 <= rhs_exponent + i && rhs_exponent + i < (int)rhs.size()) {
+                        rhs_digit = rhs[rhs_exponent + i];
+                    }
 
-                auto lhs_it = aligned_lhs.rbegin();
-                auto rhs_it = aligned_rhs.rbegin();
-
-                while(lhs_it != aligned_lhs.rend() and rhs_it != aligned_rhs.rend()) {
-
-                    if (*lhs_it < borrow) {
-                        *lhs_it += (10 - borrow); // Borrow is always 0 or 1, then it is never greater than 10
+                    if (lhs_digit < borrow) {
+                        lhs_digit += (10 - borrow);
                     } else {
-                        *lhs_it -= borrow;
+                        lhs_digit -= borrow;
                         borrow = 0;
                     }
 
-                    if (*lhs_it < *rhs_it) {
-                        *lhs_it += 10;
+                    if (lhs_digit < rhs_digit) {
+                        lhs_digit += 10;
                         borrow++;
                     }
 
-                    result.insert(result.begin(), *lhs_it - *rhs_it);
-                    ++lhs_it;
-                    ++rhs_it;
+                    result.insert(result.begin(), lhs_digit - rhs_digit);
                 }
-
 
                 // Remove possible 0 prefix if more significant digits were canceled.
-                while (result.front() == 0 && lhs_integers > 1) {
+                while (result.front() == 0 && result.size() > 1) {
                     result.erase(result.begin());
-                    --lhs_integers;
+                    --lhs_exponent;
                 }
 
-                return lhs_integers;
+                while (result.back() == 0 && result.size() > 1) {
+                    result.pop_back();
+                }
+
+                return lhs_exponent;
             }
 
             void add_boundaries(const boost::real::boundary &lhs,

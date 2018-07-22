@@ -46,19 +46,37 @@ namespace boost {
                     result = "-";
                 }
 
-                for (int i = 0; i < this->exponent; ++i) {
-                    result += std::to_string(this->digits[i]);
+                if (this->exponent <= 0) {
+                    result = "0.";
+
+                    for (int i = this->exponent; i < (int)this->digits.size(); ++i) {
+                        if (i < 0) {
+                            result += "0";
+                        } else {
+                            result += std::to_string(this->digits[i]);
+                        }
+                    }
+                } else {
+
+                    int digit_amount = std::max(this->exponent, (int)this->digits.size());
+                    for (int i = 0; i < digit_amount; ++i) {
+
+                        if (i == this->exponent) {
+                            result += ".";
+                        }
+
+                        if (i < (int)this->digits.size()) {
+                            result += std::to_string(this->digits[i]);
+                        } else {
+                            result += "0";
+                        }
+                    }
+
+                    if (result.back() == '.') {
+                        result.pop_back();
+                    }
                 }
 
-                result += ".";
-
-                for (int i = this->exponent; i < (int)this->digits.size(); ++i) {
-                    result += std::to_string(this->digits[i]);
-                }
-
-                if (result.back() == '.') {
-                    result.pop_back();
-                }
 
                 return result;
             }

@@ -4,14 +4,14 @@
 #include <list>
 
 #include <real/interval.hpp>
-#include <real/range_helper.hpp>
+#include <real/boundary.hpp>
 
 namespace boost {
     namespace real {
         namespace helper {
 
-            boost::real::boundary abs(const boost::real::boundary& b) {
-                boost::real::boundary result = b;
+            boundary abs(const boundary& b) {
+                boundary result = b;
                 result.positive = true;
                 return result;
             }
@@ -122,9 +122,9 @@ namespace boost {
                 return lhs_exponent;
             }
 
-            void add_boundaries(const boost::real::boundary &lhs,
-                                const boost::real::boundary &rhs,
-                                boost::real::boundary &result) {
+            void add_boundaries(const boundary &lhs,
+                                const boundary &rhs,
+                                boundary &result) {
                 if (lhs.positive == rhs.positive) {
                     result.exponent = add_vectors(lhs.digits,
                                                   lhs.exponent,
@@ -132,7 +132,7 @@ namespace boost {
                                                   rhs.exponent,
                                                   result.digits);
                     result.positive = lhs.positive;
-                } else if (vector_is_lower(rhs.digits, lhs.digits)) {
+                } else if (rhs < lhs) {
                     result.exponent = subtract_vectors(lhs.digits,
                                                        lhs.exponent,
                                                        rhs.digits,
@@ -149,9 +149,9 @@ namespace boost {
                 }
             }
 
-            void subtract_boundaries(const boost::real::boundary &lhs,
-                                     const boost::real::boundary &rhs,
-                                     boost::real::boundary &result) {
+            void subtract_boundaries(const boundary &lhs,
+                                     const boundary &rhs,
+                                     boundary &result) {
                 if (lhs.positive != rhs.positive) {
                     result.exponent = add_vectors(lhs.digits,
                                                       lhs.exponent,
@@ -250,9 +250,9 @@ namespace boost {
             }
 
 
-            void multiply_boundaries(const boost::real::boundary &lhs,
-                                     const boost::real::boundary &rhs,
-                                     boost::real::boundary &result) {
+            void multiply_boundaries(const boundary &lhs,
+                                     const boundary &rhs,
+                                     boundary &result) {
 
                 result.positive = lhs.positive == rhs.positive;
                 result.exponent = multiply_vectors(lhs.digits,
@@ -270,8 +270,7 @@ namespace boost {
                     std::vector<int>& cotient
             ) {
 
-                // NOTE: All the alignment must be replaced by a logical alignment
-                // Align decimal parts
+                // TODO: The alignment must be replaced by a logical alignment
                 int dividend_decimal_part = (int)dividend.size() - dividend_exponent;
                 int divisor_decimal_part = (int)divisor.size() - divisor_exponent;
 
@@ -316,7 +315,9 @@ namespace boost {
                         ++next_digit;
                     }
 
-                    if (aligned_divisor.size() == current_dividend.size() && boost::real::helper::vector_is_lower(current_dividend, aligned_divisor)) {
+                    if (aligned_divisor.size() == current_dividend.size() &&
+                            boost::real::helper::aligned_vectors_is_lower(current_dividend,
+                                                                          aligned_divisor)) {
                         current_dividend.push_back(*next_digit);
                         ++next_digit;
                     }
@@ -332,7 +333,11 @@ namespace boost {
 
                     } while(
                             closest.size() < current_dividend.size() ||
-                            (closest.size() == current_dividend.size() && !boost::real::helper::vector_is_lower(current_dividend, closest)) // closes <= current_dividend
+                            (
+                                    closest.size() == current_dividend.size() &&
+                                    !boost::real::helper::aligned_vectors_is_lower(
+                                    current_dividend, closest)
+                            ) // closes <= current_dividend
                     );
 
                     // i should be in [1, 10] and i - 1 in [0, 9]

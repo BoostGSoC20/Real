@@ -14,8 +14,7 @@ namespace boost {
              *
              * Note: lhs and rhs must be aligned, i.e. two digits in the same index represent the same unit.
              */
-            // TODO: when using logical alignment the sizes should not care, vector_is_slower should consider the logical unit of the numbers
-            bool vector_is_lower(const std::vector<int> &lhs, const std::vector<int> &rhs) {
+            bool aligned_vectors_is_lower(const std::vector<int> &lhs, const std::vector<int> &rhs) {
 
                 // Check if lhs is lower than rhs
                 auto lhs_it = lhs.cbegin();
@@ -35,31 +34,6 @@ namespace boost {
                 return lhs_all_zero && !rhs_all_zero;
             }
 
-            /*
-             * Align two numbers so the digits positions corresponds
-             */
-            void align_numbers(std::vector<int>& lhs,
-                               int& lhs_integers,
-                               std::vector<int>& rhs,
-                               int& rhs_integers) {
-                while (lhs_integers < rhs_integers) {
-                    lhs.insert(lhs.begin(), 0);
-                    lhs_integers++;
-                }
-
-                while (rhs_integers < lhs_integers) {
-                    rhs.insert(rhs.begin(), 0);
-                    rhs_integers++;
-                }
-
-                while (lhs.size() < rhs.size()) {
-                    lhs.push_back(0);
-                }
-
-                while (rhs.size() < lhs.size()) {
-                    rhs.push_back(0);
-                }
-            }
         }
     }
 }

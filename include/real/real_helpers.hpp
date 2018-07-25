@@ -77,13 +77,6 @@ namespace boost {
                                  int rhs_exponent,
                                  std::vector<int> &result) {
 
-                //std::vector<int> aligned_lhs = lhs;
-                //std::vector<int> aligned_rhs = rhs;
-                //boost::real::helper::align_numbers(aligned_lhs, lhs_integers, aligned_rhs, rhs_integers);
-
-                //auto lhs_it = aligned_lhs.rbegin();
-                //auto rhs_it = aligned_rhs.rbegin();
-
                 int fractional_length = std::max((int)lhs.size() - lhs_exponent, (int)rhs.size() - rhs_exponent);
                 int integral_length = std::max(lhs_exponent, rhs_exponent);
 
@@ -195,9 +188,12 @@ namespace boost {
                     std::vector<int>& result
             ) {
 
-                // will keep the result number in vector
-                // in reverse order
+                // will keep the result number in vector in reverse order
+                // Digits: .123 | Exponent: -3 | .000123 <--- Number size is the Digits size less the exponent
+                // Digits: .123 | Exponent: 2  | 12.3
                 size_t new_size = lhs.size() + rhs.size();
+                if (lhs_exponent < 0) new_size -= lhs_exponent; // <--- Less the exponent
+                if (rhs_exponent < 0) new_size -= rhs_exponent; // <--- Less the exponent
 
                 if (!result.empty()) result.clear();
                 for (int i = 0; i < (int)new_size; i++) result.push_back(0);
@@ -243,19 +239,14 @@ namespace boost {
                 }
 
                 int fractional_part = ((int)lhs.size() - lhs_exponent) + ((int)rhs.size() - rhs_exponent);
+                int integer_part = (int)result.size() - fractional_part;
 
-                // ignore 0s from the most right of the integer part
-                auto it = result.begin();
-                while ((int)result.size() > fractional_part + 1 && *it == 0) {
-                    result.erase(it);
+                while ((int)result.size() > 1 && result.front() == 0) {
+                    result.erase(result.begin());
+                    integer_part--;
                 }
 
-                if (result.empty()) {
-                    result.assign(1, 0);
-                    return 1;
-                }
-
-                return (int)result.size() - fractional_part;
+                return integer_part;
             }
 
 

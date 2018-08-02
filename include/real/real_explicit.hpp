@@ -33,16 +33,16 @@ namespace boost {
                 // Internal number to iterate
                 real_explicit const* _real_ptr = nullptr;
 
-                void check_and_swap_bounds() {
+                void check_and_swap_boundaries() {
                     if (!this->_real_ptr->_positive) {
-                        this->range.swap_bounds();
+                        this->approximation_interval.swap_bounds();
                     }
                 }
 
             public:
 
-                // Number range boundaries
-                boost::real::interval range;
+                // Number approximation_interval boundaries
+                boost::real::interval approximation_interval;
 
                 const_precision_iterator() = default;
 
@@ -50,10 +50,10 @@ namespace boost {
 
                 explicit const_precision_iterator(real_explicit const* ptr) : _real_ptr(ptr) {
                     // Lower bound and upper bounds of the number integer part
-                    this->range.lower_bound.exponent = this->_real_ptr->_exponent;
-                    this->range.upper_bound.exponent = this->_real_ptr->_exponent;
-                    this->range.lower_bound.positive = this->_real_ptr->_positive;
-                    this->range.upper_bound.positive = this->_real_ptr->_positive;
+                    this->approximation_interval.lower_bound.exponent = this->_real_ptr->_exponent;
+                    this->approximation_interval.upper_bound.exponent = this->_real_ptr->_exponent;
+                    this->approximation_interval.lower_bound.positive = this->_real_ptr->_positive;
+                    this->approximation_interval.upper_bound.positive = this->_real_ptr->_positive;
 
                     for(int i = 0; i < this->_real_ptr->_exponent; i++) {
                         ++(*this);
@@ -73,53 +73,54 @@ namespace boost {
                     // If the explicit number full precision has been already reached,
                     // then just add zeros at the boundaries ends
                     if (this->_n >= (int)this->_real_ptr->_digits.size()) {
-                        this->range.lower_bound.push_back(0);
-                        this->range.upper_bound.push_back(0);
+                        // TODO: no need to add zeros at the end
+                        this->approximation_interval.lower_bound.push_back(0);
+                        this->approximation_interval.upper_bound.push_back(0);
                         this->_n++;
                         return;
                     }
 
                     // If the number is negative, boundaries are interpreted as mirrored:
-                    // First, the operation is made as positive, and after bound calculation
-                    // bounds are swapped to come back to the negative representation.
-                    this->check_and_swap_bounds();
+                    // First, the operation is made as positive, and after boundary calculation
+                    // boundaries are swapped to come back to the negative representation.
+                    this->check_and_swap_boundaries();
 
                     // If the explicit number just reaches the full precision
                     // then set both boundaries equals
                     if (this->_n == (int)this->_real_ptr->_digits.size() - 1) {
 
-                        this->range.lower_bound.push_back(this->_real_ptr->_digits[this->_n]);
-                        this->range.upper_bound = this->range.lower_bound;
+                        this->approximation_interval.lower_bound.push_back(this->_real_ptr->_digits[this->_n]);
+                        this->approximation_interval.upper_bound = this->approximation_interval.lower_bound;
 
 
                     } else {
 
                         // If the explicit number didn't reaches the full precision
                         // then the number interval is defined by truncation.
-                        this->range.lower_bound.push_back(this->_real_ptr->_digits[this->_n]);
+                        this->approximation_interval.lower_bound.push_back(this->_real_ptr->_digits[this->_n]);
 
-                        this->range.upper_bound.clear();
-                        this->range.upper_bound.digits.resize(this->range.lower_bound.size());
+                        this->approximation_interval.upper_bound.clear();
+                        this->approximation_interval.upper_bound.digits.resize(this->approximation_interval.lower_bound.size());
 
                         int carry = 1;
-                        for (int i = (int)this->range.lower_bound.size() - 1; i >= 0; --i) {
-                            if (this->range.lower_bound[i] + carry == 10) {
-                                this->range.upper_bound[i] = 0;
+                        for (int i = (int)this->approximation_interval.lower_bound.size() - 1; i >= 0; --i) {
+                            if (this->approximation_interval.lower_bound[i] + carry == 10) {
+                                this->approximation_interval.upper_bound[i] = 0;
                             } else {
-                                this->range.upper_bound[i] = this->range.lower_bound[i] + carry;
+                                this->approximation_interval.upper_bound[i] = this->approximation_interval.lower_bound[i] + carry;
                                 carry = 0;
                             }
                         }
 
                         if (carry > 0) {
-                            this->range.upper_bound.push_front(carry);
-                            this->range.upper_bound.exponent = this->range.lower_bound.exponent + 1;
+                            this->approximation_interval.upper_bound.push_front(carry);
+                            this->approximation_interval.upper_bound.exponent = this->approximation_interval.lower_bound.exponent + 1;
                         } else {
-                            this->range.upper_bound.exponent = this->range.lower_bound.exponent;
+                            this->approximation_interval.upper_bound.exponent = this->approximation_interval.lower_bound.exponent;
                         }
                     }
 
-                    this->check_and_swap_bounds();
+                    this->check_and_swap_boundaries();
                     this->_n++;
                 }
             };
@@ -167,7 +168,7 @@ std::ostream& operator<<(std::ostream& os, const boost::real::real_explicit& r) 
     for (int i = 0; i <= r.max_precision(); i++) {
         ++it;
     }
-    os << it.range;
+    os << it.approximation_interval;
     return os;
 }
 

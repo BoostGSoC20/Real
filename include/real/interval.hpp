@@ -22,14 +22,14 @@ namespace boost {
             }
 
             bool positive() const {
-                // If the lower bound of a range is positive, then the upper bound is also positive
-                // and the range is fully contained in the positive number line
+                // If the lower bound of a approximation_interval is positive, then the upper bound is also positive
+                // and the approximation_interval is fully contained in the positive number line
                 return this->lower_bound.positive;
             }
 
             bool negative() const {
-                // If the upper bound of a range is negative, then the lower bound is also negative
-                // and the range is fully contained in the negative number line
+                // If the upper bound of a approximation_interval is negative, then the lower bound is also negative
+                // and the approximation_interval is fully contained in the negative number line
                 return !this->upper_bound.positive;
             }
         };

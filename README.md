@@ -23,7 +23,7 @@ In boost::real, a number has one of the next three representations:
 Because of the third representation type, a number resulting from a complex calculus is a binary tree where each internal vertex is an operation and the vertex children are its operands. The tree leaves are those numbers represented by either (1) or (2) while the internal vertex are those numbers represented by (3). More information about the used number representation can be found in [3]
 
 ## The boost::real precision iterator.
-The boost::real::const_precision_iterator is a forward iterator [4] that iterates through the number interval precisions. The iterator returns two numbers, a lower and an upper bound that represent the [m<sub>k</sub> - e<sub>k</sub>, m<sub>k</sub> + e<sub>k</sub>] limits of the number for a given precision. Each time the iterator is incremented, the interval range is decreased and a new interval with a better precision is obtained. Normally, there is no need to interact with the precision iterator and it is used by the boost::real operators <<, < and >.
+The boost::real::const_precision_iterator is a forward iterator [4] that iterates through the number interval precisions. The iterator returns two numbers, a lower and an upper bound that represent the [m<sub>k</sub> - e<sub>k</sub>, m<sub>k</sub> + e<sub>k</sub>] limits of the number for a given precision. Each time the iterator is incremented, the interval approximation_interval is decreased and a new interval with a better precision is obtained. Normally, there is no need to interact with the precision iterator and it is used by the boost::real operators <<, < and >.
 
 ## Interface
 
@@ -189,5 +189,5 @@ h: 0.000001
 ## References
     1. Computable calculus / Oliver Aberth, San Diego : Academic Press, c2001
     2. Lambov, B. (2007). RealLib: An efficient implementation of exact real arithmetic. Mathematical Structures in Computer Science, 17(1), 81-98.
-    3. Aberth, O., & Schaefer, M. J. (1992). Precise computation using range arithmetic, via C++. ACM Transactions on Mathematical Software (TOMS), 18(4), 481-491.
+    3. Aberth, O., & Schaefer, M. J. (1992). Precise computation using approximation_interval arithmetic, via C++. ACM Transactions on Mathematical Software (TOMS), 18(4), 481-491.
     4. https://en.cppreference.com/w/cpp/concept/ForwardIterator

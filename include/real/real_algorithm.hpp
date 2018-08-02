@@ -30,14 +30,14 @@ namespace boost {
 
                 void check_and_swap_bounds() {
                     if (!this->_real_ptr->_positive) {
-                        this->range.swap_bounds();
+                        this->approximation_interval.swap_bounds();
                     }
                 }
 
             public:
 
-                // Number range boundaries
-                boost::real::interval range;
+                // Number approximation_interval boundaries
+                boost::real::interval approximation_interval;
 
                 const_precision_iterator() = default;
 
@@ -46,15 +46,15 @@ namespace boost {
                 explicit const_precision_iterator(real_algorithm const* ptr) : _real_ptr(ptr) {
 
                     for (int i = 0; i < this->_real_ptr->_exponent; i++) {
-                        this->range.lower_bound.push_back((*this->_real_ptr)[i]);
-                        this->range.upper_bound.push_back((*this->_real_ptr)[i]);
+                        this->approximation_interval.lower_bound.push_back((*this->_real_ptr)[i]);
+                        this->approximation_interval.upper_bound.push_back((*this->_real_ptr)[i]);
                     }
 
-                    this->range.upper_bound.digits.at((uint)this->_real_ptr->_exponent - 1)++;
-                    this->range.lower_bound.exponent = this->_real_ptr->_exponent;
-                    this->range.upper_bound.exponent = this->_real_ptr->_exponent;
-                    this->range.lower_bound.positive = this->_real_ptr->_positive;
-                    this->range.upper_bound.positive = this->_real_ptr->_positive;
+                    this->approximation_interval.upper_bound.digits.at((uint)this->_real_ptr->_exponent - 1)++;
+                    this->approximation_interval.lower_bound.exponent = this->_real_ptr->_exponent;
+                    this->approximation_interval.upper_bound.exponent = this->_real_ptr->_exponent;
+                    this->approximation_interval.lower_bound.positive = this->_real_ptr->_positive;
+                    this->approximation_interval.upper_bound.positive = this->_real_ptr->_positive;
                     this->_n = this->_real_ptr->_exponent;
                     this->check_and_swap_bounds();
                 }
@@ -66,25 +66,25 @@ namespace boost {
                     // bounds are swapped to come back to the negative representation.
                     this->check_and_swap_bounds();
 
-                    this->range.lower_bound.push_back((*this->_real_ptr)[this->_n]);
+                    this->approximation_interval.lower_bound.push_back((*this->_real_ptr)[this->_n]);
 
-                    this->range.upper_bound.clear();
-                    this->range.upper_bound.digits.resize(this->range.lower_bound.size());
+                    this->approximation_interval.upper_bound.clear();
+                    this->approximation_interval.upper_bound.digits.resize(this->approximation_interval.lower_bound.size());
                     int carry = 1;
-                    for (int i = (int)this->range.lower_bound.size() - 1; i >= 0; --i) {
-                        if (this->range.lower_bound[i] + carry == 10) {
-                            this->range.upper_bound[i] = 0;
+                    for (int i = (int)this->approximation_interval.lower_bound.size() - 1; i >= 0; --i) {
+                        if (this->approximation_interval.lower_bound[i] + carry == 10) {
+                            this->approximation_interval.upper_bound[i] = 0;
                         } else {
-                            this->range.upper_bound[i] = this->range.lower_bound[i] + carry;
+                            this->approximation_interval.upper_bound[i] = this->approximation_interval.lower_bound[i] + carry;
                             carry = 0;
                         }
                     }
 
                     if (carry > 0) {
-                        this->range.upper_bound.push_front(carry);
-                        this->range.upper_bound.exponent = this->range.lower_bound.exponent + 1;
+                        this->approximation_interval.upper_bound.push_front(carry);
+                        this->approximation_interval.upper_bound.exponent = this->approximation_interval.lower_bound.exponent + 1;
                     } else {
-                        this->range.upper_bound.exponent = this->range.lower_bound.exponent;
+                        this->approximation_interval.upper_bound.exponent = this->approximation_interval.lower_bound.exponent;
                     }
 
                     this->check_and_swap_bounds();
@@ -135,7 +135,7 @@ std::ostream& operator<<(std::ostream& os, const boost::real::real_algorithm& r)
     for (int i = 0; i <= r.max_precision(); i++) {
         ++it;
     }
-    os << it.range;
+    os << it.approximation_interval;
     return os;
 }
 

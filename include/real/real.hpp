@@ -63,6 +63,7 @@ namespace boost {
                 const_precision_iterator* _lhs_it_ptr = nullptr;
                 const_precision_iterator* _rhs_it_ptr = nullptr;
 
+                // TODO: rename bounds to boundaries
                 void calculate_operation_bounds() {
 
                     switch (this->_real_ptr->_operation) {
@@ -223,7 +224,7 @@ namespace boost {
 
             public:
 
-                // Number range boundaries
+                // Number approximation_interval boundaries
                 boost::real::interval range;
 
                 const_precision_iterator() = default;
@@ -236,12 +237,12 @@ namespace boost {
 
                         case KIND::EXPLICIT:
                                 this->_explicit_it = this->_real_ptr->_explicit_number.cbegin();
-                            this->range = this->_explicit_it.range;
+                            this->range = this->_explicit_it.approximation_interval;
                             break;
 
                         case KIND::ALGORITHM:
                             this->_algorithmic_it = this->_real_ptr->_algorithmic_number.cbegin();
-                            this->range = this->_algorithmic_it.range;
+                            this->range = this->_algorithmic_it.approximation_interval;
                             break;
 
                         case KIND::OPERATION:
@@ -258,12 +259,12 @@ namespace boost {
 
                         case KIND::EXPLICIT:
                             ++this->_explicit_it;
-                            this->range = this->_explicit_it.range;
+                            this->range = this->_explicit_it.approximation_interval;
                             break;
 
                         case KIND::ALGORITHM:
                             ++this->_algorithmic_it;
-                            this->range = this->_algorithmic_it.range;
+                            this->range = this->_algorithmic_it.approximation_interval;
                             break;
 
                         case KIND::OPERATION:

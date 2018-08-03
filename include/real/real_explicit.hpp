@@ -234,6 +234,10 @@ namespace boost {
                 return this->_exponent;
             }
 
+            bool positive() const {
+                return this->_positive;
+            }
+
             const std::vector<int>& digits() const {
                 return this->_digits;
             }

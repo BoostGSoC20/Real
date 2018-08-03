@@ -24,8 +24,9 @@ endif()
 set(Boost_USE_MULTITHREADED OFF)
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 
-include_directories(include ${Boost_INCLUDE_DIRS})
+include_directories(include external/include test/include ${Boost_INCLUDE_DIRS})
 
+# add Boost.Real as a 'linkable' target
 add_library(Boost.Real INTERFACE)
 
 # Unit tests
@@ -33,7 +34,7 @@ enable_testing()
 FILE(GLOB TestSources RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} test/*_test.cpp)
 foreach(testSrc ${TestSources})
     get_filename_component(testName ${testSrc} NAME_WE)
-    add_executable(${testName} ${testSrc})
+    add_executable(${testName} test/main-test.cpp ${testSrc})
     add_test(${testName} ${testName})
 endforeach(testSrc)
 

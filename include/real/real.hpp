@@ -70,89 +70,89 @@ namespace boost {
 
                         case OPERATION::ADDITION:
                             boost::real::helper::add_boundaries(
-                                    this->_lhs_it_ptr->range.lower_bound,
-                                    this->_rhs_it_ptr->range.lower_bound,
-                                    this->range.lower_bound
+                                    this->_lhs_it_ptr->approximation_interval.lower_bound,
+                                    this->_rhs_it_ptr->approximation_interval.lower_bound,
+                                    this->approximation_interval.lower_bound
                             );
 
                             boost::real::helper::add_boundaries(
-                                    this->_lhs_it_ptr->range.upper_bound,
-                                    this->_rhs_it_ptr->range.upper_bound,
-                                    this->range.upper_bound
+                                    this->_lhs_it_ptr->approximation_interval.upper_bound,
+                                    this->_rhs_it_ptr->approximation_interval.upper_bound,
+                                    this->approximation_interval.upper_bound
                             );
                             break;
 
 
                         case OPERATION::SUBTRACT:
                             boost::real::helper::subtract_boundaries(
-                                    this->_lhs_it_ptr->range.lower_bound,
-                                    this->_rhs_it_ptr->range.upper_bound,
-                                    this->range.lower_bound
+                                    this->_lhs_it_ptr->approximation_interval.lower_bound,
+                                    this->_rhs_it_ptr->approximation_interval.upper_bound,
+                                    this->approximation_interval.lower_bound
                             );
 
                             boost::real::helper::subtract_boundaries(
-                                    this->_lhs_it_ptr->range.upper_bound,
-                                    this->_rhs_it_ptr->range.lower_bound,
-                                    this->range.upper_bound
+                                    this->_lhs_it_ptr->approximation_interval.upper_bound,
+                                    this->_rhs_it_ptr->approximation_interval.lower_bound,
+                                    this->approximation_interval.upper_bound
                             );
                             break;
 
 
                         case OPERATION::MULTIPLICATION: {
-                            bool lhs_positive = this->_lhs_it_ptr->range.positive();
-                            bool rhs_positive = this->_rhs_it_ptr->range.positive();
-                            bool lhs_negative = this->_lhs_it_ptr->range.negative();
-                            bool rhs_negative = this->_rhs_it_ptr->range.negative();
+                            bool lhs_positive = this->_lhs_it_ptr->approximation_interval.positive();
+                            bool rhs_positive = this->_rhs_it_ptr->approximation_interval.positive();
+                            bool lhs_negative = this->_lhs_it_ptr->approximation_interval.negative();
+                            bool rhs_negative = this->_rhs_it_ptr->approximation_interval.negative();
 
                             if (lhs_positive && rhs_positive) { // Positive - Positive
                                 boost::real::helper::multiply_boundaries(
-                                        this->_lhs_it_ptr->range.lower_bound,
-                                        this->_rhs_it_ptr->range.lower_bound,
-                                        this->range.lower_bound
+                                        this->_lhs_it_ptr->approximation_interval.lower_bound,
+                                        this->_rhs_it_ptr->approximation_interval.lower_bound,
+                                        this->approximation_interval.lower_bound
                                 );
 
                                 boost::real::helper::multiply_boundaries(
-                                        this->_lhs_it_ptr->range.upper_bound,
-                                        this->_rhs_it_ptr->range.upper_bound,
-                                        this->range.upper_bound
+                                        this->_lhs_it_ptr->approximation_interval.upper_bound,
+                                        this->_rhs_it_ptr->approximation_interval.upper_bound,
+                                        this->approximation_interval.upper_bound
                                 );
 
                             } else if (lhs_negative && rhs_negative) { // Negative - Negative
                                 boost::real::helper::multiply_boundaries(
-                                        this->_lhs_it_ptr->range.upper_bound,
-                                        this->_rhs_it_ptr->range.upper_bound,
-                                        this->range.lower_bound
+                                        this->_lhs_it_ptr->approximation_interval.upper_bound,
+                                        this->_rhs_it_ptr->approximation_interval.upper_bound,
+                                        this->approximation_interval.lower_bound
                                 );
 
                                 boost::real::helper::multiply_boundaries(
-                                        this->_lhs_it_ptr->range.lower_bound,
-                                        this->_rhs_it_ptr->range.lower_bound,
-                                        this->range.upper_bound
+                                        this->_lhs_it_ptr->approximation_interval.lower_bound,
+                                        this->_rhs_it_ptr->approximation_interval.lower_bound,
+                                        this->approximation_interval.upper_bound
                                 );
                             } else if (lhs_negative && rhs_positive) { // Negative - Positive
                                 boost::real::helper::multiply_boundaries(
-                                        this->_lhs_it_ptr->range.lower_bound,
-                                        this->_rhs_it_ptr->range.upper_bound,
-                                        this->range.lower_bound
+                                        this->_lhs_it_ptr->approximation_interval.lower_bound,
+                                        this->_rhs_it_ptr->approximation_interval.upper_bound,
+                                        this->approximation_interval.lower_bound
                                 );
 
                                 boost::real::helper::multiply_boundaries(
-                                        this->_lhs_it_ptr->range.upper_bound,
-                                        this->_rhs_it_ptr->range.lower_bound,
-                                        this->range.upper_bound
+                                        this->_lhs_it_ptr->approximation_interval.upper_bound,
+                                        this->_rhs_it_ptr->approximation_interval.lower_bound,
+                                        this->approximation_interval.upper_bound
                                 );
 
                             } else if (lhs_positive && rhs_negative) { // Positive - Negative
                                 boost::real::helper::multiply_boundaries(
-                                        this->_lhs_it_ptr->range.upper_bound,
-                                        this->_rhs_it_ptr->range.lower_bound,
-                                        this->range.lower_bound
+                                        this->_lhs_it_ptr->approximation_interval.upper_bound,
+                                        this->_rhs_it_ptr->approximation_interval.lower_bound,
+                                        this->approximation_interval.lower_bound
                                 );
 
                                 boost::real::helper::multiply_boundaries(
-                                        this->_lhs_it_ptr->range.lower_bound,
-                                        this->_rhs_it_ptr->range.upper_bound,
-                                        this->range.upper_bound
+                                        this->_lhs_it_ptr->approximation_interval.lower_bound,
+                                        this->_rhs_it_ptr->approximation_interval.upper_bound,
+                                        this->approximation_interval.upper_bound
                                 );
 
                             } else { // One is around zero all possible combinations are be tested
@@ -161,57 +161,57 @@ namespace boost {
 
                                 // Lower * Lower
                                 boost::real::helper::multiply_boundaries(
-                                        this->_lhs_it_ptr->range.lower_bound,
-                                        this->_rhs_it_ptr->range.lower_bound,
+                                        this->_lhs_it_ptr->approximation_interval.lower_bound,
+                                        this->_rhs_it_ptr->approximation_interval.lower_bound,
                                         current_boundary
                                 );
 
-                                this->range.lower_bound = current_boundary;
-                                this->range.upper_bound = current_boundary;
+                                this->approximation_interval.lower_bound = current_boundary;
+                                this->approximation_interval.upper_bound = current_boundary;
 
                                 // Upper * upper
                                 boost::real::helper::multiply_boundaries(
-                                        this->_lhs_it_ptr->range.upper_bound,
-                                        this->_rhs_it_ptr->range.upper_bound,
+                                        this->_lhs_it_ptr->approximation_interval.upper_bound,
+                                        this->_rhs_it_ptr->approximation_interval.upper_bound,
                                         current_boundary
                                 );
 
-                                if (current_boundary < this->range.lower_bound) {
-                                    this->range.lower_bound = current_boundary;
+                                if (current_boundary < this->approximation_interval.lower_bound) {
+                                    this->approximation_interval.lower_bound = current_boundary;
                                 }
 
-                                if (this->range.upper_bound < current_boundary) {
-                                    this->range.upper_bound = current_boundary;
+                                if (this->approximation_interval.upper_bound < current_boundary) {
+                                    this->approximation_interval.upper_bound = current_boundary;
                                 }
 
                                 // Lower * upper
                                 boost::real::helper::multiply_boundaries(
-                                        this->_lhs_it_ptr->range.lower_bound,
-                                        this->_rhs_it_ptr->range.upper_bound,
+                                        this->_lhs_it_ptr->approximation_interval.lower_bound,
+                                        this->_rhs_it_ptr->approximation_interval.upper_bound,
                                         current_boundary
                                 );
 
-                                if (current_boundary < this->range.lower_bound) {
-                                    this->range.lower_bound = current_boundary;
+                                if (current_boundary < this->approximation_interval.lower_bound) {
+                                    this->approximation_interval.lower_bound = current_boundary;
                                 }
 
-                                if (this->range.upper_bound < current_boundary) {
-                                    this->range.upper_bound = current_boundary;
+                                if (this->approximation_interval.upper_bound < current_boundary) {
+                                    this->approximation_interval.upper_bound = current_boundary;
                                 }
 
                                 // Upper * lower
                                 boost::real::helper::multiply_boundaries(
-                                        this->_lhs_it_ptr->range.upper_bound,
-                                        this->_rhs_it_ptr->range.lower_bound,
+                                        this->_lhs_it_ptr->approximation_interval.upper_bound,
+                                        this->_rhs_it_ptr->approximation_interval.lower_bound,
                                         current_boundary
                                 );
 
-                                if (current_boundary < this->range.lower_bound) {
-                                    this->range.lower_bound = current_boundary;
+                                if (current_boundary < this->approximation_interval.lower_bound) {
+                                    this->approximation_interval.lower_bound = current_boundary;
                                 }
 
-                                if (this->range.upper_bound < current_boundary) {
-                                    this->range.upper_bound = current_boundary;
+                                if (this->approximation_interval.upper_bound < current_boundary) {
+                                    this->approximation_interval.upper_bound = current_boundary;
                                 }
                             }
                             break;
@@ -225,7 +225,7 @@ namespace boost {
             public:
 
                 // Number approximation_interval boundaries
-                boost::real::interval range;
+                boost::real::interval approximation_interval;
 
                 const_precision_iterator() = default;
 
@@ -237,12 +237,12 @@ namespace boost {
 
                         case KIND::EXPLICIT:
                                 this->_explicit_it = this->_real_ptr->_explicit_number.cbegin();
-                            this->range = this->_explicit_it.approximation_interval;
+                            this->approximation_interval = this->_explicit_it.approximation_interval;
                             break;
 
                         case KIND::ALGORITHM:
                             this->_algorithmic_it = this->_real_ptr->_algorithmic_number.cbegin();
-                            this->range = this->_algorithmic_it.approximation_interval;
+                            this->approximation_interval = this->_algorithmic_it.approximation_interval;
                             break;
 
                         case KIND::OPERATION:
@@ -259,18 +259,18 @@ namespace boost {
 
                         case KIND::EXPLICIT:
                             ++this->_explicit_it;
-                            this->range = this->_explicit_it.approximation_interval;
+                            this->approximation_interval = this->_explicit_it.approximation_interval;
                             break;
 
                         case KIND::ALGORITHM:
                             ++this->_algorithmic_it;
-                            this->range = this->_algorithmic_it.approximation_interval;
+                            this->approximation_interval = this->_algorithmic_it.approximation_interval;
                             break;
 
                         case KIND::OPERATION:
                             // Composed number iteration
-                            this->range.lower_bound.clear();
-                            this->range.upper_bound.clear();
+                            this->approximation_interval.lower_bound.clear();
+                            this->approximation_interval.upper_bound.clear();
 
                             // Recursive iteration of the operands
                             ++(*this->_lhs_it_ptr);
@@ -447,11 +447,11 @@ namespace boost {
                     ++this_it;
                     ++other_it;
 
-                    if (this_it.range < other_it.range) {
+                    if (this_it.approximation_interval < other_it.approximation_interval) {
                         return true;
                     }
 
-                    if (other_it.range < this_it.range) {
+                    if (other_it.approximation_interval < this_it.approximation_interval) {
                         return false;
                     }
                 }
@@ -469,7 +469,7 @@ std::ostream& operator<<(std::ostream& os, const boost::real::real& r) {
     for (int i = 0; i <= r.max_precision(); i++) {
         ++it;
     }
-    os << it.range;
+    os << it.approximation_interval;
     return os;
 }
 

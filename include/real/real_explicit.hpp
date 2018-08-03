@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <initializer_list>
+#include <string>
 
 #include <real/real_exception.hpp>
 #include <real/real_helpers.hpp>
@@ -16,7 +17,7 @@ namespace boost {
         class real_explicit {
 
             // Number representation as a vector of digits with an integer part and a sign (+/-)
-            std::vector<int> _digits = {0};
+            std::vector<int> _digits = {};
             int _exponent = 1;
             bool _positive = true;
 
@@ -129,6 +130,89 @@ namespace boost {
 
             real_explicit(const real_explicit& other)  = default;
 
+            explicit real_explicit(const std::string& number) {
+                // Check that is not an empty string
+                if (number.length() == 0) {
+                    throw boost::real::invalid_string_number();
+                }
+
+                // Check that there is no more that one '.' symbol
+                unsigned int dot_amount = 0;
+                for (const auto& c : number ) {
+                    if (c == '.' && dot_amount >= 1) {
+                        throw boost::real::invalid_string_number();
+                    } else if (c == '.') {
+                        dot_amount++;
+                    }
+                }
+
+                int exponent = 0;
+                dot_amount = 0;
+
+                // Check whether the number is explicitly specified as positive or negative
+                unsigned int first_index = 0;
+                if (number.at(first_index) == '+') {
+                    this->_positive = true;
+                    first_index++;
+                } else if (number.at(first_index) == '-') {
+                    this->_positive = false;
+                    first_index++;
+                }
+
+                // Remove zeros from the lefts side
+                // Note: We know at this point that number.length > 0 because the first check
+                unsigned int last_index = (unsigned int)number.length() - 1;
+                while (last_index > first_index && (number.at(last_index) == '0' || number.at(last_index) == '.')) {
+                    if (number.at(last_index) == '.') {
+                        dot_amount++;
+                    }
+                    last_index--;
+                }
+
+                // The number is all composed by zeros, then it is zero
+                if (last_index == first_index && number.at(last_index) == '0') {
+                    this->_digits = {0};
+                    this->_exponent = 1;
+                    return;
+                }
+
+                // Remove zeros from the right side
+                // Note: if the number is all made by zeros, then the code never reaches this part
+                // This is why we don't need to check that first_index is lower than the string length
+                while (number.at(first_index) == '0') {
+                    first_index++;
+                }
+
+                if (number.at(first_index) == '.') {
+                    dot_amount++;
+                    first_index++;
+                    while (number.at(first_index) == '0') {
+                        first_index++;
+                        exponent--;
+                    }
+                }
+
+                for (unsigned int i = first_index; i <= last_index; i++) {
+
+                    if (number.at(i) == '.') {
+                        dot_amount++;
+
+                    } else {
+                        // This will only affect if the '.' appears, in that case, exponent
+                        // wasn't negative and no inconsistency is made.
+                        if (dot_amount == 0)  exponent++;
+                        try {
+                            this->_digits.push_back(number.at(i) - '0');
+                        } catch (const std::invalid_argument& e) {
+                            throw boost::real::invalid_string_number();
+                        }
+
+                    }
+                }
+
+                this->_exponent = exponent;
+            };
+
             real_explicit(std::initializer_list<int> digits, int exponent) :
                     _digits(digits),
                     _exponent(exponent),
@@ -144,6 +228,14 @@ namespace boost {
 
             int max_precision() const {
                 return this->_max_precision;
+            }
+
+            int exponent() const {
+                return this->_exponent;
+            }
+
+            const std::vector<int>& digits() const {
+                return this->_digits;
             }
 
             const_precision_iterator cbegin() const {

@@ -25,6 +25,13 @@ namespace boost {
                 return "The boost::real number method cannot be called for real number for the current representation";
             }
         };
+
+        struct invalid_string_number : public std::exception {
+
+            const char * what () const throw () override {
+                return "The string passed to construct the boost::real number is invalid";
+            }
+        };
     }
 }
 

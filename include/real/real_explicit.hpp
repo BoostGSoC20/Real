@@ -29,7 +29,7 @@ namespace boost {
             private:
 
                 // Iterator precision
-                int _n = 0;
+                int _n;
 
                 // Internal number to iterate
                 real_explicit const* _real_ptr = nullptr;
@@ -49,15 +49,20 @@ namespace boost {
 
                 const_precision_iterator(const const_precision_iterator& other) = default;
 
-                explicit const_precision_iterator(real_explicit const* ptr) : _real_ptr(ptr) {
-                    // Lower bound and upper bounds of the number integer part
+                explicit const_precision_iterator(real_explicit const* ptr) : _n(1), _real_ptr(ptr) {
                     this->approximation_interval.lower_bound.exponent = this->_real_ptr->_exponent;
                     this->approximation_interval.upper_bound.exponent = this->_real_ptr->_exponent;
                     this->approximation_interval.lower_bound.positive = this->_real_ptr->_positive;
                     this->approximation_interval.upper_bound.positive = this->_real_ptr->_positive;
 
-                    for(int i = 0; i < this->_real_ptr->_exponent; i++) {
-                        ++(*this);
+                    int first_digit = this->_real_ptr->_digits[0];
+                    this->approximation_interval.lower_bound.digits.push_back(first_digit);
+
+                    if (first_digit == 10) {
+                        this->approximation_interval.upper_bound.digits.push_back(1);
+                        this->approximation_interval.upper_bound.exponent++;
+                    } else {
+                        this->approximation_interval.upper_bound.digits.push_back(first_digit + 1);
                     }
                 }
 

@@ -132,7 +132,7 @@ namespace boost {
                                                   rhs.exponent,
                                                   result.digits);
                     result.positive = lhs.positive;
-                } else if (rhs < lhs) {
+                } else if (abs(rhs) < abs(lhs)) {
                     result.exponent = subtract_vectors(lhs.digits,
                                                        lhs.exponent,
                                                        rhs.digits,

@@ -13,6 +13,8 @@ namespace boost {
             boost::real::boundary lower_bound;
             boost::real::boundary upper_bound;
 
+            interval() = default;
+
             void swap_bounds() {
                 this->lower_bound.swap(this->upper_bound);
             }

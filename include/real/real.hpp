@@ -19,10 +19,10 @@ namespace boost {
         class real {
 
             // Available operations
-            enum class OPERATION {ADDITION, SUBTRACT, MULTIPLICATION, NONE};
+            enum class OPERATION {ADDITION, SUBTRACT, MULTIPLICATION};
             enum class KIND {EXPLICIT, OPERATION, ALGORITHM};
 
-            KIND _kind = KIND::EXPLICIT;
+            KIND _kind;
 
             // Explicit number
             real_explicit _explicit_number;
@@ -31,7 +31,7 @@ namespace boost {
             real_algorithm _algorithmic_number;
 
             // Composed number
-            OPERATION _operation = OPERATION::NONE;
+            OPERATION _operation;
             real* _lhs_ptr = nullptr;
             real* _rhs_ptr = nullptr;
 
@@ -217,7 +217,7 @@ namespace boost {
                             break;
                         }
 
-                        case OPERATION::NONE:
+                        default:
                             throw boost::real::none_operation_exception();
                     }
                 }
@@ -291,19 +291,20 @@ namespace boost {
                     _algorithmic_number(other._algorithmic_number),
                     _operation(other._operation) { this->copy_operands(other); };
 
-            // TODO: Check that the digits size can be casted to int, if not, throw exception
-            real(std::initializer_list<int> digits)
-                    : _explicit_number(digits, digits.size()) {}
+            real(const std::string number)
+                    : _kind(KIND::EXPLICIT), _explicit_number(number) {}
 
-            // TODO: Check that the digits size can be casted to int, if not, throw exception
+            real(std::initializer_list<int> digits)
+                    : _kind(KIND::EXPLICIT), _explicit_number(digits, digits.size()) {}
+
             real(std::initializer_list<int> digits, bool positive)
-                    : _explicit_number(digits, digits.size(), positive) {}
+                    : _kind(KIND::EXPLICIT), _explicit_number(digits, digits.size(), positive) {}
 
             real(std::initializer_list<int> digits, int exponent)
-                    : _explicit_number(digits, exponent) {};
+                    : _kind(KIND::EXPLICIT), _explicit_number(digits, exponent) {};
 
             real(std::initializer_list<int> digits, int exponent, bool positive)
-                    : _explicit_number(digits, exponent, positive) {};
+                    : _kind(KIND::EXPLICIT), _explicit_number(digits, exponent, positive) {};
 
             real(int (*get_nth_digit)(unsigned int), int exponent)
                     : _kind(KIND::ALGORITHM), _algorithmic_number(get_nth_digit, exponent) {}
@@ -351,7 +352,7 @@ namespace boost {
                             case OPERATION::MULTIPLICATION:
                                 precision = this->_lhs_ptr->max_precision() + this->_rhs_ptr->max_precision();
                                 break;
-                            case OPERATION::NONE:
+                            default:
                                 throw boost::real::none_operation_exception();
                         }
                         break;

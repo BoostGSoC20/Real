@@ -10,8 +10,8 @@ namespace boost {
     namespace real {
 
         struct interval {
-            boundary lower_bound;
-            boundary upper_bound;
+            boost::real::boundary lower_bound;
+            boost::real::boundary upper_bound;
 
             void swap_bounds() {
                 this->lower_bound.swap(this->upper_bound);
@@ -31,6 +31,10 @@ namespace boost {
                 // If the upper bound of a approximation_interval is negative, then the lower bound is also negative
                 // and the approximation_interval is fully contained in the negative number line
                 return !this->upper_bound.positive;
+            }
+
+            bool operator==(const boost::real::interval& other) const {
+                return this->lower_bound == other.lower_bound && this->upper_bound == other.upper_bound;
             }
         };
     }

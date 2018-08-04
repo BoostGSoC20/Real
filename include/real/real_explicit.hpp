@@ -17,6 +17,8 @@ namespace boost {
         class real_explicit {
 
             // Number representation as a vector of digits with an integer part and a sign (+/-)
+            // TODO: Replace this by a boost::real::boundary type
+            // TODO: Add normalizations to the constructors
             std::vector<int> _digits = {};
             int _exponent = 1;
             bool _positive = true;
@@ -64,25 +66,26 @@ namespace boost {
                     } else {
                         this->approximation_interval.upper_bound.digits.push_back(first_digit + 1);
                     }
+
+                    this->check_and_swap_boundaries();
                 }
 
                 /**
-                 * @brief Increases the interval number precision, the interval becomes smaller and
-                 * the number error is decreased.
-                 *
-                 * WARNING: This method asumes the current precision is greater than the integer part
-                 * of the number. Otherwise, the number will be miss-represented because the tuncation
-                 * is made before the fractional part.
+                 * @brief Increases the approximation interval number precision,
+                 * the interval becomes smaller and the number error is decreased.
                  */
                 void operator++() {
+                    this->iterate_n_times(1);
+                }
 
-                    // If the explicit number full precision has been already reached,
-                    // then just add zeros at the boundaries ends
+                void iterate_n_times(int n) {
+                    // If the explicit number full precision has been already reached (the end)
+                    // is the end of the iterator
                     if (this->_n >= (int)this->_real_ptr->_digits.size()) {
-                        // TODO: no need to add zeros at the end
-                        this->approximation_interval.lower_bound.push_back(0);
-                        this->approximation_interval.upper_bound.push_back(0);
-                        this->_n++;
+                        // TODO: Remove commented lines that are deprecatod code
+                        //this->approximation_interval.lower_bound.push_back(0);
+                        //this->approximation_interval.upper_bound.push_back(0);
+                        //this->_n++;
                         return;
                     }
 
@@ -91,19 +94,24 @@ namespace boost {
                     // boundaries are swapped to come back to the negative representation.
                     this->check_and_swap_boundaries();
 
-                    // If the explicit number just reaches the full precision
-                    // then set both boundaries equals
-                    if (this->_n == (int)this->_real_ptr->_digits.size() - 1) {
+                    // If the explicit number just reaches the full precision (the end)
+                    // then set both boundaries are equals
+                    if (this->_n + n >= (int)this->_real_ptr->_digits.size()) {
 
-                        this->approximation_interval.lower_bound.push_back(this->_real_ptr->_digits[this->_n]);
+                        for(int i = this->_n; i < (int)this->_real_ptr->_digits.size(); i++) {
+                            this->approximation_interval.lower_bound.push_back(this->_real_ptr->_digits[i]);
+                        }
                         this->approximation_interval.upper_bound = this->approximation_interval.lower_bound;
 
 
                     } else {
 
-                        // If the explicit number didn't reaches the full precision
+                        // If the explicit number didn't reaches the full precision (the end)
                         // then the number interval is defined by truncation.
-                        this->approximation_interval.lower_bound.push_back(this->_real_ptr->_digits[this->_n]);
+
+                        for(int i = 0; i < n; i++) {
+                            this->approximation_interval.lower_bound.push_back(this->_real_ptr->_digits[this->_n]);
+                        }
 
                         this->approximation_interval.upper_bound.clear();
                         this->approximation_interval.upper_bound.digits.resize(this->approximation_interval.lower_bound.size());
@@ -126,8 +134,23 @@ namespace boost {
                         }
                     }
 
+                    // Normalize boundaries representation
+                    this->approximation_interval.lower_bound.normalize();
+                    this->approximation_interval.upper_bound.normalize();
+
                     this->check_and_swap_boundaries();
-                    this->_n++;
+                    this->_n = std::min(this->_n + n, (int)this->_real_ptr->_digits.size());
+                }
+
+                bool operator==(const const_precision_iterator& other) const {
+                    // uninitialized iterators are never equals
+                    if (this->_real_ptr == nullptr || other._real_ptr == nullptr) {
+                        return false;
+                    }
+
+                    return (other._real_ptr == this->_real_ptr) &&
+                            (other._n == this->_n) &&
+                            (other.approximation_interval == this->approximation_interval);
                 }
             };
 
@@ -249,6 +272,12 @@ namespace boost {
 
             const_precision_iterator cbegin() const {
                 return const_precision_iterator(this);
+            }
+
+            const_precision_iterator cend() const {
+                const_precision_iterator it(this);
+                it.iterate_n_times((int)this->_digits.size() + 1);
+                return it;
             }
 
             int operator[](unsigned int n) const {

@@ -6,6 +6,11 @@
 
 namespace boost {
     namespace real {
+
+        /*
+         * Is an explicit number that represent a boundary. The number is expected to not have anny
+         * zeros at the right or the left to avoid multiple representations of the same number.
+         */
         struct boundary {
             std::vector<int> digits = {};
             int exponent = 0;
@@ -15,9 +20,9 @@ namespace boost {
 
             boundary(const boundary &other) = default;
 
-            boundary &operator=(const boundary &other) = default;
+            boundary &operator=(const boundary& other) = default;
 
-            bool operator<(const boundary &other) const {
+            bool operator<(const boundary& other) const {
 
                 if (this->positive != other.positive) {
                     return !this->positive;
@@ -38,6 +43,10 @@ namespace boost {
                 }
 
                 return other.exponent < this->exponent;
+            }
+
+            bool operator==(const boundary& other) const {
+                return !(*this < other || other < *this);
             }
 
             std::basic_string<char> as_string() const {
@@ -94,6 +103,21 @@ namespace boost {
 
             void push_front(int digit) {
                 this->digits.insert(this->digits.begin(), digit);
+            }
+
+            /*
+             * Removes extra zeros at the sides to convert the number representation into a
+             * normalized representation.
+             */
+            void normalize() {
+                while (this->digits.size() > 1 and this->digits.front() == 0) {
+                    this->digits.erase(this->digits.begin());
+                    this->exponent--;
+                }
+
+                while (this->digits.size() > 1 and this->digits.back() == 0) {
+                    this->digits.pop_back();
+                }
             }
 
             void clear() {

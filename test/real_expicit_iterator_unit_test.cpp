@@ -1,5 +1,5 @@
 #include <catch2/catch.hpp>
-#include <real/real.hpp>
+#include <real/real_explicit.hpp>
 
 TEST_CASE("Iterate boost::real_explicit::const_precision_iterator until full precision is reached") {
 
@@ -32,11 +32,11 @@ TEST_CASE("Iterate boost::real_explicit::const_precision_iterator until full pre
                         }
 
                         if (i < (int)a.digits().size() - 1) {
-                            expected_interval.lower_bound.push_back(a.digits()[i]);
-                            expected_interval.upper_bound.push_back(a.digits()[i] + 1);
+                            expected_interval.lower_bound.push_back(a[i]);
+                            expected_interval.upper_bound.push_back(a[i] + 1);
                         } else if (i == (int)a.digits().size() - 1) {
-                            expected_interval.lower_bound.push_back(a.digits()[i]);
-                            expected_interval.upper_bound.push_back(a.digits()[i]);
+                            expected_interval.lower_bound.push_back(a[i]);
+                            expected_interval.upper_bound.push_back(a[i]);
                         }
 
                         CHECK( approximation_it.approximation_interval == expected_interval );
@@ -59,7 +59,7 @@ TEST_CASE("Iterate boost::real_explicit::const_precision_iterator until full pre
             for (int i = 0; i < 11; i++) {
 
                 if (i < (int)a.digits().size()) {
-                    expected_interval.lower_bound.push_back(a.digits()[i]);
+                    expected_interval.lower_bound.push_back(a[i]);
                 }
 
                 if (i == (int)a.digits().size() - 1) {
@@ -107,11 +107,11 @@ TEST_CASE("Iterate boost::real_explicit::const_precision_iterator until full pre
                         }
 
                         if (i < (int)a.digits().size() - 1) {
-                            expected_interval.upper_bound.push_back(a.digits()[i]);
-                            expected_interval.lower_bound.push_back(a.digits()[i] + 1);
+                            expected_interval.upper_bound.push_back(a[i]);
+                            expected_interval.lower_bound.push_back(a[i] + 1);
                         } else if (i == (int)a.digits().size() - 1) {
-                            expected_interval.upper_bound.push_back(a.digits()[i]);
-                            expected_interval.lower_bound.push_back(a.digits()[i]);
+                            expected_interval.upper_bound.push_back(a[i]);
+                            expected_interval.lower_bound.push_back(a[i]);
                         }
 
                         CHECK( approximation_it.approximation_interval == expected_interval );
@@ -134,7 +134,7 @@ TEST_CASE("Iterate boost::real_explicit::const_precision_iterator until full pre
             for (int i = 0; i < 11; i++) {
 
                 if (i < (int)a.digits().size()) {
-                    expected_interval.upper_bound.push_back(a.digits()[i]);
+                    expected_interval.upper_bound.push_back(a[i]);
                 }
 
                 if (i == (int)a.digits().size() - 1) {

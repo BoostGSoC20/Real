@@ -11,7 +11,7 @@ TEST_CASE("Iterate boost::real_algorithm::const_precision_iterator until full pr
 
             SECTION("Testing for number 0.333333...") {
 
-                boost::real::real_algorithm a([](unsigned int n) { return 3; }, 0);
+                boost::real::real_algorithm a([](unsigned int n) -> int { return 3; }, 0);
                 boost::real::real_algorithm::const_precision_iterator approximation_it = a.cbegin();
                 boost::real::interval expected_interval;
                 expected_interval.lower_bound.exponent = a.exponent();
@@ -34,7 +34,7 @@ TEST_CASE("Iterate boost::real_algorithm::const_precision_iterator until full pr
 
         SECTION("With carry in the upper boundary calculation, number 1.99999999989999999998999...") {
             boost::real::real_algorithm a(
-                    [](unsigned int n) {
+                    [](unsigned int n) -> int {
                         if (n == 0) return 1;
                         else if (n == 10 || n == 20) return 8;
                         else return 9;
@@ -77,7 +77,7 @@ TEST_CASE("Iterate boost::real_algorithm::const_precision_iterator until full pr
 
         SECTION("Testing for number -0.333333...") {
 
-            boost::real::real_algorithm a([](unsigned int n) { return 3; }, 0, false);
+            boost::real::real_algorithm a([](unsigned int n) -> int { return 3; }, 0, false);
             boost::real::real_algorithm::const_precision_iterator approximation_it = a.cbegin();
             boost::real::interval expected_interval;
             expected_interval.lower_bound.exponent = a.exponent();
@@ -99,7 +99,7 @@ TEST_CASE("Iterate boost::real_algorithm::const_precision_iterator until full pr
 
         SECTION("With carry in the upper boundary calculation, number -1.99999999989999999998999...") {
             boost::real::real_algorithm a(
-                    [](unsigned int n) {
+                    [](unsigned int n) -> int {
                         if (n == 0) return 1;
                         else if (n == 10 || n == 20) return 8;
                         else return 9;
@@ -142,7 +142,7 @@ TEST_CASE("Iterate boost::real_algorithm::const_precision_iterator until full pr
 
 TEST_CASE("Iterator cend") {
 
-    boost::real::real_algorithm a([](unsigned int n) { return 3; }, 0);
+    boost::real::real_algorithm a([](unsigned int n) -> int { return 3; }, 0);
     boost::real::real_algorithm::const_precision_iterator approximation_it = a.cbegin();
     boost::real::real_algorithm::const_precision_iterator end_it = a.cend();
 

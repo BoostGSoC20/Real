@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include <real/real_algorithm.hpp>
+#include <test_helpers.hpp>
 
 TEST_CASE("Iterate boost::real_algorithm::const_precision_iterator until full precision is reached") {
 

@@ -1,5 +1,6 @@
 #include <catch2/catch.hpp>
 #include <real/real_explicit.hpp>
+#include <test_helpers.hpp>
 
 TEST_CASE("Iterate boost::real_explicit::const_precision_iterator until full precision is reached") {
 

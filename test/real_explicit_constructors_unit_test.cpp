@@ -1,5 +1,6 @@
 #include <catch2/catch.hpp>
 #include <real/real.hpp>
+#include <test_helpers.hpp>
 
 TEST_CASE("Create boost::real_explicit from strings") {
 

@@ -2,27 +2,7 @@
 #include <map>
 
 #include <real/real.hpp>
-
-namespace Catch {
-    template<>
-    struct StringMaker<boost::real::interval> {
-        static std::string convert( boost::real::interval const& value ) {
-            return value.as_sting();
-
-        }
-    };
-}
-
-int one_and_nines(unsigned int n) {
-    if (n == 0) {
-        return 1;
-    }
-    return 9;
-}
-
-int ones(unsigned int n) {
-    return 1;
-}
+#include <test_helpers.hpp>
 
 TEST_CASE("Operator + boost::real::const_precision_iterator") {
 

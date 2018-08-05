@@ -1,4 +1,5 @@
 #include <catch2/catch.hpp>
+
 #include <real/real.hpp>
 #include <real/utils.hpp>
 
@@ -15,6 +16,4 @@ SCENARIO("Real numbers addition is commutative" ) {
             CHECK(boost::real::to_string(e1) == boost::real::to_string(e2));
         }
     }
-
-
 }

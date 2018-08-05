@@ -57,7 +57,7 @@ namespace boost {
                 }
 
                 if (this->exponent <= 0) {
-                    result = "0.";
+                    result += "0.";
 
                     for (int i = this->exponent; i < (int) this->digits.size(); ++i) {
                         if (i < 0) {

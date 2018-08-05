@@ -56,15 +56,6 @@ namespace boost {
                     integral_length++;
                 }
 
-                while (result.front() == 0 && result.size() > 1) {
-                    result.erase(result.begin());
-                    integral_length--;
-                }
-
-                while (result.back() == 0 && result.size() > 1) {
-                    result.pop_back();
-                }
-
                 return integral_length;
             }
 
@@ -109,16 +100,6 @@ namespace boost {
                     result.insert(result.begin(), lhs_digit - rhs_digit);
                 }
 
-                // Remove possible 0 prefix if more significant digits were canceled.
-                while (result.front() == 0 && result.size() > 1) {
-                    result.erase(result.begin());
-                    --lhs_exponent;
-                }
-
-                while (result.back() == 0 && result.size() > 1) {
-                    result.pop_back();
-                }
-
                 return lhs_exponent;
             }
 
@@ -147,6 +128,8 @@ namespace boost {
                                                        result.digits);
                     result.positive = rhs.positive;
                 }
+
+                result.normalize();
             }
 
             void subtract_boundaries(const boundary &lhs,
@@ -177,6 +160,8 @@ namespace boost {
                         result.positive = !lhs.positive;
                     }
                 }
+
+                result.normalize();
             }
 
             // Multiplies str1 and str2, and prints result.
@@ -239,14 +224,9 @@ namespace boost {
                 }
 
                 int fractional_part = ((int)lhs.size() - lhs_exponent) + ((int)rhs.size() - rhs_exponent);
-                int integer_part = (int)result.size() - fractional_part;
+                int result_exponent = (int)result.size() - fractional_part;
 
-                while ((int)result.size() > 1 && result.front() == 0) {
-                    result.erase(result.begin());
-                    integer_part--;
-                }
-
-                return integer_part;
+                return result_exponent;
             }
 
 
@@ -260,6 +240,8 @@ namespace boost {
                                                        rhs.digits,
                                                        rhs.exponent,
                                                        result.digits);
+
+                result.normalize();
             }
 
             int divide_vectors(

@@ -120,6 +120,13 @@ namespace boost {
                 }
             }
 
+            void normalize_left() {
+                while (this->digits.size() > 1 and this->digits.front() == 0) {
+                    this->digits.erase(this->digits.begin());
+                    this->exponent--;
+                }
+            }
+
             void clear() {
                 this->digits.clear();
             }

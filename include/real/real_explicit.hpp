@@ -134,9 +134,9 @@ namespace boost {
                         }
                     }
 
-                    // Normalize boundaries representation
-                    this->approximation_interval.lower_bound.normalize();
-                    this->approximation_interval.upper_bound.normalize();
+                    // Left normalization of boundaries representation
+                    this->approximation_interval.lower_bound.normalize_left();
+                    this->approximation_interval.upper_bound.normalize_left();
 
                     this->check_and_swap_boundaries();
                     this->_n = std::min(this->_n + n, (int)this->_real_ptr->_digits.size());

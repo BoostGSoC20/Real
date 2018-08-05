@@ -102,9 +102,9 @@ namespace boost {
                         this->approximation_interval.upper_bound.exponent = this->approximation_interval.lower_bound.exponent;
                     }
 
-                    // Normalize boundaries representation
-                    this->approximation_interval.lower_bound.normalize();
-                    this->approximation_interval.upper_bound.normalize();
+                    // Left normalization of boundaries representation
+                    this->approximation_interval.lower_bound.normalize_left();
+                    this->approximation_interval.upper_bound.normalize_left();
 
                     this->check_and_swap_boundaries();
                     this->_n += n;

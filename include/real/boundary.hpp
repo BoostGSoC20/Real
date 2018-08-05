@@ -118,6 +118,12 @@ namespace boost {
                 while (this->digits.size() > 1 and this->digits.back() == 0) {
                     this->digits.pop_back();
                 }
+
+                // Zero could have many representation, and the normalized is the next one.
+                if (this->digits.size() == 1 and this->digits.front() == 0) {
+                    this->exponent = 0;
+                    this->positive = true;
+                }
             }
 
             void normalize_left() {

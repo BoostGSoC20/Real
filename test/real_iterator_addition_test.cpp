@@ -1,8 +1,17 @@
 #include <catch2/catch.hpp>
 #include <map>
-#include <iostream>
 
 #include <real/real.hpp>
+
+namespace Catch {
+    template<>
+    struct StringMaker<boost::real::interval> {
+        static std::string convert( boost::real::interval const& value ) {
+            return value.as_sting();
+
+        }
+    };
+}
 
 int one_and_nines(unsigned int n) {
     if (n == 0) {
@@ -15,7 +24,7 @@ int ones(unsigned int n) {
     return 1;
 }
 
-TEST_CASE("Iteration of addition") {
+TEST_CASE("Operator + boost::real::const_precision_iterator") {
 
     std::map<std::string, boost::real::real> numbers;
 
@@ -37,16 +46,15 @@ TEST_CASE("Iteration of addition") {
             boost::real::real a = numbers["E(+1.9)"] + numbers["A(+1.99..)"];
 
             auto a_it = a.cbegin();
-
             boost::real::interval expected_interval({});
-            expected_interval.lower_bound.exponent = 1;
-            expected_interval.lower_bound.positive = true;
-            expected_interval.upper_bound.exponent = 1;
-            expected_interval.upper_bound.positive = true;
 
+
+            expected_interval.lower_bound.positive = true;
+            expected_interval.upper_bound.positive = true;
+            expected_interval.lower_bound.exponent = 1;
+            expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {2};
             expected_interval.upper_bound.digits = {4};
-
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
@@ -68,16 +76,15 @@ TEST_CASE("Iteration of addition") {
             boost::real::real a = numbers["E(+1.1)"] + numbers["A(+1.11..)"];
 
             auto a_it = a.cbegin();
-
             boost::real::interval expected_interval({});
-            expected_interval.lower_bound.exponent = 1;
-            expected_interval.lower_bound.positive = true;
-            expected_interval.upper_bound.exponent = 1;
-            expected_interval.upper_bound.positive = true;
 
+
+            expected_interval.lower_bound.positive = true;
+            expected_interval.upper_bound.positive = true;
+            expected_interval.lower_bound.exponent = 1;
+            expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {2};
             expected_interval.upper_bound.digits = {4};
-
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
@@ -101,16 +108,15 @@ TEST_CASE("Iteration of addition") {
             boost::real::real a = numbers["E(+1.9)"] + numbers["A(+1.11..)"];
 
             auto a_it = a.cbegin();
-
             boost::real::interval expected_interval({});
-            expected_interval.lower_bound.exponent = 1;
-            expected_interval.lower_bound.positive = true;
-            expected_interval.upper_bound.exponent = 1;
-            expected_interval.upper_bound.positive = true;
 
+
+            expected_interval.lower_bound.positive = true;
+            expected_interval.upper_bound.positive = true;
+            expected_interval.lower_bound.exponent = 1;
+            expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {2};
             expected_interval.upper_bound.digits = {4};
-
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
@@ -134,16 +140,15 @@ TEST_CASE("Iteration of addition") {
             boost::real::real a = numbers["E(+1.9)"] + numbers["E(+1.9)"];
 
             auto a_it = a.cbegin();
-
             boost::real::interval expected_interval({});
-            expected_interval.lower_bound.exponent = 1;
-            expected_interval.lower_bound.positive = true;
-            expected_interval.upper_bound.exponent = 1;
-            expected_interval.upper_bound.positive = true;
 
+
+            expected_interval.lower_bound.positive = true;
+            expected_interval.upper_bound.positive = true;
+            expected_interval.lower_bound.exponent = 1;
+            expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {2};
             expected_interval.upper_bound.digits = {4};
-
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
@@ -163,16 +168,15 @@ TEST_CASE("Iteration of addition") {
             boost::real::real a = numbers["E(+1.1)"] + numbers["E(+1.1)"];
 
             auto a_it = a.cbegin();
-
             boost::real::interval expected_interval({});
-            expected_interval.lower_bound.exponent = 1;
-            expected_interval.lower_bound.positive = true;
-            expected_interval.upper_bound.exponent = 1;
-            expected_interval.upper_bound.positive = true;
 
+
+            expected_interval.lower_bound.positive = true;
+            expected_interval.upper_bound.positive = true;
+            expected_interval.lower_bound.exponent = 1;
+            expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {2};
             expected_interval.upper_bound.digits = {4};
-
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
@@ -192,16 +196,15 @@ TEST_CASE("Iteration of addition") {
             boost::real::real a = numbers["E(+1.9)"] + numbers["E(+1.1)"];
 
             auto a_it = a.cbegin();
-
             boost::real::interval expected_interval({});
-            expected_interval.lower_bound.exponent = 1;
-            expected_interval.lower_bound.positive = true;
-            expected_interval.upper_bound.exponent = 1;
-            expected_interval.upper_bound.positive = true;
 
+
+            expected_interval.lower_bound.positive = true;
+            expected_interval.upper_bound.positive = true;
+            expected_interval.lower_bound.exponent = 1;
+            expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {2};
             expected_interval.upper_bound.digits = {4};
-
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
@@ -221,16 +224,15 @@ TEST_CASE("Iteration of addition") {
             boost::real::real a = numbers["A(+1.99..)"] + numbers["A(+1.99..)"];
 
             auto a_it = a.cbegin();
-
             boost::real::interval expected_interval({});
-            expected_interval.lower_bound.exponent = 1;
-            expected_interval.lower_bound.positive = true;
-            expected_interval.upper_bound.exponent = 1;
-            expected_interval.upper_bound.positive = true;
 
+
+            expected_interval.lower_bound.positive = true;
+            expected_interval.upper_bound.positive = true;
+            expected_interval.lower_bound.exponent = 1;
+            expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {2};
             expected_interval.upper_bound.digits = {4};
-
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
@@ -251,16 +253,15 @@ TEST_CASE("Iteration of addition") {
             boost::real::real a = numbers["A(+1.11..)"] + numbers["A(+1.11..)"];
 
             auto a_it = a.cbegin();
-
             boost::real::interval expected_interval({});
-            expected_interval.lower_bound.exponent = 1;
-            expected_interval.lower_bound.positive = true;
-            expected_interval.upper_bound.exponent = 1;
-            expected_interval.upper_bound.positive = true;
 
+
+            expected_interval.lower_bound.positive = true;
+            expected_interval.upper_bound.positive = true;
+            expected_interval.lower_bound.exponent = 1;
+            expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {2};
             expected_interval.upper_bound.digits = {4};
-
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
@@ -284,16 +285,15 @@ TEST_CASE("Iteration of addition") {
             boost::real::real a = numbers["A(+1.99..)"] + numbers["A(+1.11..)"];
 
             auto a_it = a.cbegin();
-
             boost::real::interval expected_interval({});
-            expected_interval.lower_bound.exponent = 1;
-            expected_interval.lower_bound.positive = true;
-            expected_interval.upper_bound.exponent = 1;
-            expected_interval.upper_bound.positive = true;
 
+
+            expected_interval.lower_bound.positive = true;
+            expected_interval.upper_bound.positive = true;
+            expected_interval.lower_bound.exponent = 1;
+            expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {2};
             expected_interval.upper_bound.digits = {4};
-
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
@@ -320,21 +320,20 @@ TEST_CASE("Iteration of addition") {
             boost::real::real a = numbers["E(-1.9)"] + numbers["A(-1.99..)"];
 
             auto a_it = a.cbegin();
-
             boost::real::interval expected_interval({});
-            expected_interval.lower_bound.exponent = 1;
+
+
             expected_interval.lower_bound.positive = false;
-            expected_interval.upper_bound.exponent = 1;
             expected_interval.upper_bound.positive = false;
-
-            expected_interval.upper_bound.digits = {2};
+            expected_interval.lower_bound.exponent = 1;
+            expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {4};
-
+            expected_interval.upper_bound.digits = {2};
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
-            expected_interval.upper_bound.digits = {3, 8};
             expected_interval.lower_bound.digits = {3, 9};
+            expected_interval.upper_bound.digits = {3, 8};
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
@@ -351,31 +350,30 @@ TEST_CASE("Iteration of addition") {
             boost::real::real a = numbers["E(-1.1)"] + numbers["A(-1.11..)"];
 
             auto a_it = a.cbegin();
-
             boost::real::interval expected_interval({});
-            expected_interval.lower_bound.exponent = 1;
+
+
             expected_interval.lower_bound.positive = false;
-            expected_interval.upper_bound.exponent = 1;
             expected_interval.upper_bound.positive = false;
-
-            expected_interval.upper_bound.digits = {2};
+            expected_interval.lower_bound.exponent = 1;
+            expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {4};
-
+            expected_interval.upper_bound.digits = {2};
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
-            expected_interval.upper_bound.digits = {2, 2};
             expected_interval.lower_bound.digits = {2, 3};
+            expected_interval.upper_bound.digits = {2, 2};
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
-            expected_interval.upper_bound.digits = {2, 2, 1};
             expected_interval.lower_bound.digits = {2, 2, 2};
+            expected_interval.upper_bound.digits = {2, 2, 1};
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
-            expected_interval.upper_bound.digits = {2, 2, 1, 1};
             expected_interval.lower_bound.digits = {2, 2, 1, 2};
+            expected_interval.upper_bound.digits = {2, 2, 1, 1};
             CHECK(a_it.approximation_interval == expected_interval);
         }
 
@@ -385,31 +383,30 @@ TEST_CASE("Iteration of addition") {
             boost::real::real a = numbers["E(-1.9)"] + numbers["A(-1.11..)"];
 
             auto a_it = a.cbegin();
-
             boost::real::interval expected_interval({});
-            expected_interval.lower_bound.exponent = 1;
+
+
             expected_interval.lower_bound.positive = false;
-            expected_interval.upper_bound.exponent = 1;
             expected_interval.upper_bound.positive = false;
-
-            expected_interval.upper_bound.digits = {2};
+            expected_interval.lower_bound.exponent = 1;
+            expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {4};
-
+            expected_interval.upper_bound.digits = {2};
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
-            expected_interval.upper_bound.digits = {3};
             expected_interval.lower_bound.digits = {3,1};
+            expected_interval.upper_bound.digits = {3};
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
-            expected_interval.upper_bound.digits = {3,0,1};
             expected_interval.lower_bound.digits = {3,0,2};
+            expected_interval.upper_bound.digits = {3,0,1};
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
-            expected_interval.upper_bound.digits = {3,0,1,1};
             expected_interval.lower_bound.digits = {3,0,1,2};
+            expected_interval.upper_bound.digits = {3,0,1,1};
             CHECK(a_it.approximation_interval == expected_interval);
         }
 
@@ -418,21 +415,20 @@ TEST_CASE("Iteration of addition") {
             boost::real::real a = numbers["E(-1.9)"] + numbers["E(-1.9)"];
 
             auto a_it = a.cbegin();
-
             boost::real::interval expected_interval({});
-            expected_interval.lower_bound.exponent = 1;
+
+
             expected_interval.lower_bound.positive = false;
-            expected_interval.upper_bound.exponent = 1;
             expected_interval.upper_bound.positive = false;
-
-            expected_interval.upper_bound.digits = {2};
+            expected_interval.lower_bound.exponent = 1;
+            expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {4};
-
+            expected_interval.upper_bound.digits = {2};
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
-            expected_interval.upper_bound.digits = {3,8};
             expected_interval.lower_bound.digits = {3,8};
+            expected_interval.upper_bound.digits = {3,8};
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
@@ -447,21 +443,20 @@ TEST_CASE("Iteration of addition") {
             boost::real::real a = numbers["E(-1.1)"] + numbers["E(-1.1)"];
 
             auto a_it = a.cbegin();
-
             boost::real::interval expected_interval({});
-            expected_interval.lower_bound.exponent = 1;
+
+
             expected_interval.lower_bound.positive = false;
-            expected_interval.upper_bound.exponent = 1;
             expected_interval.upper_bound.positive = false;
-
-            expected_interval.upper_bound.digits = {2};
+            expected_interval.lower_bound.exponent = 1;
+            expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {4};
-
+            expected_interval.upper_bound.digits = {2};
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
-            expected_interval.upper_bound.digits = {2,2};
             expected_interval.lower_bound.digits = {2,2};
+            expected_interval.upper_bound.digits = {2,2};
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
@@ -476,21 +471,20 @@ TEST_CASE("Iteration of addition") {
             boost::real::real a = numbers["E(-1.9)"] + numbers["E(-1.1)"];
 
             auto a_it = a.cbegin();
-
             boost::real::interval expected_interval({});
-            expected_interval.lower_bound.exponent = 1;
+
+
             expected_interval.lower_bound.positive = false;
-            expected_interval.upper_bound.exponent = 1;
             expected_interval.upper_bound.positive = false;
-
-            expected_interval.upper_bound.digits = {2};
+            expected_interval.lower_bound.exponent = 1;
+            expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {4};
-
+            expected_interval.upper_bound.digits = {2};
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
-            expected_interval.upper_bound.digits = {3};
             expected_interval.lower_bound.digits = {3};
+            expected_interval.upper_bound.digits = {3};
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
@@ -505,16 +499,15 @@ TEST_CASE("Iteration of addition") {
             boost::real::real a = numbers["A(-1.99..)"] + numbers["A(-1.99..)"];
 
             auto a_it = a.cbegin();
-
             boost::real::interval expected_interval({});
-            expected_interval.lower_bound.exponent = 1;
+
+
             expected_interval.lower_bound.positive = false;
-            expected_interval.upper_bound.exponent = 1;
             expected_interval.upper_bound.positive = false;
-
-            expected_interval.upper_bound.digits = {2};
+            expected_interval.lower_bound.exponent = 1;
+            expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {4};
-
+            expected_interval.upper_bound.digits = {2};
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
@@ -535,31 +528,30 @@ TEST_CASE("Iteration of addition") {
             boost::real::real a = numbers["A(-1.11..)"] + numbers["A(-1.11..)"];
 
             auto a_it = a.cbegin();
-
             boost::real::interval expected_interval({});
-            expected_interval.lower_bound.exponent = 1;
+
+
             expected_interval.lower_bound.positive = false;
-            expected_interval.upper_bound.exponent = 1;
             expected_interval.upper_bound.positive = false;
-
-            expected_interval.upper_bound.digits = {2};
+            expected_interval.lower_bound.exponent = 1;
+            expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {4};
-
+            expected_interval.upper_bound.digits = {2};
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
-            expected_interval.upper_bound.digits = {2,2};
             expected_interval.lower_bound.digits = {2,4};
+            expected_interval.upper_bound.digits = {2,2};
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
-            expected_interval.upper_bound.digits = {2,2,2};
             expected_interval.lower_bound.digits = {2,2,4};
+            expected_interval.upper_bound.digits = {2,2,2};
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
-            expected_interval.upper_bound.digits = {2,2,2,2};
             expected_interval.lower_bound.digits = {2,2,2,4};
+            expected_interval.upper_bound.digits = {2,2,2,2};
             CHECK(a_it.approximation_interval == expected_interval);
         }
 
@@ -568,31 +560,30 @@ TEST_CASE("Iteration of addition") {
             boost::real::real a = numbers["A(-1.99..)"] + numbers["A(-1.11..)"];
 
             auto a_it = a.cbegin();
-
             boost::real::interval expected_interval({});
-            expected_interval.lower_bound.exponent = 1;
+
+
             expected_interval.lower_bound.positive = false;
-            expected_interval.upper_bound.exponent = 1;
             expected_interval.upper_bound.positive = false;
-
-            expected_interval.upper_bound.digits = {2};
+            expected_interval.lower_bound.exponent = 1;
+            expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {4};
-
+            expected_interval.upper_bound.digits = {2};
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
-            expected_interval.upper_bound.digits = {3};
             expected_interval.lower_bound.digits = {3,2};
+            expected_interval.upper_bound.digits = {3};
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
-            expected_interval.upper_bound.digits = {3,1};
             expected_interval.lower_bound.digits = {3,1,2};
+            expected_interval.upper_bound.digits = {3,1};
             CHECK(a_it.approximation_interval == expected_interval);
 
             ++a_it;
-            expected_interval.upper_bound.digits = {3,1,1};
             expected_interval.lower_bound.digits = {3,1,1,2};
+            expected_interval.upper_bound.digits = {3,1,1};
             CHECK(a_it.approximation_interval == expected_interval);
         }
     }

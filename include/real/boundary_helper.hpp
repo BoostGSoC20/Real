@@ -1,5 +1,5 @@
-#ifndef BOOST_REAL_RANGE_HELPER_HPP
-#define BOOST_REAL_RANGE_HELPER_HPP
+#ifndef BOOST_REAL_BOUNDARY_HELPER_HPP
+#define BOOST_REAL_BOUNDARY_HELPER_HPP
 
 #include <algorithm>
 #include "interval.hpp"
@@ -38,4 +38,4 @@ namespace boost {
     }
 }
 
-#endif //BOOST_REAL_RANGE_HELPER_HPP
+#endif //BOOST_REAL_BOUNDARY_HELPER_HPP

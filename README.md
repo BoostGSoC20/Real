@@ -1,7 +1,10 @@
 ![Boost.Real](doc/other/logo/logo.png)
 
-[![Build Status](https://travis-ci.org/sdavtaker/Real.svg?branch=master)](https://travis-ci.org/sdavtaker/Real) [![codecov](https://codecov.io/gh/sdavtaker/Real/branch/master/graph/badge.svg)](https://codecov.io/gh/sdavtaker/Real)
 Boost.Real numerical data type for real numbers representation using interval arithmetic.
+
+[![Build Status](https://travis-ci.org/sdavtaker/Real.svg?branch=master)](https://travis-ci.org/sdavtaker/Real) 
+[![codecov](https://codecov.io/gh/sdavtaker/Real/branch/master/graph/badge.svg)](https://codecov.io/gh/sdavtaker/Real)
+
 
 ## Introduction
 

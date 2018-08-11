@@ -56,6 +56,18 @@ namespace boost {
                     result = "-";
                 }
 
+                // If the number is to large, scientific notation is used to print it.
+                if ((this->exponent < -10) || (this->exponent > (int)this->digits.size() + 10)) {
+                    result += "0.";
+
+                    for (const auto& d: this->digits) {
+                        result += std::to_string(d);
+                    }
+
+                    result += "e" + std::to_string(this->exponent);
+                    return result;
+                }
+
                 if (this->exponent <= 0) {
                     result += "0.";
 

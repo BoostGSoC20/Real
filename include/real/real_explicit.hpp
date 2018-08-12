@@ -82,7 +82,7 @@ namespace boost {
                  *
                  * @param real_number - the boost::real::real number to iterate.
                  */
-                explicit const_precision_iterator(real_explicit const* ptr) : _n(1), _real_ptr(ptr) {
+                explicit const_precision_iterator(real_explicit const* real_number) : _n(1), _real_ptr(real_number) {
                     this->approximation_interval.lower_bound.exponent = this->_real_ptr->_exponent;
                     this->approximation_interval.upper_bound.exponent = this->_real_ptr->_exponent;
                     this->approximation_interval.lower_bound.positive = this->_real_ptr->_positive;

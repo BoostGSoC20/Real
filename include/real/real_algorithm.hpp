@@ -6,6 +6,16 @@
 namespace boost {
     namespace real {
 
+        /**
+         * @author Laouen Mayal Louan Belloli
+         *
+         * @brief boost::real::real_algorithm is a C++ class that represents real numbers as a
+         * a function that calculates the n-th digit o the number, a sign and an exponent.
+         *
+         * @details Because a function pointer of lambda function is used to obtain the number
+         * digits on demand, numbers with infinite representations as the irrational numbers can be
+         * represented using this class.
+         */
         class real_algorithm {
 
             // Number representation as a function that return the number digits
@@ -20,6 +30,13 @@ namespace boost {
 
         public:
 
+            /**
+             * @author Laouen Mayal Louan Belloli
+             *
+             * @brief is a forward iterator that iterates a boost::real::real_algorithm number approximation
+             * intervals. The iterator calculates the initial interval with the initial precision and
+             * then it increase the precision in each iteration (++) and recalculate the interval.
+             */
             class const_precision_iterator {
             private:
 
@@ -40,11 +57,30 @@ namespace boost {
                 // Number approximation_interval boundaries
                 boost::real::interval approximation_interval;
 
+                /**
+                 * @brief **Default constructor:** Constructs an empty
+                 * boost::real::real_algorithm::const_precision_iterator that points to nullptr.
+                 */
                 const_precision_iterator() = default;
 
+                /**
+                 * @brief **Copy constructor:**
+                 * Construct a new boost::real::real_algorithm::const_precision_iterator which is
+                 * a copy of the other iterator.
+                 *
+                 * @param other - the boost::real::real::const_precision_iterator to copy.
+                 */
                 const_precision_iterator(const const_precision_iterator& other) = default;
 
-                explicit const_precision_iterator(real_algorithm const* ptr) : _n(1), _real_ptr(ptr) {
+                /**
+                 * @brief *Pointer constructor:* Construct a new boost::real::real_algorithm::const_precision_iterator
+                 * pointing to the boost::real::real_algorithm number to iterate the number approximation intervals.
+                 *
+                 * The iterator will start pointing the lowest precision interval.
+                 *
+                 * @param real_number - the boost::real::real number to iterate.
+                 */
+                explicit const_precision_iterator(real_algorithm const* real_number) : _n(1), _real_ptr(real_number) {
 
                     this->approximation_interval.lower_bound.exponent = this->_real_ptr->_exponent;
                     this->approximation_interval.upper_bound.exponent = this->_real_ptr->_exponent;
@@ -65,13 +101,17 @@ namespace boost {
                 }
 
                 /**
-                 * @brief Increases the approximation interval number precision,
-                 * the interval becomes smaller and the number error is decreased.
+                 * @brief It recalculates the approximation interval boundaries increasing the used
+                 * precision, the new pointed approximation interval is smaller than the current one.
                  */
                 void operator++() {
                     this->iterate_n_times(1);
                 }
 
+                /**
+                 * @brief It recalculates the approximation interval boundaries increasing the used
+                 * precision n times, the new pointed approximation interval is smaller than the current one.
+                 */
                 void iterate_n_times(int n) {
 
                     // If the number is negative, bounds are interpreted as mirrored:
@@ -110,6 +150,13 @@ namespace boost {
                     this->_n += n;
                 }
 
+                /**
+                 * @brief It compare by value equality; two boost::real::real_algorithm::const_precision_iterators
+                 * are equals if they are pointing to the same real number and are in the same precision iteration.
+                 *
+                 * @param other - A boost::real::real_algorithm::const_precision_iterator that is the right side operand
+                 * @return a bool that is true if and only if both iterators are equals.
+                 */
                 bool operator==(const const_precision_iterator& other) const {
                     // uninitialized iterators are never equals
                     if (this->_real_ptr == nullptr || other._real_ptr == nullptr) {
@@ -122,13 +169,48 @@ namespace boost {
                 }
             };
 
+            /**
+             * @brief *Default constructor:* Construct an empty boost::real::real_algorithm with
+             * undefined representation and behaviour.
+             *
+             * @note **WARNING** The default constructor exist only for implementation purposes
+             * and it is deprecated.
+             */
             real_algorithm() = default;
 
+            /**
+             * @brief *Copy constructor:* Creates a copy of the boost::real::real_algorithm number other.
+             *
+             * @param other - the boost::real::real instance to copy.
+             */
             real_algorithm(const real_algorithm& other) = default;
 
+            /**
+             * @brief *Lambda function constructor with exponent:* Creates a boost::real::real_algorithm
+             * instance that represents the number where the exponent is used to set the number
+             * integer part and the lambda function digits is used to know the number digits,
+             * this function returns the n-th number digit. The number is positive.
+             *
+             * @param get_nth_digit - a function pointer or lambda function that given an unsigned
+             * int "n" as parameter, it returns the number n-th digit.
+             * @param exponent - an integer representing the number exponent.
+             */
             explicit real_algorithm(int (*get_nth_digit)(unsigned int), int exponent)
                     : _get_nth_digit(get_nth_digit), _exponent(exponent), _positive(true) {}
 
+            /**
+             * @brief *Lambda function constructor with exponent and sign:* Creates a boost::real::real_algorothm instance
+             * that represents the number where the exponent is used to set the number integer part
+             * and the lambda function digits is used to know the number digit, this function returns
+             * the n-th number digit. This constructor uses the sign to determine if the number
+             * is positive or negative.
+             *
+             * @param get_nth_digit - a function pointer or lambda function that given an unsigned
+             * int "n" as parameter, it returns the number n-th digit.
+             * @param exponent - an integer representing the number exponent.
+             * @param positive - a bool that represent the number sign. If positive is set to true,
+             * the number is positive, otherwise is negative.
+             */
             explicit real_algorithm(int (*get_nth_digit)(unsigned int),
                                     int exponent,
                                     bool positive)
@@ -136,44 +218,82 @@ namespace boost {
                       _exponent(exponent),
                       _positive(positive) {}
 
-            explicit real_algorithm(int (*get_nth_digit)(unsigned int),
-                                    int exponent,
-                                    bool positive,
-                                    int max_precision)
-                    : _get_nth_digit(get_nth_digit),
-                      _exponent(exponent),
-                      _positive(positive),
-                      _max_precision(max_precision) {}
-
+            /**
+             * @brief Returns te maximum allowed precision, if that precision is reached and an
+             * operator need more precision, a precision_exception should be thrown.
+             *
+             * @return and integer with the maximum allowed precision.
+             */
             int max_precision() const {
                 return this->_max_precision;
             }
 
+            /**
+             * @return An integer with the number exponent
+             */
             int exponent() const {
                 return this->_exponent;
             }
 
+            /**
+             * @return A bool indicating if the number is positive (true) or negative (false)
+             */
             bool positive() const {
                 return this->_positive;
             }
 
+            /**
+             * @brief Construct a new boost::real::real_algorithm::con_precision_iterator that iterates the number
+             * approximation intervals in increasing order according to the approximation precision.
+             *
+             * The iterator starts pointing the interval with the minimum precision.
+             *
+             * @return a boost::real::real_algorithm::const_precision_iterator of the number.
+             */
             const_precision_iterator cbegin() const {
                 return const_precision_iterator(this);
             }
 
+            /**
+             * @brief Construct a new boost::real::real_algorithm::con_precision_iterator that iterates the number
+             * approximation intervals in increasing order according to the approximation precision.
+             *
+             * The iterator starts pointing the interval with the maximum allowed precision.
+             *
+             * @return a boost::real::real_algorithm::const_precision_iterator of the number.
+             */
             const_precision_iterator cend() const {
                 const_precision_iterator it(this);
                 it.iterate_n_times(this->_max_precision - 1);
                 return it;
             }
 
+            /**
+             * @brief Returns the n-th digit the number.
+             *
+             * @param n - an unsigned int number indicating the index of the requested digit.
+             * @return an integer with the value of the number n-th digit.
+             */
             int operator[](unsigned int n) const { return this->_get_nth_digit(n); }
 
+            /**
+             * @brief It assign a new copy of the other boost::real::real_algorithm number in the *this boost::real::real_algorithm number.
+             *
+             * @param other - the boost::real::real_algorithm number to copy.
+             * @return a reference of *this with the new represented number.
+             */
             real_algorithm& operator=(const real_algorithm& other) = default;
         };
     }
 }
 
+/**
+ * @bief overload of the << operator for std::ostream and boost::real::real_algorithm
+ *
+ * @param os - The std::ostream object where to print the r number.
+ * @param r - the boost::real::real_algorithm number to print
+ * @return a reference of the modified os object.
+ */
 std::ostream& operator<<(std::ostream& os, const boost::real::real_algorithm& r) {
     auto it = r.cbegin();
     for (int i = 0; i <= r.max_precision(); i++) {

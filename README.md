@@ -2,7 +2,7 @@
 
 Boost.Real numerical data type for real numbers representation using range arithmetic.
 
-[![Build Status](https://travis-ci.org/sdavtaker/Real.svg?branch=master)](https://travis-ci.org/sdavtaker/Real) 
+[![Build Status](https://travis-ci.org/BoostGSoC18/Real.svg?branch=master)](https://travis-ci.org/BoostGSoC18/Real) 
 [![codecov](https://codecov.io/gh/sdavtaker/Real/branch/master/graph/badge.svg)](https://codecov.io/gh/sdavtaker/Real)
 
 

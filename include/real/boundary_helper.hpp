@@ -8,11 +8,19 @@ namespace boost {
     namespace real {
         namespace helper {
 
-            /*
-             * Brief: checks whether the lhs vector elements are lower than the rhs elements if those
+            /**
+             * @author Laouen Mayal Louan Belloli
+             *
+             * @brief checks whether the lhs vector elements are lower than the rhs elements if those
              * elements are interpreted as a number digits.
              *
-             * Note: lhs and rhs must be aligned, i.e. two digits in the same index represent the same unit.
+             * @pre lhs and rhs must be aligned, i.e. two digits in the same index represent the same unit.
+             *
+             * @param lhs - a std::vector<int> used as the left side operand
+             * @param rhs - a std::vector<int> used as the right side operand
+             *
+             * @return a bool that is true if and only if, the represented number by lsh is lower than
+             * the represented number by rhs.
              */
             bool aligned_vectors_is_lower(const std::vector<int> &lhs, const std::vector<int> &rhs) {
 

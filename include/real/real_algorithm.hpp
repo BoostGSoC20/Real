@@ -175,6 +175,8 @@ namespace boost {
              *
              * @note **WARNING** The default constructor exist only for implementation purposes
              * and it is deprecated.
+             *
+             * @deprecated
              */
             real_algorithm() = default;
 

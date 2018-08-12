@@ -16,6 +16,20 @@ namespace boost {
                 return result;
             }
 
+            /**
+             * @author Laouen Mayal Louan Belloli
+             *
+             * @brief Implement the addition between two std::vector<int> that represent numbers.
+             * The numbers in the vectors are the digit and each vector has a corresponding exponent
+             * to correctly align the vectors for the addition.
+             *
+             * @param lhs - a std::vector<int> representing the left operand.
+             * @param lhs_exponent - a int representing the exponent of the left operand.
+             * @param rhs - a std::vector<int> representing the right operand.
+             * @param rhs_exponent - a int representing the exponent of the right operand.
+             * @param result - a std::vector<int> that is used to store the result.
+             * @return a integer representing the exponent of the result.
+             */
             int add_vectors(const std::vector<int> &lhs,
                             int lhs_exponent,
                             const std::vector<int> &rhs,
@@ -59,8 +73,21 @@ namespace boost {
                 return integral_length;
             }
 
-            /*
-             * Pre-condition: lhs >= rhs
+            /**
+             * @author Laouen Mayal Louan Belloli
+             *
+             * @brief Implement the subtraction between two std::vector<int> that represent numbers.
+             * The numbers in the vectors are the digit and each vector has a corresponding exponent
+             * to correctly align the vectors for the addition.
+             *
+             * @pre lhs >= rhs.
+             *
+             * @param lhs - a std::vector<int> representing the left operand.
+             * @param lhs_exponent - a int representing the exponent of the left operand.
+             * @param rhs - a std::vector<int> representing the right operand.
+             * @param rhs_exponent - a int representing the exponent of the right operand.
+             * @param result - a std::vector<int> that is used to store the result.
+             * @return a integer representing the exponent of the result.
              */
             int subtract_vectors(const std::vector<int> &lhs,
                                  int lhs_exponent,
@@ -103,68 +130,20 @@ namespace boost {
                 return lhs_exponent;
             }
 
-            void add_boundaries(const boundary &lhs,
-                                const boundary &rhs,
-                                boundary &result) {
-                if (lhs.positive == rhs.positive) {
-                    result.exponent = add_vectors(lhs.digits,
-                                                  lhs.exponent,
-                                                  rhs.digits,
-                                                  rhs.exponent,
-                                                  result.digits);
-                    result.positive = lhs.positive;
-                } else if (abs(rhs) < abs(lhs)) {
-                    result.exponent = subtract_vectors(lhs.digits,
-                                                       lhs.exponent,
-                                                       rhs.digits,
-                                                       rhs.exponent,
-                                                       result.digits);
-                    result.positive = lhs.positive;
-                } else {
-                    result.exponent = subtract_vectors(rhs.digits,
-                                                       rhs.exponent,
-                                                       lhs.digits,
-                                                       lhs.exponent,
-                                                       result.digits);
-                    result.positive = rhs.positive;
-                }
-
-                result.normalize();
-            }
-
-            void subtract_boundaries(const boundary &lhs,
-                                     const boundary &rhs,
-                                     boundary &result) {
-                if (lhs.positive != rhs.positive) {
-                    result.exponent = add_vectors(lhs.digits,
-                                                      lhs.exponent,
-                                                      rhs.digits,
-                                                      rhs.exponent,
-                                                      result.digits);
-                    result.positive = lhs.positive;
-                } else {
-
-                    if (abs(rhs) < abs(lhs)) {
-                        result.exponent = subtract_vectors(lhs.digits,
-                                                               lhs.exponent,
-                                                               rhs.digits,
-                                                               rhs.exponent,
-                                                               result.digits);
-                        result.positive = lhs.positive;
-                    } else {
-                        result.exponent = subtract_vectors(rhs.digits,
-                                                               rhs.exponent,
-                                                               lhs.digits,
-                                                               lhs.exponent,
-                                                               result.digits);
-                        result.positive = !lhs.positive;
-                    }
-                }
-
-                result.normalize();
-            }
-
-            // Multiplies str1 and str2, and prints result.
+            /**
+             * @author Laouen Mayal Louan Belloli
+             *
+             * @brief Implement the multiplication between two std::vector<int> that represent numbers.
+             * The numbers in the vectors are the digit and each vector has a corresponding exponent
+             * to correctly align the vectors for the addition.
+             *
+             * @param lhs - a std::vector<int> representing the left operand.
+             * @param lhs_exponent - a int representing the exponent of the left operand.
+             * @param rhs - a std::vector<int> representing the right operand.
+             * @param rhs_exponent - a int representing the exponent of the right operand.
+             * @param result - a std::vector<int> that is used to store the result.
+             * @return a integer representing the exponent of the result.
+             */
             int multiply_vectors(
                     const std::vector<int>& lhs,
                     int lhs_exponent,
@@ -229,7 +208,94 @@ namespace boost {
                 return result_exponent;
             }
 
+            /**
+             * @author Laouen Mayal Louan Belloli
+             *
+             * @brief Implement the addition between two boost::real::boundary variables.
+             *
+             * @param lhs - a boost::real::boundary representing the left operand.
+             * @param rhs - a boost::real::boundary representing the right operand.
+             * @param result - a boost::real::boundary to store the result.
+             */
+            void add_boundaries(const boundary &lhs,
+                                const boundary &rhs,
+                                boundary &result) {
+                if (lhs.positive == rhs.positive) {
+                    result.exponent = add_vectors(lhs.digits,
+                                                  lhs.exponent,
+                                                  rhs.digits,
+                                                  rhs.exponent,
+                                                  result.digits);
+                    result.positive = lhs.positive;
+                } else if (abs(rhs) < abs(lhs)) {
+                    result.exponent = subtract_vectors(lhs.digits,
+                                                       lhs.exponent,
+                                                       rhs.digits,
+                                                       rhs.exponent,
+                                                       result.digits);
+                    result.positive = lhs.positive;
+                } else {
+                    result.exponent = subtract_vectors(rhs.digits,
+                                                       rhs.exponent,
+                                                       lhs.digits,
+                                                       lhs.exponent,
+                                                       result.digits);
+                    result.positive = rhs.positive;
+                }
 
+                result.normalize();
+            }
+
+            /**
+             * @author Laouen Mayal Louan Belloli
+             *
+             * @brief Implement the subtraction between two boost::real::boundary variables.
+             *
+             * @param lhs - a boost::real::boundary representing the left operand.
+             * @param rhs - a boost::real::boundary representing the right operand.
+             * @param result - a boost::real::boundary to store the result.
+             */
+            void subtract_boundaries(const boundary &lhs,
+                                     const boundary &rhs,
+                                     boundary &result) {
+                if (lhs.positive != rhs.positive) {
+                    result.exponent = add_vectors(lhs.digits,
+                                                      lhs.exponent,
+                                                      rhs.digits,
+                                                      rhs.exponent,
+                                                      result.digits);
+                    result.positive = lhs.positive;
+                } else {
+
+                    if (abs(rhs) < abs(lhs)) {
+                        result.exponent = subtract_vectors(lhs.digits,
+                                                               lhs.exponent,
+                                                               rhs.digits,
+                                                               rhs.exponent,
+                                                               result.digits);
+                        result.positive = lhs.positive;
+                    } else {
+                        result.exponent = subtract_vectors(rhs.digits,
+                                                               rhs.exponent,
+                                                               lhs.digits,
+                                                               lhs.exponent,
+                                                               result.digits);
+                        result.positive = !lhs.positive;
+                    }
+                }
+
+                result.normalize();
+            }
+
+            /**
+             * @author Laouen Mayal Louan Belloli
+             *
+             * @brief Implement the multiplication between two boost::real::boundary variables.
+             *
+             * @param lhs - a boost::real::boundary representing the left operand.
+             * @param rhs - a boost::real::boundary representing the right operand.
+             * @param result - a boost::real::boundary to store the result.
+             */
             void multiply_boundaries(const boundary &lhs,
                                      const boundary &rhs,
                                      boundary &result) {

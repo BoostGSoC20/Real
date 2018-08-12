@@ -53,6 +53,10 @@ namespace boost {
             bool operator==(const boost::real::interval& other) const {
                 return this->lower_bound == other.lower_bound && this->upper_bound == other.upper_bound;
             }
+
+            bool is_a_number() const {
+                return this->lower_bound == this->upper_bound;
+            }
         };
     }
 }

@@ -253,6 +253,36 @@ namespace boost {
                     }
                 }
 
+                explicit const_precision_iterator(real const* ptr, bool cend) : _real_ptr(ptr) {
+
+                    switch (this->_real_ptr->_kind) {
+
+                        case KIND::EXPLICIT:
+                            if (cend) {
+                                this->_explicit_it = this->_real_ptr->_explicit_number.cend();
+                            } else {
+                                this->_explicit_it = this->_real_ptr->_explicit_number.cbegin();
+                            }
+                            this->approximation_interval = this->_explicit_it.approximation_interval;
+                            break;
+
+                        case KIND::ALGORITHM:
+                            if (cend) {
+                                this->_algorithmic_it = this->_real_ptr->_algorithmic_number.cend();
+                            } else {
+                                this->_algorithmic_it = this->_real_ptr->_algorithmic_number.cbegin();
+                            }
+                            this->approximation_interval = this->_algorithmic_it.approximation_interval;
+                            break;
+
+                        case KIND::OPERATION:
+                            this->_lhs_it_ptr = new const_precision_iterator(this->_real_ptr->_lhs_ptr, cend);
+                            this->_rhs_it_ptr = new const_precision_iterator(this->_real_ptr->_rhs_ptr, cend);
+                            this->calculate_operation_bounds();
+                            break;
+                    }
+                }
+
                 void operator++() {
 
                     switch (this->_real_ptr->_kind) {
@@ -365,6 +395,10 @@ namespace boost {
                 return const_precision_iterator(this);
             }
 
+            const_precision_iterator cend() const {
+                return const_precision_iterator(this, true);
+            }
+
             /************** Operators ******************/
 
             int operator[](unsigned int n) const {
@@ -458,7 +492,29 @@ namespace boost {
                 }
 
                 // If the precision is reached and the number ranges still overlap, then we cannot
-                // know if they are equals or other es less than this and we throw an error.
+                // know if they are equals or other is less than this and we throw an error.
+                throw boost::real::precision_exception();
+            }
+
+            bool operator==(const real& other) const {
+                auto this_it = this->cbegin();
+                auto other_it = other.cbegin();
+
+                int current_precision = std::max(this->max_precision(), other.max_precision());
+                for (int p = 0; p < current_precision; ++p) {
+                    // Get more precision
+                    ++this_it;
+                    ++other_it;
+
+                    bool this_full_precision = this_it.approximation_interval.is_a_number();
+                    bool other_full_precision = other_it.approximation_interval.is_a_number();
+                    if (this_full_precision && other_full_precision) {
+                        return this_it.approximation_interval == other_it.approximation_interval;
+                    }
+                }
+
+                // If the precision is reached and the numbers full precision is not reached, then
+                // we cannot know if they are equals or not.
                 throw boost::real::precision_exception();
             }
         };
@@ -466,11 +522,7 @@ namespace boost {
 }
 
 std::ostream& operator<<(std::ostream& os, const boost::real::real& r) {
-    auto it = r.cbegin();
-    for (int i = 0; i <= r.max_precision(); i++) {
-        ++it;
-    }
-    os << it.approximation_interval;
+    os << r.cend().approximation_interval;
     return os;
 }
 

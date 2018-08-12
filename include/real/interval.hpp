@@ -30,7 +30,7 @@ namespace boost {
              *
              * @return a string that represent the state of the boost::real::interval.
              */
-            std::string as_sting() const {
+            std::string as_string() const {
 
                 std::string result = "";
                 std::string lb = this->lower_bound.as_string();
@@ -111,7 +111,7 @@ namespace boost {
 }
 
 std::ostream& operator<<(std::ostream& os, const boost::real::interval& interval) {
-    return os << interval.as_sting();
+    return os << interval.as_string();
 }
 
 #endif //BOOST_REAL_INTERVAL_HPP

@@ -24,11 +24,9 @@ namespace boost {
             int _exponent;
             bool _positive;
 
-            // TODO: Check a better way to set a max precision
-            // The number max precision is the same as the explicit number digits size
-            int _max_precision = 10;
-
         public:
+
+            static int maximum_precision;
 
             /**
              * @author Laouen Mayal Louan Belloli
@@ -227,7 +225,7 @@ namespace boost {
              * @return and integer with the maximum allowed precision.
              */
             int max_precision() const {
-                return this->_max_precision;
+                return boost::real::real_algorithm::maximum_precision;
             }
 
             /**
@@ -266,7 +264,7 @@ namespace boost {
              */
             const_precision_iterator cend() const {
                 const_precision_iterator it(this);
-                it.iterate_n_times(this->_max_precision - 1);
+                it.iterate_n_times(boost::real::real_algorithm::maximum_precision - 1);
                 return it;
             }
 

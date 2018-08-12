@@ -94,8 +94,10 @@ namespace boost {
                     if (first_digit == 10) {
                         this->approximation_interval.upper_bound.digits.push_back(1);
                         this->approximation_interval.upper_bound.exponent++;
-                    } else {
+                    } else if (this->_n < (int)this->_real_ptr->_digits.size()) {
                         this->approximation_interval.upper_bound.digits.push_back(first_digit + 1);
+                    } else {
+                        this->approximation_interval.upper_bound.digits.push_back(first_digit);
                     }
 
                     this->check_and_swap_boundaries();
@@ -239,6 +241,7 @@ namespace boost {
                     }
                 }
 
+                bool there_is_dot = dot_amount > 0;
                 int exponent = 0;
                 dot_amount = 0;
 
@@ -260,12 +263,15 @@ namespace boost {
                         dot_amount++;
                     }
                     last_index--;
+                    if (!there_is_dot || dot_amount > 0) {
+                        exponent++; // remove zeros from the integer part increases the exponent
+                    }
                 }
 
                 // The number is all composed by zeros, then it is zero
                 if (last_index == first_index && number.at(last_index) == '0') {
                     this->_digits = {0};
-                    this->_exponent = 1;
+                    this->_exponent = 0;
                     return;
                 }
 
@@ -304,6 +310,7 @@ namespace boost {
                 }
 
                 this->_exponent = exponent;
+                this->_max_precision = (int)this->_digits.size();
             };
 
             /**

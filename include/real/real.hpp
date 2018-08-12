@@ -83,6 +83,11 @@ namespace boost {
         public:
 
             /**
+             * @brief Determines the maximum precision to use
+             */
+            static int maximum_precision;
+
+            /**
              * @author Laouen Mayal Louan Belloli
              *
              * @brief is a forward iterator that iterates a boost::real::real number approximation
@@ -515,33 +520,7 @@ namespace boost {
              */
             int max_precision() const {
 
-                int precision;
-                switch (this->_kind) {
-
-                    case KIND::EXPLICIT:
-                        precision = this->_explicit_number.max_precision();
-                        break;
-
-                    case KIND::ALGORITHM:
-                        precision = this->_algorithmic_number.max_precision();
-                        break;
-
-                    case KIND::OPERATION:
-                        switch (this->_operation) {
-                            case OPERATION::SUBTRACT:
-                            case OPERATION::ADDITION:
-                                precision = std::max(this->_lhs_ptr->max_precision(), this->_rhs_ptr->max_precision());
-                                break;
-                            case OPERATION::MULTIPLICATION:
-                                precision = this->_lhs_ptr->max_precision() + this->_rhs_ptr->max_precision();
-                                break;
-                            default:
-                                throw boost::real::none_operation_exception();
-                        }
-                        break;
-                }
-
-                return precision;
+                return boost::real::real::maximum_precision;
             }
 
             /**
@@ -725,6 +704,12 @@ namespace boost {
                     ++this_it;
                     ++other_it;
 
+                    bool this_full_precision = this_it.approximation_interval.is_a_number();
+                    bool other_full_precision = other_it.approximation_interval.is_a_number();
+                    if (this_full_precision && other_full_precision) {
+                        return this_it.approximation_interval < other_it.approximation_interval;
+                    }
+
                     if (this_it.approximation_interval < other_it.approximation_interval) {
                         return true;
                     }
@@ -764,6 +749,12 @@ namespace boost {
                     bool other_full_precision = other_it.approximation_interval.is_a_number();
                     if (this_full_precision && other_full_precision) {
                         return this_it.approximation_interval == other_it.approximation_interval;
+                    }
+
+                    bool this_is_lower = this_it.approximation_interval < other_it.approximation_interval;
+                    bool other_is_lower = other_it.approximation_interval < this_it.approximation_interval;
+                    if (this_is_lower || other_is_lower) {
+                        return false;
                     }
                 }
 

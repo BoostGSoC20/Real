@@ -1,7 +1,6 @@
 var NAVTREE =
 [
   [ "Boost.Real", "index.html", [
-    [ "README", "md__home_lao_Documents_git_Real_README.html", null ],
     [ "Deprecated List", "deprecated.html", null ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],

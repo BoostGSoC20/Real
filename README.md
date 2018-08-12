@@ -6,6 +6,12 @@ Boost.Real numerical data type for real numbers representation using range arith
 [![codecov](https://codecov.io/gh/sdavtaker/Real/branch/master/graph/badge.svg)](https://codecov.io/gh/sdavtaker/Real)
 
 
+## Documentation
+   * [Project documentation main page](https://boostgsoc18.github.io/Real/)
+   * [Doxygen documentation](https://boostgsoc18.github.io/Real/doc/html/index.html)
+   * [Medium post](https://boostgsoc18.github.io/Real/doc/html/index.html)
+
+
 ## Introduction
 
 ### The problem addressed by boost::real

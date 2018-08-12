@@ -7,21 +7,43 @@
 namespace boost {
     namespace real {
 
-        /*
-         * Is an explicit number that represent a boundary. The number is expected to not have anny
-         * zeros at the right or the left to avoid multiple representations of the same number.
+        /**
+         * @author Laouen Mayal Louan Belloli
+         *
+         * @brief Explicitly represents a number as a vector of digits with a sign and an exponent
          */
         struct boundary {
             std::vector<int> digits = {};
             int exponent = 0;
             bool positive = true;
 
+            /**
+             * @brief *default constructor*: It construct a representation of the number zero.
+             */
             boundary() = default;
 
+            /**
+             * @brief *Copy constructor:* It construct a new boost::real::boundary that is a copy of the
+             * other boost::real::boundary.
+             *
+             * @param other - The boost::real::boundary to copy.
+             */
             boundary(const boundary &other) = default;
 
+            /**
+             * @brief Default asignment operator.
+             *
+             * @param other - The boost::real::boundary to copy.
+             */
             boundary &operator=(const boundary& other) = default;
 
+            /**
+             * @brief *Lower comparator operator:* It compares the *this boost::real::boundary with the other
+             * boost::real::boundary to determine if *this is lower than other.
+             *
+             * @param other - The right side operand boost::real::boundary to compare with *this.
+             * @return a bool that is true if and only if *this is lower than other.
+             */
             bool operator<(const boundary& other) const {
 
                 if (this->positive != other.positive) {
@@ -45,10 +67,22 @@ namespace boost {
                 return other.exponent < this->exponent;
             }
 
+            /**
+             * @brief *Equality comparator operator:* It compares the *this boost::real::boundary with the other
+             * boost::real::boundary to determine if *this and other are equals or not.
+             *
+             * @param other - The right side operand boost::real::boundary to compare with *this.
+             * @return a bool that is true if and only if *this is equal to other.
+             */
             bool operator==(const boundary& other) const {
                 return !(*this < other || other < *this);
             }
 
+            /**
+             * @brief Generates a string representation of the boost::real::boundary.
+             *
+             * @return a string that represent the state of the boost::real::boundary
+             */
             std::basic_string<char> as_string() const {
                 std::basic_string<char> result = "";
 
@@ -103,22 +137,40 @@ namespace boost {
                 return result;
             }
 
+            /**
+             * @brief Swaps the boost::real::boundary value with the value of the other boost::real::boundary.
+             * This operation is a more preformant form of swapping to boost::real::boundaries.
+             *
+             * @param other - The boost::real::boundary to swap with *this.
+             */
             void swap(boundary &other) {
                 this->digits.swap(other.digits);
                 std::swap(this->exponent, other.exponent);
                 std::swap(this->positive, other.positive);
             }
 
+            /**
+             * @brief add the digit parameter as a new digit of the boost::real::boundary. The digit
+             * is added in the right side of the number.
+             *
+             * @param digit - The new digit to add.
+             */
             void push_back(int digit) {
                 this->digits.push_back(digit);
             }
 
+            /**
+             * @brief add the digit parameter as a new digit of the boost::real::boundary. The digit
+             * is added in the left side of the number.
+             *
+             * @param digit - The new digit to add.
+             */
             void push_front(int digit) {
                 this->digits.insert(this->digits.begin(), digit);
             }
 
-            /*
-             * Removes extra zeros at the sides to convert the number representation into a
+            /**
+             * @brief Removes extra zeros at the sides to convert the number representation into a
              * normalized representation.
              */
             void normalize() {
@@ -138,6 +190,10 @@ namespace boost {
                 }
             }
 
+            /**
+             * @brief Removes extra zeros at the left side to convert the number representation
+             * into a semi normalized representation.
+             */
             void normalize_left() {
                 while (this->digits.size() > 1 and this->digits.front() == 0) {
                     this->digits.erase(this->digits.begin());
@@ -145,14 +201,28 @@ namespace boost {
                 }
             }
 
+            /**
+             * @brief ir clears the number digits.
+             */
             void clear() {
                 this->digits.clear();
             }
 
+            /**
+             * @brief Returns the n-th digit of the boost::real::boundary.
+             *
+             * @param n - an int number indicating the index of the requested digit.
+             * @return an integer with the value of the number n-th digit.
+             */
             int &operator[](int n) {
                 return this->digits[n];
             }
 
+            /**
+             * @brief It return the amount of digit of the boost::real::boundary
+             *
+             * @return an unsigne long representing the number of digits of the boost::real::boundary
+             */
             unsigned long size() {
                 return this->digits.size();
             }

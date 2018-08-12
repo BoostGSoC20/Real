@@ -572,7 +572,7 @@ namespace boost {
              * @brief If the number is an explicit or algorithm number it returns the n-th digit
              * of the represented number. If the number is an operation it throws an invalid_representation_exception
              *
-             * @param n - un unsigned int number indicating the index of the requested digit.
+             * @param n - an unsigned int number indicating the index of the requested digit.
              * @return an integer with the value of the number n-th digit.
              *
              * @throws boost::real::invalid_representation_exception

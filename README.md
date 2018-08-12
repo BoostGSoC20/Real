@@ -14,7 +14,7 @@ Several times, when dealing with complex mathematical calculus, numerical errors
 Another major problem when dealing with real numbers is the representation of the irrational number as the number π or e<sup>π</sup>, they are not handled by the native number data types causing limitations when calculations are based on those numbers. Normally we define a truncation of those numbers that are good enough for our purposes, but many times, the needed precision depends on the operation to do and to the composition of multiple operations, therefore, we are unable to determine which is the correct precision until we run the programme.
 
 ### The boost::real solution
-Boost::real is a real number representation data type that address the mentioned issues using interval arithmetic [1] and defining the precision as dynamical to be determined in run-time. The main goal of this data type is to represent a real number "a" as a programme that returns a finite or infinite set of intervals a(k) = [m<sub>k</sub> - e<sub>k</sub>, m<sub>k</sub> + e<sub>k</sub>], K ∈ N ≥ 0, e<sub>k</sub> ≥ 0. Where K1 < K2 ⇒ a(k2) &sub; a(k1). For this purposes, any Boost::real number has a precision const iterator that iterates the series of intervals representing the number. The series if interval are sorted from larger to smaller, thus, each time the iterator is increased, the number precision increases becuase the new calculated interval is smaller until the interval is the number itself (if possible).
+Boost::real is a real number representation data type that address the mentioned issues using range arithmetic [1] and defining the precision as dynamical to be determined in run-time. The main goal of this data type is to represent a real number "a" as a programme that returns a finite or infinite set of intervals a(k) = [m<sub>k</sub> - e<sub>k</sub>, m<sub>k</sub> + e<sub>k</sub>], K ∈ N ≥ 0, e<sub>k</sub> ≥ 0. Where K1 < K2 ⇒ a(k2) &sub; a(k1). For this purposes, any Boost::real number has a precision const iterator that iterates the serie of intervals representing the number. The intervals within the serie are sorted from larger to smaller, thus, each time the iterator is increased, the number precision increases due the new calculated interval is smaller than the previous one until the interval is the number itself (if possible).
 
 Also, to allow representing irrational numbers as π or e<sup>π</sup>, boost::real has a constructor that takes as parameter a function pointer, functor (function object with the operator ()) or lambda expression that for any integer n > 0, the function returns the n-th digit of the represented number. For example, the number &frac13 can easily be represented by a program that for any input n > 0, the function returns 3.
 
@@ -33,33 +33,37 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
 ## Interface
 
 ### Constructors and destructors
-    1. boost::real(initializer_vector<int> il)
-    2. boost::real(initializer_vector<int> il, int exponent)
-    3. boost::real(initializer_vector<int> il, int exponent, bool positive)
-    4. boost::real((unsigned int) -> int digits, int exponent)
-    5. boost::real((unsigned int) -> int digits, int exponent, bool positive)
-    6. boost::real(const boost::real& x)
-    7. boost::~real()
+    1. boost::real(const std::string number)
+    2. boost::real(const initializer_vector<int> il)
+    3. boost::real(const initializer_vector<int> il, int exponent)
+    4. boost::real(const initializer_vector<int> il, int exponent, bool positive)
+    5. boost::real((unsigned int) -> int digits, int exponent)
+    6. boost::real((unsigned int) -> int digits, int exponent, bool positive)
+    7. boost::real(const boost::real& x)
+    8. boost::~real()
   
-> (1) **Initializer list constructor** 
+> (1) **String constructor** 
+> Creates a real instance by parsing the string. The string must have a valid number, in other case, the constructor will throw an boost::real::invalid_string_number exception.
+>
+> (2) **Initializer list constructor** 
 > Creates a real instance that represents an integer number where all the il numbers are form the integer part in the same order.
 >
-> (2) **Initializer list constructor with exponent** 
+> (3) **Initializer list constructor with exponent** 
 > Creates a real instance that represents the number where the exponent is used to set the number integer part and the elements of the il list are the digits the number in the same order.
 >
-> (3) **Initializer list constructor with exponent and sign** 
+> (4) **Initializer list constructor with exponent and sign** 
 > Creates a real instance that represents the number where the exponent is used to set the number integer part and the elements of the il list are the digits the number in the same order. This constructor uses the sign to determine if the number is positive or negative.
 >
-> (4) **Lambda function constructor with exponent** 
+> (5) **Lambda function constructor with exponent** 
 > Creates a real instance that represents the number where the exponent is used to set the number integer part and the lambda function digits is used to know the number digit, this function returns the n-th number digit.
 >
-> (5) **Lambda function constructor with exponent and sign** 
+> (6) **Lambda function constructor with exponent and sign** 
 > Creates a real instance that represents the number where the exponent is used to set the number integer part and the lambda function digits is used to know the number digit, this function returns the n-th number digit. This constructor uses the sign to determine if the number is positive or negative.
 >
-> (6) **Copy constructor** 
+> (7) **Copy constructor** 
 > Creates a copy of the number x, if the number is an operation, then, the constructor creates new copies of the x operands.
 >
-> (7) **Default destructor** 
+> (8) **Default destructor** 
 > If the number is an operator, the destructor destroys its operands.
 
 ### Operators
@@ -71,9 +75,10 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
     5. boost::real operator-(const boost::real& x) const
     6. boost::real operator*(const boost::real& x) const
     7. boost::real& operator=(const boost::real& x)
-    8. bool operator<(const real& other) const
-    9. std::ostream& operator<<(std::ostream& os, const boost::real& x)
-    10. int operator[](unsigned int n) const
+    8. boost::real& operator==(const boost::real& x)
+    9. bool operator<(const real& other) const
+    10. std::ostream& operator<<(std::ostream& os, const boost::real& x)
+    11. int operator[](unsigned int n) const
 
 > (1) Modifies the number to use the third representation. and sets copies of *this and x respectively as the left and right operands and sets addition as the operation.
 >
@@ -89,6 +94,8 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
 >
 > (7) Uses the copy constructor to create a copy of x stored in *this
 >
+> (8) compares *this with x to check if they represent the same number. **WARNING:** Because different numbers can have an arbitrary number of equal intervals, numbers equality can be checked only for those numbers that can be fully represented with the maximum_precision. In other case, it will throw a boost::real::precision_exception.
+>
 > (8) Compares *this with x to check if *this is lower than x. This operator creates two precision iterators (one for each number) and iterates until the number intervals stop overlapping when that happens, it compares the intervals bounds to determine if *this is less than x. **WARNING:** If *this is equal to x, then the intervals will always overlap, because of this, the operator uses a max precision limit and if that limit is reached, the operator throws a boost::real::precision_exception.
 >
 > (9) Creates a const_precision_iterator to print the number using the iterator << operator.
@@ -98,8 +105,11 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
 ### Other methods
 
     1. boost::real::const_precision_iterator boost::real::cbegin()
+    1. boost::real::const_precision_iterator boost::real::cend()
 
-> (1) Construct a new const_precision_iterator that iterate over the *this number precisions.
+> (1) Construct a new const_precision_iterator that iterate over the *this number precisions. The constructed iterator points to the first approximation interval (the ine with less precision).
+
+> (2) Construct a new const_precision_iterator that iterate over the *this number precisions. The constructed iterator points to the last approximation interval (the one with more precision) within the maximum precision.
 
 ## boost::real::const_precision_iterator interface
 
@@ -187,8 +197,6 @@ h: 0.000001
 
 ## Current limitations
 1. The number digits are of type int between 0 and 9, number representation must be correctly handled in a higher base to improve memory performance.
-2. The const_precision_iterator does not implement cend, this could be defined for explicit numbers as the minimum between the max_precision and the precision at witch the number can be entirely represented. For algorithmic and periodic numbers it could be set as the max_precision.
-3. More constructors must be implemented to allow a more natural initialization. For example, a constructor using a sing int or double number should exist.
 4. The division algorithm is under implementation but is not currently available.
 
 ## References

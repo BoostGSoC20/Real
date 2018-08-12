@@ -154,10 +154,31 @@ namespace boost {
                 }
             };
 
+            /**
+             * @brief *Default constructor:* Construct an empty boost::real::real_explicit with
+             * undefined representation and behaviour.
+             *
+             * @note **WARNING** The default constructor exist only for implementation purposes
+             * and it is deprecated.
+             */
             real_explicit() = default;
 
+            /**
+             * @brief *Copy constructor:* Creates a copy of the boost::real::real_explicit number other.
+             *
+             * @param other - the boost::real::real instance to copy.
+             */
             real_explicit(const real_explicit& other)  = default;
 
+            /**
+             * @brief *String constructor:* Creates a boost::real::real_explicit instance by
+             * parsing the string. The string must have a valid number, in other case, the
+             * constructor will throw an boost::real::invalid_string_number exception.
+             *
+             * @param number - a valid string representing a number.
+             *
+             * @throws boost::real::invalid_string_number exception
+             */
             explicit real_explicit(const std::string& number) {
                 // Check that is not an empty string
                 if (number.length() == 0) {
@@ -241,12 +262,33 @@ namespace boost {
                 this->_exponent = exponent;
             };
 
+            /**
+             * @brief *Initializer list constructor with exponent:* Creates a boost::real::real_explicit
+             * instance that represents the number where the exponent is used to set the number
+             * integer part and the elements of the digits list are the digits the number in the same order.
+             * The number is set as positive.
+             *
+             * @param digits - an initializer_list<int> that represent the number digits.
+             * @param exponent - an integer representing the number exponent.
+             */
             real_explicit(std::initializer_list<int> digits, int exponent) :
                     _digits(digits),
                     _exponent(exponent),
                     _max_precision((int)this->_digits.size())
             {};
 
+            /**
+             * @brief *Initializer list constructor with exponent and sign:* Creates a
+             * boost::real::real_explicit instance that represents the number where the exponent
+             * is used to set the number integer part and the elements of the digit list are the
+             * digits the number in the same order. This constructor uses the sign to determine
+             * if the number is positive or negative.
+             *
+             * @param digits - an initializer_list<int> that represent the number digits.
+             * @param exponent - an integer representing the number exponent.
+             * @param positive - a bool that represent the number sign. If positive is set to true,
+             * the number is positive, otherwise is negative.
+             */
             real_explicit(std::initializer_list<int> digits, int exponent, bool positive):
                     _digits(digits),
                     _exponent(exponent),
@@ -254,32 +296,69 @@ namespace boost {
                     _max_precision((int)this->_digits.size())
             {};
 
+            /**
+             * @brief Returns te maximum allowed precision, if that precision is reached and an
+             * operator need more precision, a precision_exception should be thrown.
+             *
+             * @return and integer with the maximum allowed precision.
+             */
             int max_precision() const {
                 return this->_max_precision;
             }
 
+            /**
+             * @return An integer with the number exponent
+             */
             int exponent() const {
                 return this->_exponent;
             }
 
+            /**
+             * @return A bool indicating if the number is positive (true) or negative (false)
+             */
             bool positive() const {
                 return this->_positive;
             }
 
+            /**
+             * @return a const reference to the vector holding the number digits
+             */
             const std::vector<int>& digits() const {
                 return this->_digits;
             }
 
+            /**
+             * @brief Construct a new boost::real::real_explicit::con_precision_iterator that iterates the number
+             * approximation intervals in increasing order according to the approximation precision.
+             *
+             * The iterator starts pointing the interval with the minimum precision.
+             *
+             * @return a boost::real::real_explicit::const_precision_iterator of the number.
+             */
             const_precision_iterator cbegin() const {
                 return const_precision_iterator(this);
             }
 
+            /**
+             * @brief Construct a new boost::real::real_explicit::con_precision_iterator that iterates the number
+             * approximation intervals in increasing order according to the approximation precision.
+             *
+             * The iterator starts pointing the interval with the maximum allowed precision.
+             *
+             * @return a boost::real::real_explicit::const_precision_iterator of the number.
+             */
             const_precision_iterator cend() const {
                 const_precision_iterator it(this);
                 it.iterate_n_times((int)this->_digits.size() + 1);
                 return it;
             }
 
+            /**
+             * @brief Returns the n-th digit the number.
+             *
+             * @param n - an unsigned int number indicating the index of the requested digit.
+             * @return an integer with the value of the number n-th digit.
+             */
             int operator[](unsigned int n) const {
                 if (n < this->_digits.size()) {
                     return this->_digits.at(n);
@@ -288,11 +367,24 @@ namespace boost {
                 return 0;
             }
 
+            /**
+             * @brief It assign a new copy of the other boost::real::real_explicit number in the *this boost::real::real_explicit number.
+             *
+             * @param other - the boost::real::real_explicit number to copy.
+             * @return a reference of *this with the new represented number.
+             */
             real_explicit& operator=(const real_explicit& other) = default;
         };
     }
 }
 
+/**
+ * @bief overload of the << operator for std::ostream and boost::real::real_explicit
+ *
+ * @param os - The std::ostream object where to print the r number.
+ * @param r - the boost::real::real_explicit number to print
+ * @return a reference of the modified os object.
+ */
 std::ostream& operator<<(std::ostream& os, const boost::real::real_explicit& r) {
     auto it = r.cbegin();
     for (int i = 0; i <= r.max_precision(); i++) {

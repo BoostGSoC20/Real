@@ -389,11 +389,10 @@ namespace boost {
                 };
             };
 
-            real() = default;
-
             /**
-             * @brief *Copy constructor:* Creates a copy of the number x, if the number is an operation,
-             * then, the constructor creates new copies of the x operands.
+             * @brief *Copy constructor:* Creates a copy of the boost::real::real number other,
+             * if the number is an operation, then, the constructor recursively creates new
+             * copies of the other operands.
              *
              * @param other - the boost::real::real instance to copy.
              */
@@ -404,9 +403,9 @@ namespace boost {
                     _operation(other._operation) { this->copy_operands(other); };
 
             /**
-             * @brief *String constructor:* Creates a real instance by parsing the string.
-             * The string must have a valid number, in other case, the constructor will throw
-             * an boost::real::invalid_string_number exception.
+             * @brief *String constructor:* Creates a boost::real::real instance by parsing
+             * the string. The string must have a valid number, in other case, the constructor
+             * will throw an boost::real::invalid_string_number exception.
              *
              * @param number - a valid string representing a number.
              *
@@ -416,8 +415,9 @@ namespace boost {
                     : _kind(KIND::EXPLICIT), _explicit_number(number) {}
 
             /**
-             * @brief *Initializer list constructor:* Creates a real instance that represents an
-             * integer number where all the digits parameter numbers are form the integer part in the same order.
+             * @brief *Initializer list constructor:* Creates a boost::real::real_explicit instance
+             * that represents an integer number where all the digits parameter numbers are form
+             * the integer part in the same order. The number is set as positive.
              *
              * @param digits - a initializer_list<int> that represents the number digits.
              */
@@ -426,9 +426,10 @@ namespace boost {
 
 
             /**
-             * @brief *Signed initializer list constructor:* Creates a real instance that represents
-             * the number where the positive parameter is used to set the number sign and the elements
-             * of the digits parameter list are the number digits in the same order.
+             * @brief *Signed initializer list constructor:* Creates a boost::real::real
+             * instance that represents the number where the positive parameter is used to set the
+             * number sign and the elements of the digits parameter list are the number digits in
+             * the same order.
              *
              * @param digits - an initializer_list<int> that represent the number digits.
              * @param positive - a bool that represent the number sign. If positive is set to true,
@@ -438,9 +439,10 @@ namespace boost {
                     : _kind(KIND::EXPLICIT), _explicit_number(digits, digits.size(), positive) {}
 
             /**
-             * @brief *Initializer list constructor with exponent:* Creates a real instance that
-             * represents the number where the exponent is used to set the number integer part
-             * and the elements of the il list are the digits the number in the same order.
+             * @brief *Initializer list constructor with exponent:* Creates a boost::real::real
+             * instance that represents the number where the exponent is used to set the number
+             * integer part and the elements of the digits list are the digits the number in the same order.
+             * The number is set as positive.
              *
              * @param digits - an initializer_list<int> that represent the number digits.
              * @param exponent - an integer representing the number exponent.
@@ -449,7 +451,7 @@ namespace boost {
                     : _kind(KIND::EXPLICIT), _explicit_number(digits, exponent) {};
 
             /**
-             * @brief *Initializer list constructor with exponent and sign:* Creates a real instance
+             * @brief *Initializer list constructor with exponent and sign:* Creates a boost::real::real instance
              * that represents the number where the exponent is used to set the number integer part
              * and the elements of the digit list are the digits the number in the same order.
              * This constructor uses the sign to determine if the number is positive or negative.
@@ -463,10 +465,10 @@ namespace boost {
                     : _kind(KIND::EXPLICIT), _explicit_number(digits, exponent, positive) {};
 
             /**
-             * @brief *Lambda function constructor with exponent:* Creates a real instance that
-             * represents the number where the exponent is used to set the number integer part
-             * and the lambda function digits is used to know the number digits, this function
-             * returns the n-th number digit.
+             * @brief *Lambda function constructor with exponent:* Creates a boost::real::real
+             * instance that represents the number where the exponent is used to set the number
+             * integer part and the lambda function digits is used to know the number digits,
+             * this function returns the n-th number digit.
              *
              * @param get_nth_digit - a function pointer or lambda function that given an unsigned
              * int "n" as parameter, it returns the number n-th digit.
@@ -476,7 +478,7 @@ namespace boost {
                     : _kind(KIND::ALGORITHM), _algorithmic_number(get_nth_digit, exponent) {}
 
             /**
-             * @brief *Lambda function constructor with exponent and sign:* Creates a real instance
+             * @brief *Lambda function constructor with exponent and sign:* Creates a boost::real::real instance
              * that represents the number where the exponent is used to set the number integer part
              * and the lambda function digits is used to know the number digit, this function returns
              * the n-th number digit. This constructor uses the sign to determine if the number
@@ -543,8 +545,8 @@ namespace boost {
             }
 
             /**
-             * @brief Construct a new boost::real:con_precision_iterator that iterates the number
-             * approximation intervals from in increasing order regarding the approximation precision.
+             * @brief Construct a new boost::real::real::con_precision_iterator that iterates the number
+             * approximation intervals from in increasing order according to the approximation precision.
              *
              * The iterator starts pointing the interval with the minimum precision.
              *
@@ -555,8 +557,8 @@ namespace boost {
             }
 
             /**
-             * @brief Construct a new boost::real:con_precision_iterator that iterates the number
-             * approximation intervals from in increasing order regarding the approximation precision.
+             * @brief Construct a new boost::real::real::con_precision_iterator that iterates the number
+             * approximation intervals from in increasing order according to the approximation precision.
              *
              * The iterator starts pointing the interval with the maximum allowed precision.
              *

@@ -13,7 +13,12 @@
 namespace boost {
     namespace real {
 
-        // Explicit number definition
+        /**
+         * @author Laouen Mayal Louan Belloli
+         *
+         * @brief boost::real::real_explicit is a C++ class that fully represents real numbers as a
+         * a vector of digits, a sign and an exponent.
+         */
         class real_explicit {
 
             // Number representation as a vector of digits with an integer part and a sign (+/-)
@@ -27,6 +32,13 @@ namespace boost {
             int _max_precision = 1;
         public:
 
+            /**
+             * @author Laouen Mayal Louan Belloli
+             *
+             * @brief is a forward iterator that iterates a boost::real::real_explicit number approximation
+             * intervals. The iterator calculates the initial interval with the initial precision and
+             * then it increase the precision in each iteration (++) and recalculate the interval.
+             */
             class const_precision_iterator {
             private:
 
@@ -47,10 +59,29 @@ namespace boost {
                 // Number approximation_interval boundaries
                 boost::real::interval approximation_interval;
 
+                /**
+                 * @brief **Default constructor:** Constructs an empty
+                 * boost::real::real_explicit::const_precision_iterator that points to nullptr.
+                 */
                 const_precision_iterator() = default;
 
+                /**
+                 * @brief **Copy constructor:**
+                 * Construct a new boost::real::real_explicit::const_precision_iterator which is
+                 * a copy of the other iterator.
+                 *
+                 * @param other - the boost::real::real::const_precision_iterator to copy.
+                 */
                 const_precision_iterator(const const_precision_iterator& other) = default;
 
+                /**
+                 * @brief *Pointer constructor:* Construct a new boost::real::real_explicit::const_precision_iterator
+                 * pointing to the boost::real::real_explicit number to iterate the number approximation intervals.
+                 *
+                 * The iterator will start pointing the lowest precision interval.
+                 *
+                 * @param real_number - the boost::real::real number to iterate.
+                 */
                 explicit const_precision_iterator(real_explicit const* ptr) : _n(1), _real_ptr(ptr) {
                     this->approximation_interval.lower_bound.exponent = this->_real_ptr->_exponent;
                     this->approximation_interval.upper_bound.exponent = this->_real_ptr->_exponent;
@@ -71,13 +102,17 @@ namespace boost {
                 }
 
                 /**
-                 * @brief Increases the approximation interval number precision,
-                 * the interval becomes smaller and the number error is decreased.
+                 * @brief It recalculates the approximation interval boundaries increasing the used
+                 * precision, the new pointed approximation interval is smaller than the current one.
                  */
                 void operator++() {
                     this->iterate_n_times(1);
                 }
 
+                /**
+                 * @brief It recalculates the approximation interval boundaries increasing the used
+                 * precision n times, the new pointed approximation interval is smaller than the current one.
+                 */
                 void iterate_n_times(int n) {
                     // If the explicit number full precision has been already reached (the end)
                     // is the end of the iterator
@@ -142,6 +177,13 @@ namespace boost {
                     this->_n = std::min(this->_n + n, (int)this->_real_ptr->_digits.size());
                 }
 
+                /**
+                 * @brief It compare by value equality; two boost::real::real_explicit::const_precision_iterators
+                 * are equals if they are pointing to the same real number and are in the same precision iteration.
+                 *
+                 * @param other - A boost::real::real_explicit::const_precision_iterator that is the right side operand
+                 * @return a bool that is true if and only if both iterators are equals.
+                 */
                 bool operator==(const const_precision_iterator& other) const {
                     // uninitialized iterators are never equals
                     if (this->_real_ptr == nullptr || other._real_ptr == nullptr) {

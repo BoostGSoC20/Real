@@ -269,7 +269,8 @@ namespace boost {
                 boost::real::interval approximation_interval;
 
                 /**
-                 * @brief Default constructor. Constructs an empty iterator that points to nullptr.
+                 * @brief *Default constructor:*
+                 * Constructs an empty boost::real::real::const_precision_iterator that points to nullptr.
                  */
                 const_precision_iterator() = default;
 
@@ -283,8 +284,7 @@ namespace boost {
 
                 /**
                  * @brief *Pointer constructor:* Construct a new boost::real::real::const_precision_iterator
-                 * pointing to the boost::real::real number real_number to iterate the number
-                 * approximation intervals.
+                 * pointing to the boost::real::real number to iterate the number approximation intervals.
                  *
                  * The iterator will start pointing the lowest precision interval.
                  *

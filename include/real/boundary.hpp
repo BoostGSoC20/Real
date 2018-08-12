@@ -68,6 +68,34 @@ namespace boost {
             }
 
             /**
+             * @brief *Greater comparator operator:* It compares the *this boost::real::boundary with the other
+             * boost::real::boundary to determine if *this is greater than other.
+             *
+             * @param other - The right side operand boost::real::boundary to compare with *this.
+             * @return a bool that is true if and only if *this is greater than other.
+             */
+            bool operator>(const boundary& other) const {
+
+                if (this->positive != other.positive) {
+                    return this->positive;
+                }
+
+                if (this->positive) {
+                    if (this->exponent == other.exponent) {
+                        return boost::real::helper::aligned_vectors_is_lower(other.digits, this->digits);
+                    }
+
+                    return this->exponent > other.exponent;
+                }
+
+                if (this->exponent == other.exponent) {
+                    return boost::real::helper::aligned_vectors_is_lower(this->digits, other.digits);
+                }
+
+                return other.exponent > this->exponent;
+            }
+
+            /**
              * @brief *Equality comparator operator:* It compares the *this boost::real::boundary with the other
              * boost::real::boundary to determine if *this and other are equals or not.
              *

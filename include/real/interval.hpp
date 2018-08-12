@@ -66,6 +66,18 @@ namespace boost {
             }
 
             /**
+             * @brief Compares two boost::real::interval to determine if *this is a greater interval
+             * than other according to the interval arithmetic. *this is greater than other if and
+             * only if the lower boundary of this is greater than the upper boundary of other.
+             *
+             * @param other - a boost::real::interval to compare with *this.
+             * @return a bool that is true if and only if *this is greater than other.
+             */
+            bool operator>(const boost::real::interval& other) const {
+                return this->lower_bound > other.upper_bound;
+            }
+
+            /**
              * @brief Determine if the interval is fully contained in the positive real number line.
              *
              * @return a bool that is true if and only if both boundaries are positives.

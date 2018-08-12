@@ -734,6 +734,47 @@ namespace boost {
 
             /**
              * @brief Compares the *this boost::real::real number against the other boost::real::real number to
+             * determine if the number represented by *this is greater than the number represented by other.
+             * If the maximum precision is reached and the operator was not yet able to determine
+             * the value of the result, a precision_exception is thrown.
+             *
+             * @param other - a boost::real::real number to compare against.
+             * @return a bool that is true if *this > other and false in other cases.
+             *
+             * @throws boost::real::precision_exception
+             */
+            bool operator>(const real& other) const {
+                auto this_it = this->cbegin();
+                auto other_it = other.cbegin();
+
+                int current_precision = std::max(this->max_precision(), other.max_precision());
+                for (int p = 0; p < current_precision; ++p) {
+                    // Get more precision
+                    ++this_it;
+                    ++other_it;
+
+                    bool this_full_precision = this_it.approximation_interval.is_a_number();
+                    bool other_full_precision = other_it.approximation_interval.is_a_number();
+                    if (this_full_precision && other_full_precision) {
+                        return this_it.approximation_interval > other_it.approximation_interval;
+                    }
+
+                    if (this_it.approximation_interval > other_it.approximation_interval) {
+                        return true;
+                    }
+
+                    if (other_it.approximation_interval > this_it.approximation_interval) {
+                        return false;
+                    }
+                }
+
+                // If the precision is reached and the number ranges still overlap, then we cannot
+                // know if they are equals or other is less than this and we throw an error.
+                throw boost::real::precision_exception();
+            }
+
+            /**
+             * @brief Compares the *this boost::real::real number against the other boost::real::real number to
              * determine if the number represented by *this is the same than the number represented by other.
              * If the maximum precision is reached and the operator was not yet able to determine
              * the value of the result, a precision_exception is thrown.

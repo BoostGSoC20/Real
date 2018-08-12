@@ -42,14 +42,14 @@ TEST_CASE("Create boost::real_explicit from strings") {
                     }
                 }
 
-                SECTION("With zeros to take out form the left") {
+                SECTION("With zeros to take out form the left side") {
 
                     for (int i = 1; i < 10; i++) {
                         number_str += "1";
                         zeros_str += "0";
                         expected_digits.push_back(1);
                         boost::real::real_explicit a(sign + number_str + zeros_str);
-                        CHECK( a.exponent() == i );
+                        CHECK( a.exponent() == 2*i );
                         CHECK( a.digits() == expected_digits );
                         CHECK( a.positive() == positive );
                     }
@@ -62,7 +62,7 @@ TEST_CASE("Create boost::real_explicit from strings") {
                         zeros_str += "0";
                         expected_digits.push_back(1);
                         boost::real::real_explicit a(sign + zeros_str + number_str + zeros_str);
-                        CHECK( a.exponent() == i );
+                        CHECK( a.exponent() == 2*i );
                         CHECK( a.digits() == expected_digits );
                         CHECK( a.positive() == positive );
                     }

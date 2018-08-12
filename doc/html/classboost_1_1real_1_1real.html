@@ -111,6 +111,7 @@ $(document).ready(function(){initNavTree('classboost_1_1real_1_1real.html','');}
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="classboost_1_1real_1_1real-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">boost::real::real Class Reference</div>  </div>
@@ -130,6 +131,9 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a48f1331d514d155af31f086343c96e81"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1real_1_1real.html#a48f1331d514d155af31f086343c96e81">real</a> ()=default</td></tr>
+<tr class="memdesc:a48f1331d514d155af31f086343c96e81"><td class="mdescLeft">&#160;</td><td class="mdescRight"><em>Default constructor:</em> Constructr a <a class="el" href="classboost_1_1real_1_1real.html" title="boost::real::real is a C++ class that represent real numbers as abstract entities that can be dynamic...">boost::real::real</a> with undefined representation and behaviour.  <a href="#a48f1331d514d155af31f086343c96e81">More...</a><br /></td></tr>
+<tr class="separator:a48f1331d514d155af31f086343c96e81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1d21608c917b9b87eda9b8f63fbc2b98"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1real_1_1real.html#a1d21608c917b9b87eda9b8f63fbc2b98">real</a> (const <a class="el" href="classboost_1_1real_1_1real.html">real</a> &amp;other)</td></tr>
 <tr class="memdesc:a1d21608c917b9b87eda9b8f63fbc2b98"><td class="mdescLeft">&#160;</td><td class="mdescRight"><em>Copy constructor:</em> Creates a copy of the <a class="el" href="classboost_1_1real_1_1real.html" title="boost::real::real is a C++ class that represent real numbers as abstract entities that can be dynamic...">boost::real::real</a> number other, if the number is an operation, then, the constructor recursively creates new copies of the other operands.  <a href="#a1d21608c917b9b87eda9b8f63fbc2b98">More...</a><br /></td></tr>
 <tr class="separator:a1d21608c917b9b87eda9b8f63fbc2b98"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -197,6 +201,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1268d6a83d2c73aa82c99c19e87673bb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1real_1_1real.html#a1268d6a83d2c73aa82c99c19e87673bb">operator==</a> (const <a class="el" href="classboost_1_1real_1_1real.html">real</a> &amp;other) const </td></tr>
 <tr class="memdesc:a1268d6a83d2c73aa82c99c19e87673bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compares the *this <a class="el" href="classboost_1_1real_1_1real.html" title="boost::real::real is a C++ class that represent real numbers as abstract entities that can be dynamic...">boost::real::real</a> number against the other <a class="el" href="classboost_1_1real_1_1real.html" title="boost::real::real is a C++ class that represent real numbers as abstract entities that can be dynamic...">boost::real::real</a> number to determine if the number represented by *this is the same than the number represented by other. If the maximum precision is reached and the operator was not yet able to determine the value of the result, a <a class="el" href="structboost_1_1real_1_1precision__exception.html">precision_exception</a> is thrown.  <a href="#a1268d6a83d2c73aa82c99c19e87673bb">More...</a><br /></td></tr>
 <tr class="separator:a1268d6a83d2c73aa82c99c19e87673bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:a82a712f0ad4bb0c6fd31076a7f74ef24"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a82a712f0ad4bb0c6fd31076a7f74ef24"></a>
+static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1real_1_1real.html#a82a712f0ad4bb0c6fd31076a7f74ef24">maximum_precision</a></td></tr>
+<tr class="memdesc:a82a712f0ad4bb0c6fd31076a7f74ef24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines the maximum precision to use. <br /></td></tr>
+<tr class="separator:a82a712f0ad4bb0c6fd31076a7f74ef24"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="classboost_1_1real_1_1real.html" title="boost::real::real is a C++ class that represent real numbers as abstract entities that can be dynamic...">boost::real::real</a> is a C++ class that represent real numbers as abstract entities that can be dynamically approximated as much as needed (until a set maximum precision) to be able to operate with them. Numbers can be added, subtracted, multiplied and compared by lower and by equality. </p>
@@ -210,6 +221,32 @@ Public Member Functions</h2></td></tr>
 </ol>
 <p>Two <a class="el" href="classboost_1_1real_1_1real.html" title="boost::real::real is a C++ class that represent real numbers as abstract entities that can be dynamic...">boost::real::real</a> numbers can be compared by the lower operator "&lt;" and by the equal operator "==" but for those cases where the class is not able to decide the value of the result before reaching the maximum precision, a <a class="el" href="structboost_1_1real_1_1precision__exception.html">precision_exception</a> is thrown. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a48f1331d514d155af31f086343c96e81"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">boost::real::real::real </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><em>Default constructor:</em> Constructr a <a class="el" href="classboost_1_1real_1_1real.html" title="boost::real::real is a C++ class that represent real numbers as abstract entities that can be dynamic...">boost::real::real</a> with undefined representation and behaviour. </p>
+<dl class="section note"><dt>Note</dt><dd>This constructor exist to allow working with other libraries as std::map or std::tuple </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a1d21608c917b9b87eda9b8f63fbc2b98"></a>
 <div class="memitem">
 <div class="memproto">

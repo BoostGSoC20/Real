@@ -395,6 +395,14 @@ namespace boost {
             };
 
             /**
+             * @brief *Default constructor:* Constructr a boost::real::real with undefined representation
+             * and behaviour.
+             *
+             * @note This constructor exist to allow working with other libraries as std::map or std::tuple
+             */
+            real() = default;
+
+            /**
              * @brief *Copy constructor:* Creates a copy of the boost::real::real number other,
              * if the number is an operation, then, the constructor recursively creates new
              * copies of the other operands.

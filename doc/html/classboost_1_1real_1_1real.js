@@ -1,6 +1,7 @@
 var classboost_1_1real_1_1real =
 [
     [ "const_precision_iterator", "classboost_1_1real_1_1real_1_1const__precision__iterator.html", "classboost_1_1real_1_1real_1_1const__precision__iterator" ],
+    [ "real", "classboost_1_1real_1_1real.html#a48f1331d514d155af31f086343c96e81", null ],
     [ "real", "classboost_1_1real_1_1real.html#a1d21608c917b9b87eda9b8f63fbc2b98", null ],
     [ "real", "classboost_1_1real_1_1real.html#aff9a6dea526021e7194224a2472dfe41", null ],
     [ "real", "classboost_1_1real_1_1real.html#a4d840c250178fd8668d733d20d794727", null ],

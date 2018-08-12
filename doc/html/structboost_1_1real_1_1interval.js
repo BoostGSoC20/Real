@@ -1,7 +1,7 @@
 var structboost_1_1real_1_1interval =
 [
     [ "interval", "structboost_1_1real_1_1interval.html#a257086eb1469f6b7206dd037b4df3ef7", null ],
-    [ "as_sting", "structboost_1_1real_1_1interval.html#ac4bbcc8b90e6f0c62d3dd2a6553cfcfa", null ],
+    [ "as_string", "structboost_1_1real_1_1interval.html#aacceb6e1643940bc06a25a81ea445822", null ],
     [ "is_a_number", "structboost_1_1real_1_1interval.html#a7cd74b436d0df31ed597c198dac3c32f", null ],
     [ "negative", "structboost_1_1real_1_1interval.html#a83984b6187f5c416cfee51a2058f3270", null ],
     [ "operator<", "structboost_1_1real_1_1interval.html#a06fcaf7e5a72d8737e53d3b68039ff8d", null ],

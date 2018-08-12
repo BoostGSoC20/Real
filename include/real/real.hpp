@@ -19,14 +19,14 @@ namespace boost {
         /**
          * @author Laouen Mayal Louan Belloli
          *
-         * @brief boost::real is a C++ class that represent real numbers as abstract entities that
+         * @brief boost::real::real is a C++ class that represent real numbers as abstract entities that
          * can be dynamically approximated as much as needed (until a set maximum precision) to be
          * able to operate with them. Numbers can be added, subtracted, multiplied and compared by
          * lower and by equality.
          *
-         * @details A boost::real number is represented by the operations from which the number
+         * @details A boost::real::real number is represented by the operations from which the number
          * is created, the entire operation is represented as a binary tree where the leaves are
-         * literal numbers and the internal nodes are the operations. Also, boost::real allow to
+         * literal numbers and the internal nodes are the operations. Also, boost::real::real allow to
          * represent irrational numbers by taking as parameter a function pointer or lambda function
          * that given un unsigned integer "n", the function returns the n-th digit of the irrational
          * number.
@@ -47,7 +47,7 @@ namespace boost {
          *  creates pointers to the operands and each time the number is used, the operation is
          *  evaluated to return the result.
          *
-         * Two boost::real numbers can be compared by the lower operator "<" and by the equal
+         * Two boost::real::real numbers can be compared by the lower operator "<" and by the equal
          * operator "==" but for those cases where the class is not able to decide the value of the
          * result before reaching the maximum precision, a precision_exception is thrown.
          */
@@ -82,6 +82,13 @@ namespace boost {
 
         public:
 
+            /**
+             * @author Laouen Mayal Louan Belloli
+             *
+             * @brief is a forward iterator that iterates a boost::real::real number approximation
+             * intervals. The iterator calculates the initial interval with the initial precision and
+             * then it increase the precision in each iteration (++) and recalculate the interval.
+             */
             class const_precision_iterator {
             private:
 
@@ -98,8 +105,7 @@ namespace boost {
                 const_precision_iterator* _lhs_it_ptr = nullptr;
                 const_precision_iterator* _rhs_it_ptr = nullptr;
 
-                // TODO: rename bounds to boundaries
-                void calculate_operation_bounds() {
+                void calculate_operation_boundaries() {
 
                     switch (this->_real_ptr->_operation) {
 
@@ -262,11 +268,29 @@ namespace boost {
                 // Number approximation_interval boundaries
                 boost::real::interval approximation_interval;
 
+                /**
+                 * @brief Default constructor. Constructs an empty iterator that points to nullptr.
+                 */
                 const_precision_iterator() = default;
 
+                /**
+                 * @brief *Copy constructor:* Construct a new boost::real::real::const_precision_iterator
+                 * which is a copy of the other iterator.
+                 *
+                 * @param other - the boost::real::real::const_precision_iterator to copy.
+                 */
                 const_precision_iterator(const const_precision_iterator& other) = default;
 
-                explicit const_precision_iterator(real const* ptr) : _real_ptr(ptr) {
+                /**
+                 * @brief *Pointer constructor:* Construct a new boost::real::real::const_precision_iterator
+                 * pointing to the boost::real::real number real_number to iterate the number
+                 * approximation intervals.
+                 *
+                 * The iterator will start pointing the lowest precision interval.
+                 *
+                 * @param real_number - the boost::real::real number to iterate.
+                 */
+                explicit const_precision_iterator(real const* real_number) : _real_ptr(real_number) {
 
                     switch (this->_real_ptr->_kind) {
 
@@ -283,12 +307,25 @@ namespace boost {
                         case KIND::OPERATION:
                             this->_lhs_it_ptr = new const_precision_iterator(this->_real_ptr->_lhs_ptr->cbegin());
                             this->_rhs_it_ptr = new const_precision_iterator(this->_real_ptr->_rhs_ptr->cbegin());
-                            this->calculate_operation_bounds();
+                            this->calculate_operation_boundaries();
                             break;
                     }
                 }
 
-                explicit const_precision_iterator(real const* ptr, bool cend) : _real_ptr(ptr) {
+                /**
+                 * @brief *Pointer constructor for cend:* Construct a new boost::real::real::const_precision_iterator
+                 * pointing to the boost::real::real number real_number to iterate the number
+                 * approximation intervals.
+                 *
+                 * If the cend parameter is set to true, the iterator will point to the highest
+                 * precision interval allowed by the maximum precision. If is set to false, this
+                 * constructor is equivalent to the Pointer constructor.
+                 *
+                 * @param real_number - the boost::real::real number to iterate.
+                 * @param cend - a bool indicating if the iterator must point the lowest of highest
+                 * precision interval.
+                 */
+                explicit const_precision_iterator(real const* real_number, bool cend) : _real_ptr(real_number) {
 
                     switch (this->_real_ptr->_kind) {
 
@@ -313,11 +350,15 @@ namespace boost {
                         case KIND::OPERATION:
                             this->_lhs_it_ptr = new const_precision_iterator(this->_real_ptr->_lhs_ptr, cend);
                             this->_rhs_it_ptr = new const_precision_iterator(this->_real_ptr->_rhs_ptr, cend);
-                            this->calculate_operation_bounds();
+                            this->calculate_operation_boundaries();
                             break;
                     }
                 }
 
+                /**
+                 * @brief It recalculates the approximation interval boundaries increasing the used
+                 * precision, the new pointed approximation interval is smaller than the current one.
+                 */
                 void operator++() {
 
                     switch (this->_real_ptr->_kind) {
@@ -342,7 +383,7 @@ namespace boost {
                             ++(*this->_rhs_it_ptr);
 
                             // Final bound calculation
-                            this->calculate_operation_bounds();
+                            this->calculate_operation_boundaries();
                             break;
                     }
                 };
@@ -354,7 +395,7 @@ namespace boost {
              * @brief *Copy constructor:* Creates a copy of the number x, if the number is an operation,
              * then, the constructor creates new copies of the x operands.
              *
-             * @param other - the boost::real instance to copy.
+             * @param other - the boost::real::real instance to copy.
              */
             real(const real& other)  :
                     _kind(other._kind),
@@ -507,7 +548,7 @@ namespace boost {
              *
              * The iterator starts pointing the interval with the minimum precision.
              *
-             * @return a boost::real::const_precision_iterator of the number.
+             * @return a boost::real::real::const_precision_iterator of the number.
              */
             const_precision_iterator cbegin() const {
                 return const_precision_iterator(this);
@@ -519,7 +560,7 @@ namespace boost {
              *
              * The iterator starts pointing the interval with the maximum allowed precision.
              *
-             * @return a boost::real::const_precision_iterator of the number.
+             * @return a boost::real::real::const_precision_iterator of the number.
              */
             const_precision_iterator cend() const {
                 return const_precision_iterator(this, true);
@@ -562,8 +603,8 @@ namespace boost {
              * representation where the operands are copies of the other and this numbers (before the conversion).
              * The new number represent the addition operation between *this and other.
              *
-             * @param other - the right side operand boost::real number.
-             * @return A reference to the new boost::real number representation.
+             * @param other - the right side operand boost::real::real number.
+             * @return A reference to the new boost::real::real number representation.
              */
             real& operator+=(const real& other) {
                 this->_lhs_ptr = new real(*this);
@@ -574,12 +615,12 @@ namespace boost {
             }
 
             /**
-             * @brief Creates a new boost::real representing an operation number where the operands
+             * @brief Creates a new boost::real::real representing an operation number where the operands
              * are copies of the other and this numbers. The number represent the addition operation
              * between *this and other.
              *
-             * @param other - the right side operand boost::real number.
-             * @return A reference to the new boost::real number representation.
+             * @param other - the right side operand boost::real::real number.
+             * @return A reference to the new boost::real::real number representation.
              */
             real operator+(const real& other) const {
                 real result = *this;
@@ -592,8 +633,8 @@ namespace boost {
              * representation where the operands are copies of the other and this numbers (before the conversion).
              * The new number representation represent the subtraction operation between *this and other.
              *
-             * @param other - the right side operand boost::real number.
-             * @return A reference to the new boost::real number representation.
+             * @param other - the right side operand boost::real::real number.
+             * @return A reference to the new boost::real::real number representation.
              */
             real& operator-=(const real& other) {
                 this->_lhs_ptr = new real(*this);
@@ -604,12 +645,12 @@ namespace boost {
             }
 
             /**
-             * @brief Creates a new boost::real representing an operation number where the operands
+             * @brief Creates a new boost::real::real representing an operation number where the operands
              * are copies of the other and this numbers. The number represent the subtraction operation
              * between *this and other.
              *
-             * @param other - the right side operand boost::real number.
-             * @return A reference to the new boost::real number representation.
+             * @param other - the right side operand boost::real::real number.
+             * @return A reference to the new boost::real::real number representation.
              */
             real operator-(const real& other) const {
                 real result = *this;
@@ -622,8 +663,8 @@ namespace boost {
              * representation where the operands are copies of the other and this numbers (before the conversion).
              * The new number represent the multiplication between *this and other.
              *
-             * @param other - the right side operand boost::real number.
-             * @return A reference to the new boost::real number representation.
+             * @param other - the right side operand boost::real::real number.
+             * @return A reference to the new boost::real::real number representation.
              */
             real& operator*=(const real& other) {
                 this->_lhs_ptr = new real(*this);
@@ -634,12 +675,12 @@ namespace boost {
             }
 
             /**
-             * @brief Creates a new boost::real representing an operation number where the operands
+             * @brief Creates a new boost::real::real representing an operation number where the operands
              * are copies of the other and this numbers. The number represent the multiplication
              * operation between *this and other.
              *
-             * @param other - the right side operand boost::real number.
-             * @return A reference to the new boost::real number representation.
+             * @param other - the right side operand boost::real::real number.
+             * @return A reference to the new boost::real::real number representation.
              */
             real operator*(const real& other) const {
                 real result = *this;
@@ -648,9 +689,9 @@ namespace boost {
             }
 
             /**
-             * @brief It assign a new copy of the other boost::real number in the *this boost::real number.
+             * @brief It assign a new copy of the other boost::real::real number in the *this boost::real::real number.
              *
-             * @param other - the boost::real number to copy.
+             * @param other - the boost::real::real number to copy.
              * @return a reference of *this with the new represented number.
              */
             real& operator=(const real& other) {
@@ -662,12 +703,12 @@ namespace boost {
             }
 
             /**
-             * @brief Compares the *this boost::real number against the other boost::real number to
+             * @brief Compares the *this boost::real::real number against the other boost::real::real number to
              * determine if the number represented by *this is lower than the number represented by other.
              * If the maximum precision is reached and the operator was not yet able to determine
              * the value of the result, a precision_exception is thrown.
              *
-             * @param other - a boost::real number to compare against.
+             * @param other - a boost::real::real number to compare against.
              * @return a bool that is true if *this < other and false in other cases.
              *
              * @throws boost::real::precision_exception
@@ -697,12 +738,12 @@ namespace boost {
             }
 
             /**
-             * @brief Compares the *this boost::real number against the other boost::real number to
+             * @brief Compares the *this boost::real::real number against the other boost::real::real number to
              * determine if the number represented by *this is the same than the number represented by other.
              * If the maximum precision is reached and the operator was not yet able to determine
              * the value of the result, a precision_exception is thrown.
              *
-             * @param other - a boost::real number to compare against.
+             * @param other - a boost::real::real number to compare against.
              * @return a bool that is true if *this < other and false in other cases.
              *
              * @throws boost::real::precision_exception
@@ -732,6 +773,13 @@ namespace boost {
     }
 }
 
+/**
+ * @bief overload of the << operator for std::ostream and boost::real::real
+ *
+ * @param os - The std::ostream object where to print the r number.
+ * @param r - the boost::real::real number to print
+ * @return a reference of the modified os object.
+ */
 std::ostream& operator<<(std::ostream& os, const boost::real::real& r) {
     os << r.cend().approximation_interval;
     return os;

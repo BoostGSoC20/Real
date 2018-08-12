@@ -1,6 +1,6 @@
 ![Boost.Real](doc/other/logo/logo.png)
 
-Boost.Real numerical data type for real numbers representation using interval arithmetic.
+Boost.Real numerical data type for real numbers representation using range arithmetic.
 
 [![Build Status](https://travis-ci.org/sdavtaker/Real.svg?branch=master)](https://travis-ci.org/sdavtaker/Real) 
 [![codecov](https://codecov.io/gh/sdavtaker/Real/branch/master/graph/badge.svg)](https://codecov.io/gh/sdavtaker/Real)
@@ -23,7 +23,7 @@ In boost::real, a number has one of the next three representations:
 
 1. Explicit number: A number is a vector of digits sorted as in the number natural representation. To determine where the integer part ends and the fractional part starts, an integer is used as the exponent of a floating point number and determines where the integer part start and the fractional ends. Also a boolean is used to set the number as positive (True) or negative (False)
 2. Algorithmic number: This representation is equal to the Explicit number but instead of using a vector of digits, a lambda function must be provided. The lambda function takes an unsigned integer "n" as parameter and returns the n-th digit of the number.
-3. A number is a composition of two numbers related by an operator (+, -, *, /), the number creates pointers to the operands and each time the number is used, the operation is evaluated to return the result.
+3. A number is a composition of two numbers related by an operator (+, -, *), the number creates pointers to the operands and each time the number is used, the operation is evaluated to return the result.
 
 Because of the third representation type, a number resulting from a complex calculus is a binary tree where each internal vertex is an operation and the vertex children are its operands. The tree leaves are those numbers represented by either (1) or (2) while the internal vertex are those numbers represented by (3). More information about the used number representation can be found in [3]
 
@@ -34,36 +34,40 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
 
 ### Constructors and destructors
     1. boost::real(const std::string number)
-    2. boost::real(const initializer_vector<int> il)
-    3. boost::real(const initializer_vector<int> il, int exponent)
-    4. boost::real(const initializer_vector<int> il, int exponent, bool positive)
-    5. boost::real((unsigned int) -> int digits, int exponent)
-    6. boost::real((unsigned int) -> int digits, int exponent, bool positive)
-    7. boost::real(const boost::real& x)
-    8. boost::~real()
+    2. boost::real(const initializer_vector<int> digits)
+    3. boost::real(const initializer_vector<int> digits, bool positive)
+    4. boost::real(const initializer_vector<int> digits, int exponent)
+    5. boost::real(const initializer_vector<int> digits, int exponent, bool positive)
+    6. boost::real((unsigned int) -> int digits, int exponent)
+    7. boost::real((unsigned int) -> int digits, int exponent, bool positive)
+    8. boost::real(const boost::real& x)
+    9. boost::~real()
   
 > (1) **String constructor** 
 > Creates a real instance by parsing the string. The string must have a valid number, in other case, the constructor will throw an boost::real::invalid_string_number exception.
 >
 > (2) **Initializer list constructor** 
-> Creates a real instance that represents an integer number where all the il numbers are form the integer part in the same order.
+> Creates a real instance that represents an integer number where all the digits numbers are form the integer part in the same order.
 >
-> (3) **Initializer list constructor with exponent** 
-> Creates a real instance that represents the number where the exponent is used to set the number integer part and the elements of the il list are the digits the number in the same order.
+> (3) **Signed initializer list constructor** 
+>Creates a real instance that represents the number where the positive parameter is used to set the number sign and the elements of the digits parameter list are the number digits in the same order.
 >
-> (4) **Initializer list constructor with exponent and sign** 
-> Creates a real instance that represents the number where the exponent is used to set the number integer part and the elements of the il list are the digits the number in the same order. This constructor uses the sign to determine if the number is positive or negative.
+> (4) **Initializer list constructor with exponent** 
+> Creates a real instance that represents the number where the exponent is used to set the number integer part and the elements of the digits list are the digits the number in the same order.
 >
-> (5) **Lambda function constructor with exponent** 
+> (5) **Initializer list constructor with exponent and sign** 
+> Creates a real instance that represents the number where the exponent is used to set the number integer part and the elements of the digits list are the digits the number in the same order. This constructor uses the sign to determine if the number is positive or negative.
+>
+> (6) **Lambda function constructor with exponent** 
 > Creates a real instance that represents the number where the exponent is used to set the number integer part and the lambda function digits is used to know the number digit, this function returns the n-th number digit.
 >
-> (6) **Lambda function constructor with exponent and sign** 
+> (7) **Lambda function constructor with exponent and sign** 
 > Creates a real instance that represents the number where the exponent is used to set the number integer part and the lambda function digits is used to know the number digit, this function returns the n-th number digit. This constructor uses the sign to determine if the number is positive or negative.
 >
-> (7) **Copy constructor** 
+> (8) **Copy constructor** 
 > Creates a copy of the number x, if the number is an operation, then, the constructor creates new copies of the x operands.
 >
-> (8) **Default destructor** 
+> (9) **Default destructor** 
 > If the number is an operator, the destructor destroys its operands.
 
 ### Operators

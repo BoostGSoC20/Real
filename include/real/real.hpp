@@ -16,6 +16,41 @@
 namespace boost {
     namespace real {
 
+        /**
+         * @author Laouen Mayal Louan Belloli
+         *
+         * @brief boost::real is a C++ class that represent real numbers as abstract entities that
+         * can be dynamically approximated as much as needed (until a set maximum precision) to be
+         * able to operate with them. Numbers can be added, subtracted, multiplied and compared by
+         * lower and by equality.
+         *
+         * @details A boost::real number is represented by the operations from which the number
+         * is created, the entire operation is represented as a binary tree where the leaves are
+         * literal numbers and the internal nodes are the operations. Also, boost::real allow to
+         * represent irrational numbers by taking as parameter a function pointer or lambda function
+         * that given un unsigned integer "n", the function returns the n-th digit of the irrational
+         * number.
+         *
+         * A number can be one of the following three kind:
+         *
+         *  1. Explicit number: A number is a vector of digits sorted as in the number natural
+         *  representation. To determine where the integer part ends and the fractional part starts,
+         *  an integer is used as the exponent of a floating point number and determines where the
+         *  integer part start and the fractional ends. Also a boolean is used to set the number as
+         *  positive (True) or negative (False)
+         *
+         *  2. Algorithmic number: This representation is equal to the Explicit number but instead
+         *  of using a vector of digits, a lambda function must be provided. The lambda function
+         *  takes an unsigned integer "n" as parameter and returns the n-th digit of the number.
+         *
+         *  3. A number is a composition of two numbers related by an operator (+, -, *), the number
+         *  creates pointers to the operands and each time the number is used, the operation is
+         *  evaluated to return the result.
+         *
+         * Two boost::real numbers can be compared by the lower operator "<" and by the equal
+         * operator "==" but for those cases where the class is not able to decide the value of the
+         * result before reaching the maximum precision, a precision_exception is thrown.
+         */
         class real {
 
             // Available operations
@@ -315,43 +350,112 @@ namespace boost {
 
             real() = default;
 
+            /**
+             * @brief *Copy constructor:* Creates a copy of the number x, if the number is an operation,
+             * then, the constructor creates new copies of the x operands.
+             *
+             * @param other - the boost::real instance to copy.
+             */
             real(const real& other)  :
                     _kind(other._kind),
                     _explicit_number(other._explicit_number),
                     _algorithmic_number(other._algorithmic_number),
                     _operation(other._operation) { this->copy_operands(other); };
 
+            /**
+             * @brief *String constructor:* Creates a real instance by parsing the string.
+             * The string must have a valid number, in other case, the constructor will throw
+             * an boost::real::invalid_string_number exception.
+             *
+             * @param number - a valid string representing a number.
+             *
+             * @throws boost::real::invalid_string_number exception
+             */
             real(const std::string number)
                     : _kind(KIND::EXPLICIT), _explicit_number(number) {}
 
+            /**
+             * @brief *Initializer list constructor:* Creates a real instance that represents an
+             * integer number where all the digits parameter numbers are form the integer part in the same order.
+             *
+             * @param digits - a initializer_list<int> that represents the number digits.
+             */
             real(std::initializer_list<int> digits)
                     : _kind(KIND::EXPLICIT), _explicit_number(digits, digits.size()) {}
 
+
+            /**
+             * @brief *Signed initializer list constructor:* Creates a real instance that represents
+             * the number where the positive parameter is used to set the number sign and the elements
+             * of the digits parameter list are the number digits in the same order.
+             *
+             * @param digits - an initializer_list<int> that represent the number digits.
+             * @param positive - a bool that represent the number sign. If positive is set to true,
+             * the number is positive, otherwise is negative.
+             */
             real(std::initializer_list<int> digits, bool positive)
                     : _kind(KIND::EXPLICIT), _explicit_number(digits, digits.size(), positive) {}
 
+            /**
+             * @brief *Initializer list constructor with exponent:* Creates a real instance that
+             * represents the number where the exponent is used to set the number integer part
+             * and the elements of the il list are the digits the number in the same order.
+             *
+             * @param digits - an initializer_list<int> that represent the number digits.
+             * @param exponent - an integer representing the number exponent.
+             */
             real(std::initializer_list<int> digits, int exponent)
                     : _kind(KIND::EXPLICIT), _explicit_number(digits, exponent) {};
 
+            /**
+             * @brief *Initializer list constructor with exponent and sign:* Creates a real instance
+             * that represents the number where the exponent is used to set the number integer part
+             * and the elements of the digit list are the digits the number in the same order.
+             * This constructor uses the sign to determine if the number is positive or negative.
+             *
+             * @param digits - an initializer_list<int> that represent the number digits.
+             * @param exponent - an integer representing the number exponent.
+             * @param positive - a bool that represent the number sign. If positive is set to true,
+             * the number is positive, otherwise is negative.
+             */
             real(std::initializer_list<int> digits, int exponent, bool positive)
                     : _kind(KIND::EXPLICIT), _explicit_number(digits, exponent, positive) {};
 
+            /**
+             * @brief *Lambda function constructor with exponent:* Creates a real instance that
+             * represents the number where the exponent is used to set the number integer part
+             * and the lambda function digits is used to know the number digits, this function
+             * returns the n-th number digit.
+             *
+             * @param get_nth_digit - a function pointer or lambda function that given an unsigned
+             * int "n" as parameter, it returns the number n-th digit.
+             * @param exponent - an integer representing the number exponent.
+             */
             real(int (*get_nth_digit)(unsigned int), int exponent)
                     : _kind(KIND::ALGORITHM), _algorithmic_number(get_nth_digit, exponent) {}
 
+            /**
+             * @brief *Lambda function constructor with exponent and sign:* Creates a real instance
+             * that represents the number where the exponent is used to set the number integer part
+             * and the lambda function digits is used to know the number digit, this function returns
+             * the n-th number digit. This constructor uses the sign to determine if the number
+             * is positive or negative.
+             *
+             * @param get_nth_digit - a function pointer or lambda function that given an unsigned
+             * int "n" as parameter, it returns the number n-th digit.
+             * @param exponent - an integer representing the number exponent.
+             * @param positive - a bool that represent the number sign. If positive is set to true,
+             * the number is positive, otherwise is negative.
+             */
             real(int (*get_nth_digit)(unsigned int),
                  int exponent,
                  bool positive)
                     : _kind(KIND::ALGORITHM),
                       _algorithmic_number(get_nth_digit, exponent, positive) {}
 
-            real(int (*get_nth_digit)(unsigned int),
-                 int exponent,
-                 bool positive,
-                 int max_precision)
-                    : _kind(KIND::ALGORITHM),
-                      _algorithmic_number(get_nth_digit, exponent, positive, max_precision) {}
-
+            /**
+             * @brief *Default destructor:* If the number is an operator, the destructor destroys its operands.
+             */
             ~real() {
                 delete this->_lhs_ptr;
                 this->_lhs_ptr = nullptr;
@@ -360,6 +464,12 @@ namespace boost {
                 this->_rhs_ptr = nullptr;
             }
 
+            /**
+             * @brief Returns te maximum allowed precision, if that precision is reached and an
+             * operator need more precision, a precision_exception should be thrown.
+             *
+             * @return and integer with the maximum allowed precision.
+             */
             int max_precision() const {
 
                 int precision;
@@ -391,16 +501,41 @@ namespace boost {
                 return precision;
             }
 
+            /**
+             * @brief Construct a new boost::real:con_precision_iterator that iterates the number
+             * approximation intervals from in increasing order regarding the approximation precision.
+             *
+             * The iterator starts pointing the interval with the minimum precision.
+             *
+             * @return a boost::real::const_precision_iterator of the number.
+             */
             const_precision_iterator cbegin() const {
                 return const_precision_iterator(this);
             }
 
+            /**
+             * @brief Construct a new boost::real:con_precision_iterator that iterates the number
+             * approximation intervals from in increasing order regarding the approximation precision.
+             *
+             * The iterator starts pointing the interval with the maximum allowed precision.
+             *
+             * @return a boost::real::const_precision_iterator of the number.
+             */
             const_precision_iterator cend() const {
                 return const_precision_iterator(this, true);
             }
 
             /************** Operators ******************/
 
+            /**
+             * @brief If the number is an explicit or algorithm number it returns the n-th digit
+             * of the represented number. If the number is an operation it throws an invalid_representation_exception
+             *
+             * @param n - un unsigned int number indicating the index of the requested digit.
+             * @return an integer with the value of the number n-th digit.
+             *
+             * @throws boost::real::invalid_representation_exception
+             */
             int operator[](unsigned int n) const {
                 int result;
 
@@ -422,6 +557,14 @@ namespace boost {
                 return result;
             };
 
+            /**
+             * @brief Convert the number from its current representation to an operation number
+             * representation where the operands are copies of the other and this numbers (before the conversion).
+             * The new number represent the addition operation between *this and other.
+             *
+             * @param other - the right side operand boost::real number.
+             * @return A reference to the new boost::real number representation.
+             */
             real& operator+=(const real& other) {
                 this->_lhs_ptr = new real(*this);
                 this->_rhs_ptr = new real(other);
@@ -430,12 +573,28 @@ namespace boost {
                 return *this;
             }
 
+            /**
+             * @brief Creates a new boost::real representing an operation number where the operands
+             * are copies of the other and this numbers. The number represent the addition operation
+             * between *this and other.
+             *
+             * @param other - the right side operand boost::real number.
+             * @return A reference to the new boost::real number representation.
+             */
             real operator+(const real& other) const {
                 real result = *this;
                 result += other;
                 return result;
             }
 
+            /**
+             * @brief Convert the number from its current representation to an operation number
+             * representation where the operands are copies of the other and this numbers (before the conversion).
+             * The new number representation represent the subtraction operation between *this and other.
+             *
+             * @param other - the right side operand boost::real number.
+             * @return A reference to the new boost::real number representation.
+             */
             real& operator-=(const real& other) {
                 this->_lhs_ptr = new real(*this);
                 this->_rhs_ptr = new real(other);
@@ -444,12 +603,28 @@ namespace boost {
                 return *this;
             }
 
+            /**
+             * @brief Creates a new boost::real representing an operation number where the operands
+             * are copies of the other and this numbers. The number represent the subtraction operation
+             * between *this and other.
+             *
+             * @param other - the right side operand boost::real number.
+             * @return A reference to the new boost::real number representation.
+             */
             real operator-(const real& other) const {
                 real result = *this;
                 result -= other;
                 return result;
             }
 
+            /**
+             * @brief Convert the number from its current representation to an operation number
+             * representation where the operands are copies of the other and this numbers (before the conversion).
+             * The new number represent the multiplication between *this and other.
+             *
+             * @param other - the right side operand boost::real number.
+             * @return A reference to the new boost::real number representation.
+             */
             real& operator*=(const real& other) {
                 this->_lhs_ptr = new real(*this);
                 this->_rhs_ptr = new real(other);
@@ -458,12 +633,26 @@ namespace boost {
                 return *this;
             }
 
+            /**
+             * @brief Creates a new boost::real representing an operation number where the operands
+             * are copies of the other and this numbers. The number represent the multiplication
+             * operation between *this and other.
+             *
+             * @param other - the right side operand boost::real number.
+             * @return A reference to the new boost::real number representation.
+             */
             real operator*(const real& other) const {
                 real result = *this;
                 result *= other;
                 return result;
             }
 
+            /**
+             * @brief It assign a new copy of the other boost::real number in the *this boost::real number.
+             *
+             * @param other - the boost::real number to copy.
+             * @return a reference of *this with the new represented number.
+             */
             real& operator=(const real& other) {
                 this->_kind = other._kind;
                 this->_explicit_number = other._explicit_number;
@@ -472,6 +661,17 @@ namespace boost {
                 return *this;
             }
 
+            /**
+             * @brief Compares the *this boost::real number against the other boost::real number to
+             * determine if the number represented by *this is lower than the number represented by other.
+             * If the maximum precision is reached and the operator was not yet able to determine
+             * the value of the result, a precision_exception is thrown.
+             *
+             * @param other - a boost::real number to compare against.
+             * @return a bool that is true if *this < other and false in other cases.
+             *
+             * @throws boost::real::precision_exception
+             */
             bool operator<(const real& other) const {
                 auto this_it = this->cbegin();
                 auto other_it = other.cbegin();
@@ -496,6 +696,17 @@ namespace boost {
                 throw boost::real::precision_exception();
             }
 
+            /**
+             * @brief Compares the *this boost::real number against the other boost::real number to
+             * determine if the number represented by *this is the same than the number represented by other.
+             * If the maximum precision is reached and the operator was not yet able to determine
+             * the value of the result, a precision_exception is thrown.
+             *
+             * @param other - a boost::real number to compare against.
+             * @return a bool that is true if *this < other and false in other cases.
+             *
+             * @throws boost::real::precision_exception
+             */
             bool operator==(const real& other) const {
                 auto this_it = this->cbegin();
                 auto other_it = other.cbegin();

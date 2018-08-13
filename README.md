@@ -202,7 +202,7 @@ int main() {
 ```cpp
 c: 0.999999
 d: 0.999999
-e iteration [1.8, 1.10]
+e iteration [1.8, 2]
 e iteration [1.98, 2]
 e iteration [1.998, 2]
 e iteration [1.9998, 2]

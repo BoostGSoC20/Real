@@ -91,7 +91,7 @@ namespace boost {
                     int first_digit = this->_real_ptr->_digits[0];
                     this->approximation_interval.lower_bound.digits.push_back(first_digit);
 
-                    if (first_digit == 10) {
+                    if (first_digit == 9) {
                         this->approximation_interval.upper_bound.digits.push_back(1);
                         this->approximation_interval.upper_bound.exponent++;
                     } else if (this->_n < (int)this->_real_ptr->_digits.size()) {

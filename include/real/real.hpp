@@ -22,7 +22,7 @@ namespace boost {
          * @brief boost::real::real is a C++ class that represent real numbers as abstract entities that
          * can be dynamically approximated as much as needed (until a set maximum precision) to be
          * able to operate with them. Numbers can be added, subtracted, multiplied and compared by
-         * lower and by equality.
+         * lower than and equality.
          *
          * @details A boost::real::real number is represented by the operations from which the number
          * is created, the entire operation is represented as a binary tree where the leaves are
@@ -392,6 +392,32 @@ namespace boost {
                             break;
                     }
                 };
+
+                /**
+                 * @brief It compare by value equality; two boost::real::real::const_precision_iterators
+                 * are equals if they are pointing to the same real number and are in the same precision iteration.
+                 *
+                 * @param other - A boost::real::real::const_precision_iterator that is the right side operand
+                 * @return a bool that is true if and only if both iterators are equals.
+                 */
+                bool operator==(const const_precision_iterator& other) const {
+                    // uninitialized iterators are never equals
+                    if (this->_real_ptr == nullptr || other._real_ptr == nullptr) {
+                        return false;
+                    }
+
+                    return (other._real_ptr == this->_real_ptr) && (other.approximation_interval == this->approximation_interval);
+                }
+
+                /**
+                 * @brief It compare by value not equal; two boost::real::real::const_precision_iterators.
+                 *
+                 * @param other - A boost::real::real::const_precision_iterator that is the right side operand
+                 * @return a bool that is true if and only if both iterators are not equals.
+                 */
+                bool operator!=(const const_precision_iterator& other) const {
+                    return !(*this == other);
+                }
             };
 
             /**
@@ -688,6 +714,17 @@ namespace boost {
                 this->_explicit_number = other._explicit_number;
                 this->_operation = other._operation;
                 this->copy_operands(other);
+                return *this;
+            }
+
+            /**
+             * @brief It assign a new copy of the other boost::real::real number in the *this boost::real::real number.
+             *
+             * @param other - the boost::real::real number to copy.
+             * @return a reference of *this with the new represented number.
+             */
+            real& operator=(const std::string& number) {
+                *this = real(number);
                 return *this;
             }
 

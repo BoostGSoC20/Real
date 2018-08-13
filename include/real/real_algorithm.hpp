@@ -165,16 +165,21 @@ namespace boost {
                            (other._n == this->_n) &&
                            (other.approximation_interval == this->approximation_interval);
                 }
+
+                /**
+                 * @brief It compare by value not equal; two boost::real::real_algorithm::const_precision_iterators.
+                 *
+                 * @param other - A boost::real::real_algorithm::const_precision_iterator that is the right side operand
+                 * @return a bool that is true if and only if both iterators are not equals.
+                 */
+                bool operator!=(const const_precision_iterator& other) const {
+                    return !(*this == other);
+                }
             };
 
             /**
              * @brief *Default constructor:* Construct an empty boost::real::real_algorithm with
              * undefined representation and behaviour.
-             *
-             * @note **WARNING** The default constructor exist only for implementation purposes
-             * and it is deprecated.
-             *
-             * @deprecated
              */
             real_algorithm() = default;
 
@@ -199,7 +204,7 @@ namespace boost {
                     : _get_nth_digit(get_nth_digit), _exponent(exponent), _positive(true) {}
 
             /**
-             * @brief *Lambda function constructor with exponent and sign:* Creates a boost::real::real_algorothm instance
+             * @brief *Lambda function constructor with exponent and sign:* Creates a boost::real::real_algorithm instance
              * that represents the number where the exponent is used to set the number integer part
              * and the lambda function digits is used to know the number digit, this function returns
              * the n-th number digit. This constructor uses the sign to determine if the number
@@ -219,10 +224,10 @@ namespace boost {
                       _positive(positive) {}
 
             /**
-             * @brief Returns te maximum allowed precision, if that precision is reached and an
+             * @brief Returns the maximum allowed precision, if that precision is reached and an
              * operator need more precision, a precision_exception should be thrown.
              *
-             * @return and integer with the maximum allowed precision.
+             * @return an integer with the maximum allowed precision.
              */
             int max_precision() const {
                 return boost::real::real_algorithm::maximum_precision;

@@ -26,7 +26,7 @@ namespace boost {
             }
         };
 
-        struct invalid_string_number : public std::exception {
+        struct invalid_string_number_exception : public std::exception {
 
             const char * what () const throw () override {
                 return "The string passed to construct the boost::real number is invalid";

@@ -1,7 +1,7 @@
 #ifndef BOOST_REAL_IRRATIONALS_HPP
 #define BOOST_REAL_IRRATIONALS_HPP
 
-#include "real.hpp"
+#include <real/real.hpp>
 #include <real/irrational_helpers.hpp>
 
 

@@ -16,7 +16,7 @@ namespace boost {
         /**
          * @author Laouen Mayal Louan Belloli
          *
-         * @brief boost::real::real_explicit is a C++ class that fully represents real numbers as a
+         * @brief boost::real::real_explicit is a C++ class that fully represents real numbers as
          * a vector of digits, a sign and an exponent.
          */
         class real_explicit {
@@ -196,16 +196,21 @@ namespace boost {
                             (other._n == this->_n) &&
                             (other.approximation_interval == this->approximation_interval);
                 }
+
+                /**
+                 * @brief It compare by value not equal; two boost::real::real_explicit::const_precision_iterators.
+                 *
+                 * @param other - A boost::real::real_explicit::const_precision_iterator that is the right side operand
+                 * @return a bool that is true if and only if both iterators are not equals.
+                 */
+                bool operator!=(const const_precision_iterator& other) const {
+                    return !(*this == other);
+                }
             };
 
             /**
              * @brief *Default constructor:* Construct an empty boost::real::real_explicit with
              * undefined representation and behaviour.
-             *
-             * @note **WARNING** The default constructor exist only for implementation purposes
-             * and it is deprecated.
-             *
-             * @deprecated
              */
             real_explicit() = default;
 
@@ -228,14 +233,14 @@ namespace boost {
             explicit real_explicit(const std::string& number) {
                 // Check that is not an empty string
                 if (number.length() == 0) {
-                    throw boost::real::invalid_string_number();
+                    throw boost::real::invalid_string_number_exception();
                 }
 
                 // Check that there is no more that one '.' symbol
                 unsigned int dot_amount = 0;
                 for (const auto& c : number ) {
                     if (c == '.' && dot_amount >= 1) {
-                        throw boost::real::invalid_string_number();
+                        throw boost::real::invalid_string_number_exception();
                     } else if (c == '.') {
                         dot_amount++;
                     }
@@ -303,7 +308,7 @@ namespace boost {
                         try {
                             this->_digits.push_back(number.at(i) - '0');
                         } catch (const std::invalid_argument& e) {
-                            throw boost::real::invalid_string_number();
+                            throw boost::real::invalid_string_number_exception();
                         }
 
                     }
@@ -379,7 +384,7 @@ namespace boost {
             }
 
             /**
-             * @brief Construct a new boost::real::real_explicit::con_precision_iterator that iterates the number
+             * @brief Construct a new boost::real::real_explicit::const_precision_iterator that iterates the number
              * approximation intervals in increasing order according to the approximation precision.
              *
              * The iterator starts pointing the interval with the minimum precision.
@@ -391,7 +396,7 @@ namespace boost {
             }
 
             /**
-             * @brief Construct a new boost::real::real_explicit::con_precision_iterator that iterates the number
+             * @brief Construct a new boost::real::real_explicit::const_precision_iterator that iterates the number
              * approximation intervals in increasing order according to the approximation precision.
              *
              * The iterator starts pointing the interval with the maximum allowed precision.

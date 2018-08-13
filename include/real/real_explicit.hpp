@@ -29,7 +29,7 @@ namespace boost {
             bool _positive = true;
 
             // The number max precision is the same as the explicit number digits size
-            int _max_precision = 1;
+            unsigned int _maximum_precision = 1;
         public:
 
             /**
@@ -315,7 +315,7 @@ namespace boost {
                 }
 
                 this->_exponent = exponent;
-                this->_max_precision = (int)this->_digits.size();
+                this->_maximum_precision = (int)this->_digits.size();
             };
 
             /**
@@ -330,7 +330,7 @@ namespace boost {
             real_explicit(std::initializer_list<int> digits, int exponent) :
                     _digits(digits),
                     _exponent(exponent),
-                    _max_precision((int)this->_digits.size())
+                    _maximum_precision((int)this->_digits.size())
             {};
 
             /**
@@ -349,7 +349,7 @@ namespace boost {
                     _digits(digits),
                     _exponent(exponent),
                     _positive(positive),
-                    _max_precision((int)this->_digits.size())
+                    _maximum_precision((int)this->_digits.size())
             {};
 
             /**
@@ -359,7 +359,16 @@ namespace boost {
              * @return and integer with the maximum allowed precision.
              */
             int max_precision() const {
-                return this->_max_precision;
+                return this->_maximum_precision;
+            }
+
+            /**
+             * @brief Set a new maximum precision for the instance.
+             *
+             * @param maximum_precision - an unsigned int to set as the new precision.
+             */
+            void set_maximum_precision(unsigned int maximum_precision) {
+                this->_maximum_precision = maximum_precision;
             }
 
             /**

@@ -24,9 +24,12 @@ namespace boost {
             int _exponent;
             bool _positive;
 
+            // Precision
+            unsigned int _maximum_precision = 0;
+
         public:
 
-            static int maximum_precision;
+            static unsigned int maximum_precision;
 
             /**
              * @author Laouen Mayal Louan Belloli
@@ -231,6 +234,15 @@ namespace boost {
              */
             int max_precision() const {
                 return boost::real::real_algorithm::maximum_precision;
+            }
+
+            /**
+             * @brief Set a new maximum precision for the instance.
+             *
+             * @param maximum_precision - an unsigned int to set as the new precision.
+             */
+            void set_maximum_precision(unsigned int maximum_precision) {
+                this->_maximum_precision = maximum_precision;
             }
 
             /**

@@ -39,7 +39,7 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
 ## Interface
 
 ### Constructors and destructors
-    1. boost::real(const std::string number)
+    1. boost::real(const std::string& number)
     2. boost::real(const initializer_vector<int> digits)
     3. boost::real(const initializer_vector<int> digits, bool positive)
     4. boost::real(const initializer_vector<int> digits, int exponent)
@@ -85,10 +85,11 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
     5. boost::real operator-(const boost::real& x) const
     6. boost::real operator*(const boost::real& x) const
     7. boost::real& operator=(const boost::real& x)
-    8. boost::real& operator==(const boost::real& x)
-    9. bool operator<(const real& other) const
-    10. std::ostream& operator<<(std::ostream& os, const boost::real& x)
-    11. int operator[](unsigned int n) const
+    8. boost::real& operator=(const std::string& x)
+    9. boost::real& operator==(const boost::real& x)
+    10. bool operator<(const real& other) const
+    11. std::ostream& operator<<(std::ostream& os, const boost::real& x)
+    12. int operator[](unsigned int n) const
 
 > (1) Modifies the number to use the third representation. and sets copies of *this and x respectively as the left and right operands and sets addition as the operation.
 >
@@ -104,13 +105,15 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
 >
 > (7) Uses the copy constructor to create a copy of x stored in *this
 >
-> (8) compares *this with x to check if they represent the same number. **WARNING:** Because different numbers can have an arbitrary number of equal intervals, numbers equality can be checked only for those numbers that can be fully represented with the maximum_precision or their approximation intervals stop overlapping before the maximum_precision is reached. In other case, it will throw a boost::real::precision_exception.
+> (8) Uses the string constructor to create a real that represents the number specified in the x string.
 >
-> (9) Compares *this with x to check if *this is lower than x. This operator creates two precision iterators (one for each number) and iterates until the number intervals stop overlapping when that happens, it compares the intervals boundaries to determine if *this is less than x. **WARNING:** If *this is equal to x, then the intervals will always overlap, because of this, and if the numbers intervals still overlap once the maximum_precision is reached, the operator throws a boost::real::precision_exception.
+> (9) compares *this with x to check if they represent the same number. **WARNING:** Because different numbers can have an arbitrary number of equal intervals, numbers equality can be checked only for those numbers that can be fully represented with the maximum_precision or their approximation intervals stop overlapping before the maximum_precision is reached. In other case, it will throw a boost::real::precision_exception.
 >
-> (10) Creates a const_precision_iterator to print the number using the iterator << operator.
+> (10) Compares *this with x to check if *this is lower than x. This operator creates two precision iterators (one for each number) and iterates until the number intervals stop overlapping when that happens, it compares the intervals boundaries to determine if *this is less than x. **WARNING:** If *this is equal to x, then the intervals will always overlap, because of this, and if the numbers intervals still overlap once the maximum_precision is reached, the operator throws a boost::real::precision_exception.
 >
-> (11) Returns the n-th digit of the represented number. **WARNING:** This operator throws invalid_representation_exception for the third representation because only explicit and algorithmic numbers can be asked for the n-th digit.
+> (11) Creates a const_precision_iterator to print the number using the iterator << operator.
+>
+> (12) Returns the n-th digit of the represented number. **WARNING:** This operator throws invalid_representation_exception for the third representation because only explicit and algorithmic numbers can be asked for the n-th digit.
 
 ### Other methods
 

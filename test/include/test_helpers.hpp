@@ -6,8 +6,8 @@
 #include <real/real_algorithm.hpp>
 #include <sstream>
 
-int boost::real::real::maximum_precision = 10;
-int boost::real::real_algorithm::maximum_precision = 10;
+unsigned int boost::real::real::maximum_precision = 10;
+unsigned int boost::real::real_algorithm::maximum_precision = 10;
 
 namespace Catch {
     template<>

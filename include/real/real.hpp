@@ -70,6 +70,9 @@ namespace boost {
             real* _lhs_ptr = nullptr;
             real* _rhs_ptr = nullptr;
 
+            // Precision
+            unsigned int _maximum_precision = 0;
+
             void copy_operands(const real& other) {
                 if (other._lhs_ptr != nullptr) {
                     this->_lhs_ptr = new real(*other._lhs_ptr);
@@ -85,7 +88,7 @@ namespace boost {
             /**
              * @brief Determines the maximum precision to use
              */
-            static int maximum_precision;
+            static unsigned int maximum_precision;
 
             /**
              * @author Laouen Mayal Louan Belloli
@@ -553,8 +556,20 @@ namespace boost {
              * @return and integer with the maximum allowed precision.
              */
             int max_precision() const {
+                if (this->_maximum_precision == 0) {
+                    return boost::real::real::maximum_precision;
+                }
 
-                return boost::real::real::maximum_precision;
+                return this->_maximum_precision;
+            }
+
+            /**
+             * @brief Set a new maximum precision for the instance.
+             *
+             * @param maximum_precision - an unsigned int to set as the new precision.
+             */
+            void set_maximum_precision(unsigned int maximum_precision) {
+                this->_maximum_precision = maximum_precision;
             }
 
             /**

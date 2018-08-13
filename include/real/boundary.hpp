@@ -202,17 +202,17 @@ namespace boost {
              * normalized representation.
              */
             void normalize() {
-                while (this->digits.size() > 1 and this->digits.front() == 0) {
+                while (this->digits.size() > 1 && this->digits.front() == 0) {
                     this->digits.erase(this->digits.begin());
                     this->exponent--;
                 }
 
-                while (this->digits.size() > 1 and this->digits.back() == 0) {
+                while (this->digits.size() > 1 && this->digits.back() == 0) {
                     this->digits.pop_back();
                 }
 
                 // Zero could have many representation, and the normalized is the next one.
-                if (this->digits.size() == 1 and this->digits.front() == 0) {
+                if (this->digits.size() == 1 && this->digits.front() == 0) {
                     this->exponent = 0;
                     this->positive = true;
                 }
@@ -223,7 +223,7 @@ namespace boost {
              * into a semi normalized representation.
              */
             void normalize_left() {
-                while (this->digits.size() > 1 and this->digits.front() == 0) {
+                while (this->digits.size() > 1 && this->digits.front() == 0) {
                     this->digits.erase(this->digits.begin());
                     this->exponent--;
                 }

@@ -118,11 +118,17 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
 ### Other methods
 
     1. boost::real::const_precision_iterator boost::real::cbegin()
-    1. boost::real::const_precision_iterator boost::real::cend()
+    2. boost::real::const_precision_iterator boost::real::cend()
+    3. unsigned int boost::real::maximum_precision()
+    4. void boost::real::set_maximum_precision(unsigned int)
 
 > (1) Construct a new const_precision_iterator that iterate over the *this number precisions. The constructed iterator points to the first approximation interval (the ine with less precision).
 
 > (2) Construct a new const_precision_iterator that iterate over the *this number precisions. The constructed iterator points to the last approximation interval (the one with more precision) within the maximum precision.
+
+> (3) Returns the instance maximum precision at which the operators will throw a boost::real::precision_exception if they cannot determine the operation value before reaching the maximum precision.
+
+> (4) Sets a new maximum precision. If the set maximum precision is zero, the static default maximum precision will be used instead.
 
 ## boost::real::const_precision_iterator interface
 
@@ -158,8 +164,8 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
 #include <string>
 #include <real/real.hpp>
 
-int boost::real::real::maximum_precision = 10;
-int boost::real::real_algorithm::maximum_precision = 10;
+unsigned int boost::real::real::maximum_precision = 10;
+unsigned int boost::real::real_algorithm::maximum_precision = 10;
 
 int main() {
     boost::real::real c = (std::string)"0.999999";

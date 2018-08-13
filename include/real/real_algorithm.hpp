@@ -232,7 +232,7 @@ namespace boost {
              *
              * @return an integer with the maximum allowed precision.
              */
-            int max_precision() const {
+            unsigned int max_precision() const {
                 return boost::real::real_algorithm::maximum_precision;
             }
 
@@ -313,7 +313,7 @@ namespace boost {
  */
 std::ostream& operator<<(std::ostream& os, const boost::real::real_algorithm& r) {
     auto it = r.cbegin();
-    for (int i = 0; i <= r.max_precision(); i++) {
+    for (unsigned int i = 0; i <= r.max_precision(); i++) {
         ++it;
     }
     os << it.approximation_interval;

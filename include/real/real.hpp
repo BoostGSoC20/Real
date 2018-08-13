@@ -555,7 +555,7 @@ namespace boost {
              *
              * @return and integer with the maximum allowed precision.
              */
-            int max_precision() const {
+            unsigned int max_precision() const {
                 if (this->_maximum_precision == 0) {
                     return boost::real::real::maximum_precision;
                 }
@@ -565,6 +565,9 @@ namespace boost {
 
             /**
              * @brief Set a new maximum precision for the instance.
+             *
+             * @note Setting zero as the maximum precision causes the instance to use the default
+             * static unsigned int boost::real::real::maximum_precision.
              *
              * @param maximum_precision - an unsigned int to set as the new precision.
              */
@@ -759,8 +762,8 @@ namespace boost {
                 auto this_it = this->cbegin();
                 auto other_it = other.cbegin();
 
-                int current_precision = std::max(this->max_precision(), other.max_precision());
-                for (int p = 0; p < current_precision; ++p) {
+                unsigned int current_precision = std::max(this->max_precision(), other.max_precision());
+                for (unsigned int p = 0; p < current_precision; ++p) {
                     // Get more precision
                     ++this_it;
                     ++other_it;
@@ -800,8 +803,8 @@ namespace boost {
                 auto this_it = this->cbegin();
                 auto other_it = other.cbegin();
 
-                int current_precision = std::max(this->max_precision(), other.max_precision());
-                for (int p = 0; p < current_precision; ++p) {
+                unsigned int current_precision = std::max(this->max_precision(), other.max_precision());
+                for (unsigned int p = 0; p < current_precision; ++p) {
                     // Get more precision
                     ++this_it;
                     ++other_it;
@@ -841,8 +844,8 @@ namespace boost {
                 auto this_it = this->cbegin();
                 auto other_it = other.cbegin();
 
-                int current_precision = std::max(this->max_precision(), other.max_precision());
-                for (int p = 0; p < current_precision; ++p) {
+                unsigned int current_precision = std::max(this->max_precision(), other.max_precision());
+                for (unsigned int p = 0; p < current_precision; ++p) {
                     // Get more precision
                     ++this_it;
                     ++other_it;

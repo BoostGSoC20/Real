@@ -10,8 +10,9 @@ var classboost_1_1real_1_1real__explicit =
     [ "cend", "classboost_1_1real_1_1real__explicit.html#ad2099c32ed7ae1db2d50ad22cf9b37e3", null ],
     [ "digits", "classboost_1_1real_1_1real__explicit.html#acbeecc532b836ea64bf9823ad5f0abe4", null ],
     [ "exponent", "classboost_1_1real_1_1real__explicit.html#ad36cb2c2bcbbded1ef785615473e6f27", null ],
-    [ "max_precision", "classboost_1_1real_1_1real__explicit.html#ad60c99cb4e6feb7e3f806554b3ff7fca", null ],
+    [ "max_precision", "classboost_1_1real_1_1real__explicit.html#a7000d9287f0f888abf1470712f8e1811", null ],
     [ "operator=", "classboost_1_1real_1_1real__explicit.html#a501c5c1723deca496672cd0ecfc8b8fc", null ],
     [ "operator[]", "classboost_1_1real_1_1real__explicit.html#a7686e13d0637248a8254280673395e64", null ],
-    [ "positive", "classboost_1_1real_1_1real__explicit.html#a193b565b927df4d267184741ccea8d9e", null ]
+    [ "positive", "classboost_1_1real_1_1real__explicit.html#a193b565b927df4d267184741ccea8d9e", null ],
+    [ "set_maximum_precision", "classboost_1_1real_1_1real__explicit.html#af61e8ec61f68b92d97992957f7e3a4d0", null ]
 ];

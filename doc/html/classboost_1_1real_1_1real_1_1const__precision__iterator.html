@@ -49,7 +49,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -150,6 +149,12 @@ Public Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1real_1_1real_1_1const__precision__iterator.html#a385f2a7437587dd85ec121a4900d0de5">operator++</a> ()</td></tr>
 <tr class="memdesc:a385f2a7437587dd85ec121a4900d0de5"><td class="mdescLeft">&#160;</td><td class="mdescRight">It recalculates the approximation interval boundaries increasing the used precision, the new pointed approximation interval is smaller than the current one. <br /></td></tr>
 <tr class="separator:a385f2a7437587dd85ec121a4900d0de5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94d3c5544dbf31ee5b8c55254702389f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1real_1_1real_1_1const__precision__iterator.html#a94d3c5544dbf31ee5b8c55254702389f">operator==</a> (const <a class="el" href="classboost_1_1real_1_1real_1_1const__precision__iterator.html">const_precision_iterator</a> &amp;other) const </td></tr>
+<tr class="memdesc:a94d3c5544dbf31ee5b8c55254702389f"><td class="mdescLeft">&#160;</td><td class="mdescRight">It compare by value equality; two boost::real::real::const_precision_iterators are equals if they are pointing to the same real number and are in the same precision iteration.  <a href="#a94d3c5544dbf31ee5b8c55254702389f">More...</a><br /></td></tr>
+<tr class="separator:a94d3c5544dbf31ee5b8c55254702389f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae11d22bfaec9e09897f3f018a29fd01a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1real_1_1real_1_1const__precision__iterator.html#ae11d22bfaec9e09897f3f018a29fd01a">operator!=</a> (const <a class="el" href="classboost_1_1real_1_1real_1_1const__precision__iterator.html">const_precision_iterator</a> &amp;other) const </td></tr>
+<tr class="memdesc:ae11d22bfaec9e09897f3f018a29fd01a"><td class="mdescLeft">&#160;</td><td class="mdescRight">It compare by value not equal; two boost::real::real::const_precision_iterators.  <a href="#ae11d22bfaec9e09897f3f018a29fd01a">More...</a><br /></td></tr>
+<tr class="separator:ae11d22bfaec9e09897f3f018a29fd01a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -270,8 +275,75 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="ae11d22bfaec9e09897f3f018a29fd01a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool boost::real::real::const_precision_iterator::operator!= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classboost_1_1real_1_1real_1_1const__precision__iterator.html">const_precision_iterator</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>It compare by value not equal; two boost::real::real::const_precision_iterators. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>- A <a class="el" href="classboost_1_1real_1_1real_1_1const__precision__iterator.html" title="is a forward iterator that iterates a boost::real::real number approximation intervals. The iterator calculates the initial interval with the initial precision and then it increase the precision in each iteration (++) and recalculate the interval. ">boost::real::real::const_precision_iterator</a> that is the right side operand </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>a bool that is true if and only if both iterators are not equals. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a94d3c5544dbf31ee5b8c55254702389f"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool boost::real::real::const_precision_iterator::operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classboost_1_1real_1_1real_1_1const__precision__iterator.html">const_precision_iterator</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>It compare by value equality; two boost::real::real::const_precision_iterators are equals if they are pointing to the same real number and are in the same precision iteration. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>- A <a class="el" href="classboost_1_1real_1_1real_1_1const__precision__iterator.html" title="is a forward iterator that iterates a boost::real::real number approximation intervals. The iterator calculates the initial interval with the initial precision and then it increase the precision in each iteration (++) and recalculate the interval. ">boost::real::real::const_precision_iterator</a> that is the right side operand </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>a bool that is true if and only if both iterators are equals. </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/home/lao/Documents/git/Real/include/real/<a class="el" href="real_8hpp_source.html">real.hpp</a></li>
+<li><a class="el" href="real_8hpp_source.html">real.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

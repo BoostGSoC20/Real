@@ -49,7 +49,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -131,8 +130,9 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aab2d4c7050eb13b4303d0f3c735642c7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1real_1_1real__algorithm.html#aab2d4c7050eb13b4303d0f3c735642c7">real_algorithm</a> ()=default</td></tr>
-<tr class="memdesc:aab2d4c7050eb13b4303d0f3c735642c7"><td class="mdescLeft">&#160;</td><td class="mdescRight"><em>Default constructor:</em> Construct an empty <a class="el" href="classboost_1_1real_1_1real__algorithm.html" title="boost::real::real_algorithm is a C++ class that represents real numbers as a a function that calculat...">boost::real::real_algorithm</a> with undefined representation and behaviour.  <a href="#aab2d4c7050eb13b4303d0f3c735642c7">More...</a><br /></td></tr>
+<tr class="memitem:aab2d4c7050eb13b4303d0f3c735642c7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aab2d4c7050eb13b4303d0f3c735642c7"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1real_1_1real__algorithm.html#aab2d4c7050eb13b4303d0f3c735642c7">real_algorithm</a> ()=default</td></tr>
+<tr class="memdesc:aab2d4c7050eb13b4303d0f3c735642c7"><td class="mdescLeft">&#160;</td><td class="mdescRight"><em>Default constructor:</em> Construct an empty <a class="el" href="classboost_1_1real_1_1real__algorithm.html" title="boost::real::real_algorithm is a C++ class that represents real numbers as a a function that calculat...">boost::real::real_algorithm</a> with undefined representation and behaviour. <br /></td></tr>
 <tr class="separator:aab2d4c7050eb13b4303d0f3c735642c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa1988d36740aa5a9ab0a4717de57b91d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1real_1_1real__algorithm.html#aa1988d36740aa5a9ab0a4717de57b91d">real_algorithm</a> (const <a class="el" href="classboost_1_1real_1_1real__algorithm.html">real_algorithm</a> &amp;other)=default</td></tr>
 <tr class="memdesc:aa1988d36740aa5a9ab0a4717de57b91d"><td class="mdescLeft">&#160;</td><td class="mdescRight"><em>Copy constructor:</em> Creates a copy of the <a class="el" href="classboost_1_1real_1_1real__algorithm.html" title="boost::real::real_algorithm is a C++ class that represents real numbers as a a function that calculat...">boost::real::real_algorithm</a> number other.  <a href="#aa1988d36740aa5a9ab0a4717de57b91d">More...</a><br /></td></tr>
@@ -141,11 +141,14 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a8a02991359b4e1327110dce7e5e5cf69"><td class="mdescLeft">&#160;</td><td class="mdescRight"><em>Lambda function constructor with exponent:</em> Creates a <a class="el" href="classboost_1_1real_1_1real__algorithm.html" title="boost::real::real_algorithm is a C++ class that represents real numbers as a a function that calculat...">boost::real::real_algorithm</a> instance that represents the number where the exponent is used to set the number integer part and the lambda function digits is used to know the number digits, this function returns the n-th number digit. The number is positive.  <a href="#a8a02991359b4e1327110dce7e5e5cf69">More...</a><br /></td></tr>
 <tr class="separator:a8a02991359b4e1327110dce7e5e5cf69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abcb0459774777ed9543a6c1f4e96f3ff"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1real_1_1real__algorithm.html#abcb0459774777ed9543a6c1f4e96f3ff">real_algorithm</a> (int(*get_nth_digit)(unsigned int), int <a class="el" href="classboost_1_1real_1_1real__algorithm.html#ac8521c359afe0becf42ffdc9357c4273">exponent</a>, bool <a class="el" href="classboost_1_1real_1_1real__algorithm.html#a404734e8cb9e85d3cf4c1771d8754ea0">positive</a>)</td></tr>
-<tr class="memdesc:abcb0459774777ed9543a6c1f4e96f3ff"><td class="mdescLeft">&#160;</td><td class="mdescRight"><em>Lambda function constructor with exponent and sign:</em> Creates a boost::real::real_algorothm instance that represents the number where the exponent is used to set the number integer part and the lambda function digits is used to know the number digit, this function returns the n-th number digit. This constructor uses the sign to determine if the number is positive or negative.  <a href="#abcb0459774777ed9543a6c1f4e96f3ff">More...</a><br /></td></tr>
+<tr class="memdesc:abcb0459774777ed9543a6c1f4e96f3ff"><td class="mdescLeft">&#160;</td><td class="mdescRight"><em>Lambda function constructor with exponent and sign:</em> Creates a <a class="el" href="classboost_1_1real_1_1real__algorithm.html" title="boost::real::real_algorithm is a C++ class that represents real numbers as a a function that calculat...">boost::real::real_algorithm</a> instance that represents the number where the exponent is used to set the number integer part and the lambda function digits is used to know the number digit, this function returns the n-th number digit. This constructor uses the sign to determine if the number is positive or negative.  <a href="#abcb0459774777ed9543a6c1f4e96f3ff">More...</a><br /></td></tr>
 <tr class="separator:abcb0459774777ed9543a6c1f4e96f3ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8378889b2d72a86e200d8b26f7f96905"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1real_1_1real__algorithm.html#a8378889b2d72a86e200d8b26f7f96905">max_precision</a> () const </td></tr>
-<tr class="memdesc:a8378889b2d72a86e200d8b26f7f96905"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns te maximum allowed precision, if that precision is reached and an operator need more precision, a <a class="el" href="structboost_1_1real_1_1precision__exception.html">precision_exception</a> should be thrown.  <a href="#a8378889b2d72a86e200d8b26f7f96905">More...</a><br /></td></tr>
-<tr class="separator:a8378889b2d72a86e200d8b26f7f96905"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf06f6296e1c2f3e5d6c24125468fa36"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1real_1_1real__algorithm.html#adf06f6296e1c2f3e5d6c24125468fa36">max_precision</a> () const </td></tr>
+<tr class="memdesc:adf06f6296e1c2f3e5d6c24125468fa36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the maximum allowed precision, if that precision is reached and an operator need more precision, a <a class="el" href="structboost_1_1real_1_1precision__exception.html">precision_exception</a> should be thrown.  <a href="#adf06f6296e1c2f3e5d6c24125468fa36">More...</a><br /></td></tr>
+<tr class="separator:adf06f6296e1c2f3e5d6c24125468fa36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ff1657b2664f5c685b45b7b0a7a1e29"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1real_1_1real__algorithm.html#a9ff1657b2664f5c685b45b7b0a7a1e29">set_maximum_precision</a> (unsigned int maximum_precision)</td></tr>
+<tr class="memdesc:a9ff1657b2664f5c685b45b7b0a7a1e29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a new maximum precision for the instance.  <a href="#a9ff1657b2664f5c685b45b7b0a7a1e29">More...</a><br /></td></tr>
+<tr class="separator:a9ff1657b2664f5c685b45b7b0a7a1e29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac8521c359afe0becf42ffdc9357c4273"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1real_1_1real__algorithm.html#ac8521c359afe0becf42ffdc9357c4273">exponent</a> () const </td></tr>
 <tr class="separator:ac8521c359afe0becf42ffdc9357c4273"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a404734e8cb9e85d3cf4c1771d8754ea0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1real_1_1real__algorithm.html#a404734e8cb9e85d3cf4c1771d8754ea0">positive</a> () const </td></tr>
@@ -165,42 +168,15 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a89c5a375f2bd7dbf0d0b907ad8e6336a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a89c5a375f2bd7dbf0d0b907ad8e6336a"></a>
-static int&#160;</td><td class="memItemRight" valign="bottom"><b>maximum_precision</b></td></tr>
-<tr class="separator:a89c5a375f2bd7dbf0d0b907ad8e6336a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a434005e16e2048583e0e6e01176fb470"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a434005e16e2048583e0e6e01176fb470"></a>
+static unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>maximum_precision</b></td></tr>
+<tr class="separator:a434005e16e2048583e0e6e01176fb470"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="classboost_1_1real_1_1real__algorithm.html" title="boost::real::real_algorithm is a C++ class that represents real numbers as a a function that calculat...">boost::real::real_algorithm</a> is a C++ class that represents real numbers as a a function that calculates the n-th digit o the number, a sign and an exponent. </p>
 <dl class="section author"><dt>Author</dt><dd>Laouen Mayal Louan Belloli</dd></dl>
 <p>Because a function pointer of lambda function is used to obtain the number digits on demand, numbers with infinite representations as the irrational numbers can be represented using this class. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="aab2d4c7050eb13b4303d0f3c735642c7"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">boost::real::real_algorithm::real_algorithm </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">default</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p><em>Default constructor:</em> Construct an empty <a class="el" href="classboost_1_1real_1_1real__algorithm.html" title="boost::real::real_algorithm is a C++ class that represents real numbers as a a function that calculat...">boost::real::real_algorithm</a> with undefined representation and behaviour. </p>
-<dl class="section note"><dt>Note</dt><dd><b>WARNING</b> The default constructor exist only for implementation purposes and it is deprecated.</dd></dl>
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000001">Deprecated:</a></b></dt><dd></dd></dl>
-
-</div>
-</div>
 <a class="anchor" id="aa1988d36740aa5a9ab0a4717de57b91d"></a>
 <div class="memitem">
 <div class="memproto">
@@ -314,7 +290,7 @@ static int&#160;</td><td class="memItemRight" valign="bottom"><b>maximum_precisi
 </table>
 </div><div class="memdoc">
 
-<p><em>Lambda function constructor with exponent and sign:</em> Creates a boost::real::real_algorothm instance that represents the number where the exponent is used to set the number integer part and the lambda function digits is used to know the number digit, this function returns the n-th number digit. This constructor uses the sign to determine if the number is positive or negative. </p>
+<p><em>Lambda function constructor with exponent and sign:</em> Creates a <a class="el" href="classboost_1_1real_1_1real__algorithm.html" title="boost::real::real_algorithm is a C++ class that represents real numbers as a a function that calculat...">boost::real::real_algorithm</a> instance that represents the number where the exponent is used to set the number integer part and the lambda function digits is used to know the number digit, this function returns the n-th number digit. This constructor uses the sign to determine if the number is positive or negative. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">get_nth_digit</td><td>- a function pointer or lambda function that given an unsigned int "n" as parameter, it returns the number n-th digit. </td></tr>
@@ -405,7 +381,7 @@ static int&#160;</td><td class="memItemRight" valign="bottom"><b>maximum_precisi
 
 </div>
 </div>
-<a class="anchor" id="a8378889b2d72a86e200d8b26f7f96905"></a>
+<a class="anchor" id="adf06f6296e1c2f3e5d6c24125468fa36"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -413,7 +389,7 @@ static int&#160;</td><td class="memItemRight" valign="bottom"><b>maximum_precisi
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int boost::real::real_algorithm::max_precision </td>
+          <td class="memname">unsigned int boost::real::real_algorithm::max_precision </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -426,8 +402,8 @@ static int&#160;</td><td class="memItemRight" valign="bottom"><b>maximum_precisi
 </table>
 </div><div class="memdoc">
 
-<p>Returns te maximum allowed precision, if that precision is reached and an operator need more precision, a <a class="el" href="structboost_1_1real_1_1precision__exception.html">precision_exception</a> should be thrown. </p>
-<dl class="section return"><dt>Returns</dt><dd>and integer with the maximum allowed precision. </dd></dl>
+<p>Returns the maximum allowed precision, if that precision is reached and an operator need more precision, a <a class="el" href="structboost_1_1real_1_1precision__exception.html">precision_exception</a> should be thrown. </p>
+<dl class="section return"><dt>Returns</dt><dd>an integer with the maximum allowed precision. </dd></dl>
 
 </div>
 </div>
@@ -521,8 +497,40 @@ static int&#160;</td><td class="memItemRight" valign="bottom"><b>maximum_precisi
 
 </div>
 </div>
+<a class="anchor" id="a9ff1657b2664f5c685b45b7b0a7a1e29"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void boost::real::real_algorithm::set_maximum_precision </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>maximum_precision</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set a new maximum precision for the instance. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">maximum_precision</td><td>- an unsigned int to set as the new precision. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/home/lao/Documents/git/Real/include/real/<a class="el" href="real__algorithm_8hpp_source.html">real_algorithm.hpp</a></li>
+<li><a class="el" href="real__algorithm_8hpp_source.html">real_algorithm.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

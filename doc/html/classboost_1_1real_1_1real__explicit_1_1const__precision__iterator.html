@@ -49,7 +49,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -117,7 +116,7 @@ $(document).ready(function(){initNavTree('classboost_1_1real_1_1real__explicit_1
 </div><!--header-->
 <div class="contents">
 
-<p>is a forward iterator that iterates a <a class="el" href="classboost_1_1real_1_1real__explicit.html" title="boost::real::real_explicit is a C++ class that fully represents real numbers as a a vector of digits...">boost::real::real_explicit</a> number approximation intervals. The iterator calculates the initial interval with the initial precision and then it increase the precision in each iteration (++) and recalculate the interval.  
+<p>is a forward iterator that iterates a <a class="el" href="classboost_1_1real_1_1real__explicit.html" title="boost::real::real_explicit is a C++ class that fully represents real numbers as a vector of digits...">boost::real::real_explicit</a> number approximation intervals. The iterator calculates the initial interval with the initial precision and then it increase the precision in each iteration (++) and recalculate the interval.  
  <a href="classboost_1_1real_1_1real__explicit_1_1const__precision__iterator.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="real__explicit_8hpp_source.html">real_explicit.hpp</a>&gt;</code></p>
@@ -141,7 +140,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ab07052c01c53dc9058f20421be44b3a7"><td class="mdescLeft">&#160;</td><td class="mdescRight"><b>Copy constructor:</b> Construct a new <a class="el" href="classboost_1_1real_1_1real__explicit_1_1const__precision__iterator.html" title="is a forward iterator that iterates a boost::real::real_explicit number approximation intervals...">boost::real::real_explicit::const_precision_iterator</a> which is a copy of the other iterator.  <a href="#ab07052c01c53dc9058f20421be44b3a7">More...</a><br /></td></tr>
 <tr class="separator:ab07052c01c53dc9058f20421be44b3a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a716d3c07a80b506711ba1f1fc207a835"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1real_1_1real__explicit_1_1const__precision__iterator.html#a716d3c07a80b506711ba1f1fc207a835">const_precision_iterator</a> (<a class="el" href="classboost_1_1real_1_1real__explicit.html">real_explicit</a> const *real_number)</td></tr>
-<tr class="memdesc:a716d3c07a80b506711ba1f1fc207a835"><td class="mdescLeft">&#160;</td><td class="mdescRight"><em>Pointer constructor:</em> Construct a new <a class="el" href="classboost_1_1real_1_1real__explicit_1_1const__precision__iterator.html" title="is a forward iterator that iterates a boost::real::real_explicit number approximation intervals...">boost::real::real_explicit::const_precision_iterator</a> pointing to the <a class="el" href="classboost_1_1real_1_1real__explicit.html" title="boost::real::real_explicit is a C++ class that fully represents real numbers as a a vector of digits...">boost::real::real_explicit</a> number to iterate the number approximation intervals.  <a href="#a716d3c07a80b506711ba1f1fc207a835">More...</a><br /></td></tr>
+<tr class="memdesc:a716d3c07a80b506711ba1f1fc207a835"><td class="mdescLeft">&#160;</td><td class="mdescRight"><em>Pointer constructor:</em> Construct a new <a class="el" href="classboost_1_1real_1_1real__explicit_1_1const__precision__iterator.html" title="is a forward iterator that iterates a boost::real::real_explicit number approximation intervals...">boost::real::real_explicit::const_precision_iterator</a> pointing to the <a class="el" href="classboost_1_1real_1_1real__explicit.html" title="boost::real::real_explicit is a C++ class that fully represents real numbers as a vector of digits...">boost::real::real_explicit</a> number to iterate the number approximation intervals.  <a href="#a716d3c07a80b506711ba1f1fc207a835">More...</a><br /></td></tr>
 <tr class="separator:a716d3c07a80b506711ba1f1fc207a835"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a731d2ba35d09889042bb93577dee2a5f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a731d2ba35d09889042bb93577dee2a5f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1real_1_1real__explicit_1_1const__precision__iterator.html#a731d2ba35d09889042bb93577dee2a5f">operator++</a> ()</td></tr>
@@ -154,6 +153,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a2f5da63d23be5d5ddb48d8fd8e645b59"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1real_1_1real__explicit_1_1const__precision__iterator.html#a2f5da63d23be5d5ddb48d8fd8e645b59">operator==</a> (const <a class="el" href="classboost_1_1real_1_1real__explicit_1_1const__precision__iterator.html">const_precision_iterator</a> &amp;other) const </td></tr>
 <tr class="memdesc:a2f5da63d23be5d5ddb48d8fd8e645b59"><td class="mdescLeft">&#160;</td><td class="mdescRight">It compare by value equality; two boost::real::real_explicit::const_precision_iterators are equals if they are pointing to the same real number and are in the same precision iteration.  <a href="#a2f5da63d23be5d5ddb48d8fd8e645b59">More...</a><br /></td></tr>
 <tr class="separator:a2f5da63d23be5d5ddb48d8fd8e645b59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84a7207aabe187d4cf1bee375a99ef52"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classboost_1_1real_1_1real__explicit_1_1const__precision__iterator.html#a84a7207aabe187d4cf1bee375a99ef52">operator!=</a> (const <a class="el" href="classboost_1_1real_1_1real__explicit_1_1const__precision__iterator.html">const_precision_iterator</a> &amp;other) const </td></tr>
+<tr class="memdesc:a84a7207aabe187d4cf1bee375a99ef52"><td class="mdescLeft">&#160;</td><td class="mdescRight">It compare by value not equal; two boost::real::real_explicit::const_precision_iterators.  <a href="#a84a7207aabe187d4cf1bee375a99ef52">More...</a><br /></td></tr>
+<tr class="separator:a84a7207aabe187d4cf1bee375a99ef52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -162,7 +164,7 @@ Public Attributes</h2></td></tr>
 <tr class="separator:af88fc25fd86b027ff227d55d419118b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>is a forward iterator that iterates a <a class="el" href="classboost_1_1real_1_1real__explicit.html" title="boost::real::real_explicit is a C++ class that fully represents real numbers as a a vector of digits...">boost::real::real_explicit</a> number approximation intervals. The iterator calculates the initial interval with the initial precision and then it increase the precision in each iteration (++) and recalculate the interval. </p>
+<div class="textblock"><p>is a forward iterator that iterates a <a class="el" href="classboost_1_1real_1_1real__explicit.html" title="boost::real::real_explicit is a C++ class that fully represents real numbers as a vector of digits...">boost::real::real_explicit</a> number approximation intervals. The iterator calculates the initial interval with the initial precision and then it increase the precision in each iteration (++) and recalculate the interval. </p>
 <dl class="section author"><dt>Author</dt><dd>Laouen Mayal Louan Belloli </dd></dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="ab07052c01c53dc9058f20421be44b3a7"></a>
@@ -219,7 +221,7 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p><em>Pointer constructor:</em> Construct a new <a class="el" href="classboost_1_1real_1_1real__explicit_1_1const__precision__iterator.html" title="is a forward iterator that iterates a boost::real::real_explicit number approximation intervals...">boost::real::real_explicit::const_precision_iterator</a> pointing to the <a class="el" href="classboost_1_1real_1_1real__explicit.html" title="boost::real::real_explicit is a C++ class that fully represents real numbers as a a vector of digits...">boost::real::real_explicit</a> number to iterate the number approximation intervals. </p>
+<p><em>Pointer constructor:</em> Construct a new <a class="el" href="classboost_1_1real_1_1real__explicit_1_1const__precision__iterator.html" title="is a forward iterator that iterates a boost::real::real_explicit number approximation intervals...">boost::real::real_explicit::const_precision_iterator</a> pointing to the <a class="el" href="classboost_1_1real_1_1real__explicit.html" title="boost::real::real_explicit is a C++ class that fully represents real numbers as a vector of digits...">boost::real::real_explicit</a> number to iterate the number approximation intervals. </p>
 <p>The iterator will start pointing the lowest precision interval.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -231,6 +233,39 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a84a7207aabe187d4cf1bee375a99ef52"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool boost::real::real_explicit::const_precision_iterator::operator!= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classboost_1_1real_1_1real__explicit_1_1const__precision__iterator.html">const_precision_iterator</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>It compare by value not equal; two boost::real::real_explicit::const_precision_iterators. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>- A <a class="el" href="classboost_1_1real_1_1real__explicit_1_1const__precision__iterator.html" title="is a forward iterator that iterates a boost::real::real_explicit number approximation intervals...">boost::real::real_explicit::const_precision_iterator</a> that is the right side operand </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>a bool that is true if and only if both iterators are not equals. </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a2f5da63d23be5d5ddb48d8fd8e645b59"></a>
 <div class="memitem">
 <div class="memproto">
@@ -265,7 +300,7 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/home/lao/Documents/git/Real/include/real/<a class="el" href="real__explicit_8hpp_source.html">real_explicit.hpp</a></li>
+<li><a class="el" href="real__explicit_8hpp_source.html">real_explicit.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

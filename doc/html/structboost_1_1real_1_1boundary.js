@@ -9,6 +9,7 @@ var structboost_1_1real_1_1boundary =
     [ "operator<", "structboost_1_1real_1_1boundary.html#aad784d64c06d794a88c5e1471ce1f85a", null ],
     [ "operator=", "structboost_1_1real_1_1boundary.html#a6d5c81ed9ff56140d6dfa45c2377711d", null ],
     [ "operator==", "structboost_1_1real_1_1boundary.html#a2271cdff0c74a9d029e825c306fa3128", null ],
+    [ "operator>", "structboost_1_1real_1_1boundary.html#a9cb7c426c3a21ef57d7fee5e30f2246f", null ],
     [ "operator[]", "structboost_1_1real_1_1boundary.html#a297ab59eeaf0178e95699d3ad569be53", null ],
     [ "push_back", "structboost_1_1real_1_1boundary.html#ac127f1ac056c93223fc1e54b04aa3c5c", null ],
     [ "push_front", "structboost_1_1real_1_1boundary.html#aadb6ca9201ced72879670a4381129714", null ],

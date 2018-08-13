@@ -49,7 +49,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -146,6 +145,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 <tr class="memitem:a06fcaf7e5a72d8737e53d3b68039ff8d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structboost_1_1real_1_1interval.html#a06fcaf7e5a72d8737e53d3b68039ff8d">operator&lt;</a> (const <a class="el" href="structboost_1_1real_1_1interval.html">boost::real::interval</a> &amp;other) const </td></tr>
 <tr class="memdesc:a06fcaf7e5a72d8737e53d3b68039ff8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compares two <a class="el" href="structboost_1_1real_1_1interval.html" title="Represent an interval composed by two boundaries, a lower boundary and an upper boundary. The boundaries are boost::real::boundary structs that represent fully represented numbers. ">boost::real::interval</a> to determine if *this is a lower interval than other according to the interval arithmetic. *this is lower than other if and only if the upper boundary of this is lower than the lower boundary of other.  <a href="#a06fcaf7e5a72d8737e53d3b68039ff8d">More...</a><br /></td></tr>
 <tr class="separator:a06fcaf7e5a72d8737e53d3b68039ff8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1028903d0fa0338332ae5f018887d30e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structboost_1_1real_1_1interval.html#a1028903d0fa0338332ae5f018887d30e">operator&gt;</a> (const <a class="el" href="structboost_1_1real_1_1interval.html">boost::real::interval</a> &amp;other) const </td></tr>
+<tr class="memdesc:a1028903d0fa0338332ae5f018887d30e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compares two <a class="el" href="structboost_1_1real_1_1interval.html" title="Represent an interval composed by two boundaries, a lower boundary and an upper boundary. The boundaries are boost::real::boundary structs that represent fully represented numbers. ">boost::real::interval</a> to determine if *this is a greater interval than other according to the interval arithmetic. *this is greater than other if and only if the lower boundary of this is greater than the upper boundary of other.  <a href="#a1028903d0fa0338332ae5f018887d30e">More...</a><br /></td></tr>
+<tr class="separator:a1028903d0fa0338332ae5f018887d30e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab71829263e982b9a15ab17f10d3ac2fb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structboost_1_1real_1_1interval.html#ab71829263e982b9a15ab17f10d3ac2fb">positive</a> () const </td></tr>
 <tr class="memdesc:ab71829263e982b9a15ab17f10d3ac2fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if the interval is fully contained in the positive real number line.  <a href="#ab71829263e982b9a15ab17f10d3ac2fb">More...</a><br /></td></tr>
 <tr class="separator:ab71829263e982b9a15ab17f10d3ac2fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -316,6 +318,39 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a1028903d0fa0338332ae5f018887d30e"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool boost::real::interval::operator&gt; </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structboost_1_1real_1_1interval.html">boost::real::interval</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compares two <a class="el" href="structboost_1_1real_1_1interval.html" title="Represent an interval composed by two boundaries, a lower boundary and an upper boundary. The boundaries are boost::real::boundary structs that represent fully represented numbers. ">boost::real::interval</a> to determine if *this is a greater interval than other according to the interval arithmetic. *this is greater than other if and only if the lower boundary of this is greater than the upper boundary of other. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>- a <a class="el" href="structboost_1_1real_1_1interval.html" title="Represent an interval composed by two boundaries, a lower boundary and an upper boundary. The boundaries are boost::real::boundary structs that represent fully represented numbers. ">boost::real::interval</a> to compare with *this. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>a bool that is true if and only if *this is greater than other. </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="ab71829263e982b9a15ab17f10d3ac2fb"></a>
 <div class="memitem">
 <div class="memproto">
@@ -343,7 +378,7 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/home/lao/Documents/git/Real/include/real/<a class="el" href="interval_8hpp_source.html">interval.hpp</a></li>
+<li><a class="el" href="interval_8hpp_source.html">interval.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

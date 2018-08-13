@@ -6,7 +6,7 @@ var hierarchy =
     [ "boost::real::real_explicit::const_precision_iterator", "classboost_1_1real_1_1real__explicit_1_1const__precision__iterator.html", null ],
     [ "exception", null, [
       [ "boost::real::invalid_representation_exception", "structboost_1_1real_1_1invalid__representation__exception.html", null ],
-      [ "boost::real::invalid_string_number", "structboost_1_1real_1_1invalid__string__number.html", null ],
+      [ "boost::real::invalid_string_number_exception", "structboost_1_1real_1_1invalid__string__number__exception.html", null ],
       [ "boost::real::none_operation_exception", "structboost_1_1real_1_1none__operation__exception.html", null ],
       [ "boost::real::precision_exception", "structboost_1_1real_1_1precision__exception.html", null ]
     ] ],

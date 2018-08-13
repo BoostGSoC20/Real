@@ -450,7 +450,7 @@ namespace boost {
              *
              * @throws boost::real::invalid_string_number exception
              */
-            real(const std::string number)
+            real(const std::string& number)
                     : _kind(KIND::EXPLICIT), _explicit_number(number) {}
 
             /**
@@ -718,9 +718,10 @@ namespace boost {
             }
 
             /**
-             * @brief It assign a new copy of the other boost::real::real number in the *this boost::real::real number.
+             * @brief It constructs and boost::real::real number from the std::string and assign it
+             * in the *this boost::real::real number.
              *
-             * @param other - the boost::real::real number to copy.
+             * @param number - a valid string representing a number.
              * @return a reference of *this with the new represented number.
              */
             real& operator=(const std::string& number) {

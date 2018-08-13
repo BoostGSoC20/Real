@@ -9,7 +9,7 @@ Boost.Real numerical data type for real numbers representation using range arith
 ## Documentation
    * [Project documentation main page](https://boostgsoc18.github.io/Real/)
    * [Doxygen documentation](https://boostgsoc18.github.io/Real/doc/html/index.html)
-   * [Medium post](https://boostgsoc18.github.io/Real/doc/html/index.html)
+   * [Medium post](https://medium.com/@laobelloli/boost-real-9e2dfbfbed5b)
 
 
 ## Introduction

@@ -1,0 +1,6 @@
+ignore:
+  - "cmake-build-debug/**"
+  - "cmake-modules/**"
+  - "doc/**"
+  - "external/**"
+  - "test/**"

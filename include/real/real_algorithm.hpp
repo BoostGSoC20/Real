@@ -18,7 +18,7 @@ namespace boost {
          */
         class real_algorithm {
 
-            // Number representation as a function that returns the number digits
+            // Number representation as a function that return the number digits
             // an integer part and a sign (+/-)
             int (*_get_nth_digit)(unsigned int);
             int _exponent;
@@ -36,7 +36,7 @@ namespace boost {
              *
              * @brief is a forward iterator that iterates a boost::real::real_algorithm number approximation
              * intervals. The iterator calculates the initial interval with the initial precision and
-             * then it increases the precision in each iteration (++) and recalculates the interval.
+             * then it increase the precision in each iteration (++) and recalculate the interval.
              */
             class const_precision_iterator {
             private:
@@ -77,7 +77,7 @@ namespace boost {
                  * @brief *Pointer constructor:* Construct a new boost::real::real_algorithm::const_precision_iterator
                  * pointing to the boost::real::real_algorithm number to iterate the number approximation intervals.
                  *
-                 * The iterator will start pointing to the lowest precision interval.
+                 * The iterator will start pointing the lowest precision interval.
                  *
                  * @param real_number - the boost::real::real number to iterate.
                  */
@@ -152,7 +152,7 @@ namespace boost {
                 }
 
                 /**
-                 * @brief It compares by value equality; two boost::real::real_algorithm::const_precision_iterators
+                 * @brief It compare by value equality; two boost::real::real_algorithm::const_precision_iterators
                  * are equals if they are pointing to the same real number and are in the same precision iteration.
                  *
                  * @param other - A boost::real::real_algorithm::const_precision_iterator that is the right side operand
@@ -170,7 +170,7 @@ namespace boost {
                 }
 
                 /**
-                 * @brief It compares by value not equal; two boost::real::real_algorithm::const_precision_iterators.
+                 * @brief It compare by value not equal; two boost::real::real_algorithm::const_precision_iterators.
                  *
                  * @param other - A boost::real::real_algorithm::const_precision_iterator that is the right side operand
                  * @return a bool that is true if and only if both iterators are not equals.
@@ -200,7 +200,7 @@ namespace boost {
              * this function returns the n-th number digit. The number is positive.
              *
              * @param get_nth_digit - a function pointer or lambda function that given an unsigned
-             * int "n" as parameter, returns the number n-th digit.
+             * int "n" as parameter, it returns the number n-th digit.
              * @param exponent - an integer representing the number exponent.
              */
             explicit real_algorithm(int (*get_nth_digit)(unsigned int), int exponent)
@@ -214,7 +214,7 @@ namespace boost {
              * is positive or negative.
              *
              * @param get_nth_digit - a function pointer or lambda function that given an unsigned
-             * int "n" as parameter, returns the number n-th digit.
+             * int "n" as parameter, it returns the number n-th digit.
              * @param exponent - an integer representing the number exponent.
              * @param positive - a bool that represent the number sign. If positive is set to true,
              * the number is positive, otherwise is negative.

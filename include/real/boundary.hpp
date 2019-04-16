@@ -18,12 +18,12 @@ namespace boost {
             bool positive = true;
 
             /**
-             * @brief *default constructor*: It constructs a representation of the number zero.
+             * @brief *default constructor*: It construct a representation of the number zero.
              */
             boundary() = default;
 
             /**
-             * @brief *Copy constructor:* It constructs a new boost::real::boundary that is a copy of the
+             * @brief *Copy constructor:* It construct a new boost::real::boundary that is a copy of the
              * other boost::real::boundary.
              *
              * @param other - The boost::real::boundary to copy.
@@ -109,7 +109,7 @@ namespace boost {
             /**
              * @brief Generates a string representation of the boost::real::boundary.
              *
-             * @return a string that represents the state of the boost::real::boundary
+             * @return a string that represent the state of the boost::real::boundary
              */
             std::basic_string<char> as_string() const {
                 std::basic_string<char> result = "";
@@ -118,7 +118,7 @@ namespace boost {
                     result = "-";
                 }
 
-                // If the number is too large, scientific notation is used to print it.
+                // If the number is to large, scientific notation is used to print it.
                 if ((this->exponent < -10) || (this->exponent > (int)this->digits.size() + 10)) {
                     result += "0.";
 
@@ -247,9 +247,9 @@ namespace boost {
             }
 
             /**
-             * @brief It returns the number of digits of the boost::real::boundary
+             * @brief It return the amount of digit of the boost::real::boundary
              *
-             * @return an unsigned long representing the number of digits of the boost::real::boundary
+             * @return an unsigne long representing the number of digits of the boost::real::boundary
              */
             unsigned long size() {
                 return this->digits.size();

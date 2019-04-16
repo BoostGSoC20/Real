@@ -19,7 +19,7 @@ namespace boost {
              * @param lhs - a std::vector<int> used as the left side operand
              * @param rhs - a std::vector<int> used as the right side operand
              *
-             * @return a bool that is true if and only if, the number represented by lsh is lower than
+             * @return a bool that is true if and only if, the represented number by lsh is lower than
              * the represented number by rhs.
              */
             bool aligned_vectors_is_lower(const std::vector<int> &lhs, const std::vector<int> &rhs) {

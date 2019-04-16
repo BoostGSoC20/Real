@@ -95,7 +95,7 @@ namespace boost {
              *
              * @brief is a forward iterator that iterates a boost::real::real number approximation
              * intervals. The iterator calculates the initial interval with the initial precision and
-             * then it increases the precision in each iteration (++) and recalculates the interval.
+             * then it increase the precision in each iteration (++) and recalculate the interval.
              */
             class const_precision_iterator {
             private:
@@ -294,7 +294,7 @@ namespace boost {
                  * @brief *Pointer constructor:* Construct a new boost::real::real::const_precision_iterator
                  * pointing to the boost::real::real number to iterate the number approximation intervals.
                  *
-                 * The iterator will start pointing to the lowest precision interval.
+                 * The iterator will start pointing the lowest precision interval.
                  *
                  * @param real_number - the boost::real::real number to iterate.
                  */
@@ -397,7 +397,7 @@ namespace boost {
                 };
 
                 /**
-                 * @brief It compares by value equality; two boost::real::real::const_precision_iterators
+                 * @brief It compare by value equality; two boost::real::real::const_precision_iterators
                  * are equals if they are pointing to the same real number and are in the same precision iteration.
                  *
                  * @param other - A boost::real::real::const_precision_iterator that is the right side operand
@@ -413,7 +413,7 @@ namespace boost {
                 }
 
                 /**
-                 * @brief It compares by value not equal; two boost::real::real::const_precision_iterators.
+                 * @brief It compare by value not equal; two boost::real::real::const_precision_iterators.
                  *
                  * @param other - A boost::real::real::const_precision_iterator that is the right side operand
                  * @return a bool that is true if and only if both iterators are not equals.
@@ -424,10 +424,10 @@ namespace boost {
             };
 
             /**
-             * @brief *Default constructor:* Construct a boost::real::real with undefined representation
+             * @brief *Default constructor:* Constructr a boost::real::real with undefined representation
              * and behaviour.
              *
-             * @note This constructor exists to allow working with other libraries as std::map or std::tuple
+             * @note This constructor exist to allow working with other libraries as std::map or std::tuple
              */
             real() = default;
 
@@ -458,7 +458,7 @@ namespace boost {
 
             /**
              * @brief *Initializer list constructor:* Creates a boost::real::real_explicit instance
-             * that represents an integer number where all the digits parameter numbers are from
+             * that represents an integer number where all the digits parameter numbers are form
              * the integer part in the same order. The number is set as positive.
              *
              * @param digits - a initializer_list<int> that represents the number digits.
@@ -474,7 +474,7 @@ namespace boost {
              * the same order.
              *
              * @param digits - an initializer_list<int> that represent the number digits.
-             * @param positive - a bool that represents the number sign. If positive is set to true,
+             * @param positive - a bool that represent the number sign. If positive is set to true,
              * the number is positive, otherwise is negative.
              */
             real(std::initializer_list<int> digits, bool positive)
@@ -722,7 +722,7 @@ namespace boost {
             }
 
             /**
-             * @brief It assigns a new copy of the other boost::real::real number in the *this boost::real::real number.
+             * @brief It assign a new copy of the other boost::real::real number in the *this boost::real::real number.
              *
              * @param other - the boost::real::real number to copy.
              * @return a reference of *this with the new represented number.
@@ -736,8 +736,8 @@ namespace boost {
             }
 
             /**
-             * @brief It constructs a boost::real::real number from the std::string and assigns it
-             * to the *this boost::real::real number.
+             * @brief It constructs and boost::real::real number from the std::string and assign it
+             * in the *this boost::real::real number.
              *
              * @param number - a valid string representing a number.
              * @return a reference of *this with the new represented number.

@@ -13,7 +13,7 @@ namespace boost {
              * binary integer version.
              *
              * @param n - The number digit index.
-             * @return The value of the champernowne number n-th digit (either 0 or 1)
+             * @return The value if the champernowne number n-th digit (either 0 or 1)
              */
             int champernowne_binary_get_nth_digit(unsigned int n) {
                 std::vector<int> binary = {1};

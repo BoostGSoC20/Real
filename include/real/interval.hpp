@@ -20,15 +20,15 @@ namespace boost {
             boost::real::boundary upper_bound;
 
             /**
-            * @brief *default constructor*: It constructs a representation of the interval [0,0].
+            * @brief *default constructor*: It construct a representation of the interval [0,0].
             */
             interval() = default;
 
             /**
              * @brief Generates a string representation of the boost::real::interval.
-             * The string represents the interval with the format [lower boundary, upper boundary]
+             * The string represent the interval with the format [lower boundary, upper boundary]
              *
-             * @return a string that represents the state of the boost::real::interval.
+             * @return a string that represent the state of the boost::real::interval.
              */
             std::string as_string() const {
 
@@ -47,7 +47,7 @@ namespace boost {
 
             /**
              * @brief Swaps the lower boundary with the upper boundary. After this method is called
-             * the boost::real::interval boundaries are swapped.
+             * the boost::real::interval boundaries are swaped.
              */
             void swap_bounds() {
                 this->lower_bound.swap(this->upper_bound);
@@ -84,7 +84,7 @@ namespace boost {
              */
             bool positive() const {
                 // If the lower bound of a approximation_interval is positive, then the upper bound is also positive
-                // and the approximation_interval is fully contained in the positive number line.
+                // and the approximation_interval is fully contained in the positive number line
                 return this->lower_bound.positive;
             }
 
@@ -95,7 +95,7 @@ namespace boost {
              */
             bool negative() const {
                 // If the upper bound of a approximation_interval is negative, then the lower bound is also negative
-                // and the approximation_interval is fully contained in the negative number line.
+                // and the approximation_interval is fully contained in the negative number line
                 return !this->upper_bound.positive;
             }
 
@@ -103,17 +103,17 @@ namespace boost {
              * @brief Equality comparator. Determines if *this is equal or not to other.
              *
              * @param other - a boost::real::interval to compare to *this.
-             * @return a bool that is true if and only if *this and other boundaries are equals.
+             * @return a bool that is true if and only if *this and equal boundaries are equals.
              */
             bool operator==(const boost::real::interval& other) const {
                 return this->lower_bound == other.lower_bound && this->upper_bound == other.upper_bound;
             }
 
             /**
-             * @brief Determines if the interval represents a single number. i.e. the lower and upper
+             * @brief Determines if the interval represent a single number. i.e. the lower and upper
              * boundaries are equals.
              *
-             * @return a bool that is true if and only if the interval represents a single number.
+             * @return a bool that is true if and only if the interval represent a single number.
              */
             bool is_a_number() const {
                 return this->lower_bound == this->upper_bound;

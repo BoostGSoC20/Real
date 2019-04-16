@@ -20,7 +20,7 @@ namespace boost {
              * @author Laouen Mayal Louan Belloli
              *
              * @brief Implement the addition between two std::vector<int> that represent numbers.
-             * The numbers in the vectors are the digits and each vector has a corresponding exponent
+             * The numbers in the vectors are the digit and each vector has a corresponding exponent
              * to correctly align the vectors for the addition.
              *
              * @param lhs - a std::vector<int> representing the left operand.

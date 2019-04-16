@@ -11,7 +11,7 @@ namespace boost {
 
             /**
              * @brief The Champernowne is a transcendental real constant whose digits are formed by
-             * consecutively concatenated representations of sucessive integers in a determined base.
+             * consecutively concatenate representations of sucessive integers in a determined base.
              * In this function, a binary base is used.
              */
             boost::real::real CHAMPERNOWNE_BINARY(boost::real::irrational::champernowne_binary_get_nth_digit, 0);

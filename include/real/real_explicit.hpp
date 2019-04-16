@@ -28,7 +28,7 @@ namespace boost {
             int _exponent = 1;
             bool _positive = true;
 
-            // The number max precision is the same as the explicit number digits size.
+            // The number max precision is the same as the explicit number digits size
             unsigned int _maximum_precision = 1;
         public:
 
@@ -37,7 +37,7 @@ namespace boost {
              *
              * @brief is a forward iterator that iterates a boost::real::real_explicit number approximation
              * intervals. The iterator calculates the initial interval with the initial precision and
-             * then it increases the precision in each iteration (++) and recalculates the interval.
+             * then it increase the precision in each iteration (++) and recalculate the interval.
              */
             class const_precision_iterator {
             private:
@@ -119,7 +119,7 @@ namespace boost {
                     // If the explicit number full precision has been already reached (the end)
                     // is the end of the iterator
                     if (this->_n >= (int)this->_real_ptr->_digits.size()) {
-                        // TODO: Remove commented lines that are depreciated code
+                        // TODO: Remove commented lines that are deprecatod code
                         //this->approximation_interval.lower_bound.push_back(0);
                         //this->approximation_interval.upper_bound.push_back(0);
                         //this->_n++;
@@ -132,7 +132,7 @@ namespace boost {
                     this->check_and_swap_boundaries();
 
                     // If the explicit number just reaches the full precision (the end)
-                    // then set both boundaries are equals.
+                    // then set both boundaries are equals
                     if (this->_n + n >= (int)this->_real_ptr->_digits.size()) {
 
                         for(int i = this->_n; i < (int)this->_real_ptr->_digits.size(); i++) {
@@ -180,7 +180,7 @@ namespace boost {
                 }
 
                 /**
-                 * @brief It compares by value equality; two boost::real::real_explicit::const_precision_iterators
+                 * @brief It compare by value equality; two boost::real::real_explicit::const_precision_iterators
                  * are equals if they are pointing to the same real number and are in the same precision iteration.
                  *
                  * @param other - A boost::real::real_explicit::const_precision_iterator that is the right side operand
@@ -198,7 +198,7 @@ namespace boost {
                 }
 
                 /**
-                 * @brief It compares by value not equal; two boost::real::real_explicit::const_precision_iterators.
+                 * @brief It compare by value not equal; two boost::real::real_explicit::const_precision_iterators.
                  *
                  * @param other - A boost::real::real_explicit::const_precision_iterator that is the right side operand
                  * @return a bool that is true if and only if both iterators are not equals.
@@ -209,7 +209,7 @@ namespace boost {
             };
 
             /**
-             * @brief *Default constructor:* Constructs an empty boost::real::real_explicit with
+             * @brief *Default constructor:* Construct an empty boost::real::real_explicit with
              * undefined representation and behaviour.
              */
             real_explicit() = default;
@@ -223,7 +223,7 @@ namespace boost {
 
             /**
              * @brief *String constructor:* Creates a boost::real::real_explicit instance by
-             * parsing the string. The string must have a valid number, otherwise, the
+             * parsing the string. The string must have a valid number, in other case, the
              * constructor will throw an boost::real::invalid_string_number exception.
              *
              * @param number - a valid string representing a number.
@@ -250,7 +250,7 @@ namespace boost {
                 int exponent = 0;
                 dot_amount = 0;
 
-                // Check whether the number is explicitly specified as positive or negative.
+                // Check whether the number is explicitly specified as positive or negative
                 unsigned int first_index = 0;
                 if (number.at(first_index) == '+') {
                     this->_positive = true;
@@ -261,7 +261,7 @@ namespace boost {
                 }
 
                 // Remove zeros from the lefts side
-                // Note: We know at this point that number.length > 0 because of the first check
+                // Note: We know at this point that number.length > 0 because the first check
                 unsigned int last_index = (unsigned int)number.length() - 1;
                 while (last_index > first_index && (number.at(last_index) == '0' || number.at(last_index) == '.')) {
                     if (number.at(last_index) == '.') {
@@ -273,7 +273,7 @@ namespace boost {
                     }
                 }
 
-                // If the number is composed by all zeros, then it is zero.
+                // The number is all composed by zeros, then it is zero
                 if (last_index == first_index && number.at(last_index) == '0') {
                     this->_digits = {0};
                     this->_exponent = 0;
@@ -281,7 +281,7 @@ namespace boost {
                 }
 
                 // Remove zeros from the right side
-                // Note: If the number is all made by zeros, then the code never reaches this part
+                // Note: if the number is all made by zeros, then the code never reaches this part
                 // This is why we don't need to check that first_index is lower than the string length
                 while (number.at(first_index) == '0') {
                     first_index++;
@@ -324,7 +324,7 @@ namespace boost {
              * integer part and the elements of the digits list are the digits the number in the same order.
              * The number is set as positive.
              *
-             * @param digits - an initializer_list<int> that represents the number digits.
+             * @param digits - an initializer_list<int> that represent the number digits.
              * @param exponent - an integer representing the number exponent.
              */
             real_explicit(std::initializer_list<int> digits, int exponent) :
@@ -337,12 +337,12 @@ namespace boost {
              * @brief *Initializer list constructor with exponent and sign:* Creates a
              * boost::real::real_explicit instance that represents the number where the exponent
              * is used to set the number integer part and the elements of the digit list are the
-             * digits of the number in the same order. This constructor uses the sign to determine
+             * digits the number in the same order. This constructor uses the sign to determine
              * if the number is positive or negative.
              *
-             * @param digits - an initializer_list<int> that represents the number digits.
+             * @param digits - an initializer_list<int> that represent the number digits.
              * @param exponent - an integer representing the number exponent.
-             * @param positive - a bool that represents the number sign. If positive is set to true,
+             * @param positive - a bool that represent the number sign. If positive is set to true,
              * the number is positive, otherwise is negative.
              */
             real_explicit(std::initializer_list<int> digits, int exponent, bool positive):
@@ -353,10 +353,10 @@ namespace boost {
             {};
 
             /**
-             * @brief Returns the maximum allowed precision, if that precision is reached and an
-             * operator needs more precision, a precision_exception should be thrown.
+             * @brief Returns te maximum allowed precision, if that precision is reached and an
+             * operator need more precision, a precision_exception should be thrown.
              *
-             * @return an integer with the maximum allowed precision.
+             * @return and integer with the maximum allowed precision.
              */
             unsigned int max_precision() const {
                 return this->_maximum_precision;
@@ -396,7 +396,7 @@ namespace boost {
              * @brief Construct a new boost::real::real_explicit::const_precision_iterator that iterates the number
              * approximation intervals in increasing order according to the approximation precision.
              *
-             * The iterator starts pointing to the interval with the minimum precision.
+             * The iterator starts pointing the interval with the minimum precision.
              *
              * @return a boost::real::real_explicit::const_precision_iterator of the number.
              */
@@ -405,10 +405,10 @@ namespace boost {
             }
 
             /**
-             * @brief Constructs a new boost::real::real_explicit::const_precision_iterator that iterates the number
+             * @brief Construct a new boost::real::real_explicit::const_precision_iterator that iterates the number
              * approximation intervals in increasing order according to the approximation precision.
              *
-             * The iterator starts pointing to the interval with the maximum allowed precision.
+             * The iterator starts pointing the interval with the maximum allowed precision.
              *
              * @return a boost::real::real_explicit::const_precision_iterator of the number.
              */
@@ -433,7 +433,7 @@ namespace boost {
             }
 
             /**
-             * @brief It assigns a new copy of the other boost::real::real_explicit number in the *this boost::real::real_explicit number.
+             * @brief It assign a new copy of the other boost::real::real_explicit number in the *this boost::real::real_explicit number.
              *
              * @param other - the boost::real::real_explicit number to copy.
              * @return a reference of *this with the new represented number.

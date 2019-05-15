@@ -32,6 +32,13 @@ namespace boost {
                 return "The string passed to construct the boost::real number is invalid";
             }
         };
+
+        struct undefined_max_precision_exception : public std::exception {
+
+            const char * what () const throw () override {
+                return "The maximum precision for boost::real has not been defined";
+            }
+        };
     }
 }
 

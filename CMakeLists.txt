@@ -44,3 +44,10 @@ set_target_properties(Boost.Real_headers PROPERTIES
                                                  EXCLUDE_FROM_ALL TRUE
                                                  EXCLUDE_FROM_DEFAULT_BUILD TRUE
                                                  LINKER_LANGUAGE CXX)
+                                             
+#Google Benchmark, turn on/off with -DBENCH=ON or OFF
+find_package(Threads REQUIRED)
+option(BENCH "Build benchmarks" ON)
+if(BENCH)
+    add_subdirectory(bench)
+endif()

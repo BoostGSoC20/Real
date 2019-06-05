@@ -1,6 +1,9 @@
 #ifndef BOOST_REAL_REAL_ALGORITHM_HPP
 #define BOOST_REAL_REAL_ALGORITHM_HPP
 
+#include <optional>
+
+#include <real/real_exception.hpp>
 #include <real/interval.hpp>
 
 namespace boost {
@@ -29,7 +32,7 @@ namespace boost {
 
         public:
 
-            static unsigned int maximum_precision;
+            static std::optional<unsigned int> maximum_precision;
 
             /**
              * @author Laouen Mayal Louan Belloli
@@ -233,7 +236,9 @@ namespace boost {
              * @return an integer with the maximum allowed precision.
              */
             unsigned int max_precision() const {
-                return boost::real::real_algorithm::maximum_precision;
+                if(!boost::real::real_algorithm::maximum_precision)
+                    throw boost::real::undefined_max_precision_exception();
+                return boost::real::real_algorithm::maximum_precision.value();
             }
 
             /**
@@ -280,8 +285,10 @@ namespace boost {
              * @return a boost::real::real_algorithm::const_precision_iterator of the number.
              */
             const_precision_iterator cend() const {
+                if(!boost::real::real_algorithm::maximum_precision)
+                    throw boost::real::undefined_max_precision_exception();
                 const_precision_iterator it(this);
-                it.iterate_n_times(boost::real::real_algorithm::maximum_precision - 1);
+                it.iterate_n_times(boost::real::real_algorithm::maximum_precision.value() - 1);
                 return it;
             }
 

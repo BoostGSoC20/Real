@@ -2,6 +2,7 @@
 #define BOOST_REAL_REAL_HPP
 
 #include <iostream>
+#include <optional>
 #include <vector>
 #include <algorithm>
 #include <initializer_list>
@@ -88,7 +89,7 @@ namespace boost {
             /**
              * @brief Determines the maximum precision to use
              */
-            static unsigned int maximum_precision;
+            static std::optional<unsigned int> maximum_precision;
 
             /**
              * @author Laouen Mayal Louan Belloli
@@ -557,7 +558,9 @@ namespace boost {
              */
             unsigned int max_precision() const {
                 if (this->_maximum_precision == 0) {
-                    return boost::real::real::maximum_precision;
+                    if(!boost::real::real::maximum_precision)
+                        throw boost::real::undefined_max_precision_exception();
+                    return boost::real::real::maximum_precision.value();
                 }
 
                 return this->_maximum_precision;

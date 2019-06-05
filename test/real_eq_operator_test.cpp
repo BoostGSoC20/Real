@@ -940,4 +940,54 @@ TEST_CASE("Operator ==") {
             }
         }
     }
+
+    SECTION("Testing UDL") {
+        SECTION("explicit == explicit") {
+            SECTION("integer == integer") {
+                auto a = 123_r;
+                auto b = 123_r;
+
+                CHECK(a == b);
+            }
+
+            SECTION("integer == double") {
+                auto a = 123_r;
+                auto b = 123.00_r;
+
+                CHECK(a == b);
+            }
+
+            SECTION("double == double") {
+                auto a = 123.45_r;
+                auto b = 123.45_r;
+
+                CHECK(a == b);
+            }
+
+            SECTION("double == double") {
+                auto a = 123.22_r;
+                auto b = 123.2200_r;
+
+                CHECK(a == b);
+            }
+            SECTION("string == integer") {
+                auto a = "123"_r;
+                auto b = 123_r;
+
+                CHECK(a == b);
+            }
+            SECTION("string == string") {
+                auto a = "123"_r;
+                auto b = "123"_r;
+
+                CHECK(a == b);
+            }
+            SECTION("string with exponent == double") {
+                auto a = "123.456e-1"_r;
+                auto b = 12.3456_r;
+
+                CHECK(a == b);
+            }
+        }
+    }
 }

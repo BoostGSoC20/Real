@@ -5,6 +5,7 @@
 #include <iostream>
 #include <initializer_list>
 #include <string>
+#include <regex>
 
 #include <real/real_exception.hpp>
 #include <real/real_helpers.hpp>
@@ -221,102 +222,82 @@ namespace boost {
              */
             real_explicit(const real_explicit& other)  = default;
 
-            /**
-             * @brief *String constructor:* Creates a boost::real::real_explicit instance by
-             * parsing the string. The string must have a valid number, otherwise, the
-             * constructor will throw an boost::real::invalid_string_number exception.
-             *
-             * @param number - a valid string representing a number.
-             *
-             * @throws boost::real::invalid_string_number exception
-             */
             explicit real_explicit(const std::string& number) {
-                // Check that is not an empty string
-                if (number.length() == 0) {
+                std::regex decimal("((\\+|-)?[[:digit:]]?+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?");
+                if (!std::regex_match (number, decimal))
                     throw boost::real::invalid_string_number_exception();
+                //Know at this point that representation is valid
+                std::string decimal_part;
+                std::string integer_part;
+                std::size_t e_pos = number.find('e');
+                if(e_pos == std::string::npos)
+                    std::size_t e_pos = number.find('E');
+                int add_exponent = 0;
+                bool has_exponent = false;
+                if(e_pos != std::string::npos) {
+                    has_exponent = true;
+                    std::string exp = number.substr(e_pos+1);
+                    add_exponent = std::stoi(exp);
                 }
-
-                // Check that there is no more that one '.' symbol
-                unsigned int dot_amount = 0;
-                for (const auto& c : number ) {
-                    if (c == '.' && dot_amount >= 1) {
-                        throw boost::real::invalid_string_number_exception();
-                    } else if (c == '.') {
-                        dot_amount++;
-                    }
+                std::size_t dot_pos = number.find('.');
+                if (dot_pos == std::string::npos) {
+                    integer_part = number;
+                    decimal_part = "";
                 }
-
-                bool there_is_dot = dot_amount > 0;
-                int exponent = 0;
-                dot_amount = 0;
-
-                // Check whether the number is explicitly specified as positive or negative.
-                unsigned int first_index = 0;
-                if (number.at(first_index) == '+') {
+                else {
+                    integer_part = number.substr(0, dot_pos);
+                    if(has_exponent)
+                        decimal_part = number.substr(dot_pos+1, e_pos - dot_pos -1);
+                    else
+                        decimal_part = number.substr(dot_pos+1);
+                }
+                if(integer_part[0]=='+') {
                     this->_positive = true;
-                    first_index++;
-                } else if (number.at(first_index) == '-') {
+                    integer_part = integer_part.substr(1);
+                }
+                if(integer_part[0]=='-') {
                     this->_positive = false;
-                    first_index++;
+                    integer_part = integer_part.substr(1);
                 }
-
-                // Remove zeros from the lefts side
-                // Note: We know at this point that number.length > 0 because of the first check
-                unsigned int last_index = (unsigned int)number.length() - 1;
-                while (last_index > first_index && (number.at(last_index) == '0' || number.at(last_index) == '.')) {
-                    if (number.at(last_index) == '.') {
-                        dot_amount++;
-                    }
-                    last_index--;
-                    if (!there_is_dot || dot_amount > 0) {
-                        exponent++; // remove zeros from the integer part increases the exponent
-                    }
+                int i = 0;
+                while (integer_part[i]=='0'&&i<integer_part.length()) {
+                    ++i;
                 }
-
-                // If the number is composed by all zeros, then it is zero.
-                if (last_index == first_index && number.at(last_index) == '0') {
+                integer_part = integer_part.substr(i);
+                i = decimal_part.length()-1;
+                while (decimal_part[i]=='0'&&i>0) {
+                    --i;
+                }
+                decimal_part = decimal_part.substr(0, i+1);
+                //decimal and integer parts stripped of zeroes
+                int exponent = integer_part.length() + add_exponent;
+                if(decimal_part.empty()) {
+                    i = integer_part.length()-1;
+                    while (integer_part[i]=='0'&&i>0)
+                        --i;
+                    integer_part = integer_part.substr(0, i+1);
+                }
+                if(integer_part.empty()) {
+                    i = 0;
+                    while (decimal_part[i]=='0'&&i<decimal_part.length()) {
+                        ++i;
+                        --exponent;
+                    }
+                    decimal_part = decimal_part.substr(i);
+                }
+                if(integer_part.empty()&&decimal_part.empty()) {
                     this->_digits = {0};
                     this->_exponent = 0;
                     return;
                 }
-
-                // Remove zeros from the right side
-                // Note: If the number is all made by zeros, then the code never reaches this part
-                // This is why we don't need to check that first_index is lower than the string length
-                while (number.at(first_index) == '0') {
-                    first_index++;
-                }
-
-                if (number.at(first_index) == '.') {
-                    dot_amount++;
-                    first_index++;
-                    while (number.at(first_index) == '0') {
-                        first_index++;
-                        exponent--;
-                    }
-                }
-
-                for (unsigned int i = first_index; i <= last_index; i++) {
-
-                    if (number.at(i) == '.') {
-                        dot_amount++;
-
-                    } else {
-                        // This will only affect if the '.' appears, in that case, exponent
-                        // wasn't negative and no inconsistency is made.
-                        if (dot_amount == 0)  exponent++;
-                        try {
-                            this->_digits.push_back(number.at(i) - '0');
-                        } catch (const std::invalid_argument& e) {
-                            throw boost::real::invalid_string_number_exception();
-                        }
-
-                    }
-                }
-
                 this->_exponent = exponent;
-                this->_maximum_precision = (int)this->_digits.size();
-            };
+                for (const auto& c : integer_part ) {
+                    this->_digits.push_back(c-'0');
+                }
+                for (const auto& c : decimal_part ) {
+                    this->_digits.push_back(c-'0');
+                }
+            }           
 
             /**
              * @brief *Initializer list constructor with exponent:* Creates a boost::real::real_explicit

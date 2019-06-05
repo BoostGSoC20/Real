@@ -988,6 +988,21 @@ TEST_CASE("Operator ==") {
 
                 CHECK(a == b);
             }
+            SECTION("trailing zeroes == without trailing zeroes") {
+
+                SECTION("Without exponent") {
+                    auto a = "12300.00"_r;
+                    auto b = 12300_r;
+
+                    CHECK(a == b);
+                }
+                SECTION("With exponent") {
+                    auto a = "12300.00e-2"_r;
+                    auto b = 123_r;
+
+                    CHECK(a == b);
+                }
+            }
         }
     }
 }

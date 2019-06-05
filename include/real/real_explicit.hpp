@@ -222,6 +222,15 @@ namespace boost {
              */
             real_explicit(const real_explicit& other)  = default;
 
+            /**
+             * @brief *String constructor:* Creates a boost::real::real_explicit instance by
+             * parsing the string. The string must have a valid number, otherwise, the
+             * constructor will throw an boost::real::invalid_string_number exception.
+             *
+             * @param number - a valid string representing a number.
+             *
+             * @throws boost::real::invalid_string_number exception
+             */
             explicit real_explicit(const std::string& number) {
                 std::regex decimal("((\\+|-)?[[:digit:]]?+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?");
                 if (!std::regex_match (number, decimal))
@@ -230,13 +239,13 @@ namespace boost {
                 std::string decimal_part;
                 std::string integer_part;
                 std::size_t e_pos = number.find('e');
-                if(e_pos == std::string::npos)
+                if (e_pos == std::string::npos)
                     std::size_t e_pos = number.find('E');
                 int add_exponent = 0;
                 bool has_exponent = false;
-                if(e_pos != std::string::npos) {
+                if (e_pos != std::string::npos) {
                     has_exponent = true;
-                    std::string exp = number.substr(e_pos+1);
+                    std::string exp = number.substr(e_pos + 1);
                     add_exponent = std::stoi(exp);
                 }
                 std::size_t dot_pos = number.find('.');
@@ -246,56 +255,56 @@ namespace boost {
                 }
                 else {
                     integer_part = number.substr(0, dot_pos);
-                    if(has_exponent)
-                        decimal_part = number.substr(dot_pos+1, e_pos - dot_pos -1);
+                    if (has_exponent)
+                        decimal_part = number.substr(dot_pos + 1, e_pos - dot_pos - 1);
                     else
-                        decimal_part = number.substr(dot_pos+1);
+                        decimal_part = number.substr(dot_pos + 1);
                 }
-                if(integer_part[0]=='+') {
+                if (integer_part[0] == '+') {
                     this->_positive = true;
                     integer_part = integer_part.substr(1);
                 }
-                if(integer_part[0]=='-') {
+                else if (integer_part[0] == '-') {
                     this->_positive = false;
                     integer_part = integer_part.substr(1);
                 }
                 int i = 0;
-                while (integer_part[i]=='0'&&i<integer_part.length()) {
+                while (integer_part[i] == '0' && i < integer_part.length()) {
                     ++i;
                 }
                 integer_part = integer_part.substr(i);
-                i = decimal_part.length()-1;
-                while (decimal_part[i]=='0'&&i>0) {
+                i = decimal_part.length() - 1;
+                while (decimal_part[i] == '0' && i > 0) {
                     --i;
                 }
-                decimal_part = decimal_part.substr(0, i+1);
+                decimal_part = decimal_part.substr(0, i + 1);
                 //decimal and integer parts stripped of zeroes
                 int exponent = integer_part.length() + add_exponent;
-                if(decimal_part.empty()) {
-                    i = integer_part.length()-1;
-                    while (integer_part[i]=='0'&&i>0)
+                if (decimal_part.empty()) {
+                    i = integer_part.length() - 1;
+                    while (integer_part[i] == '0' && i > 0)
                         --i;
-                    integer_part = integer_part.substr(0, i+1);
+                    integer_part = integer_part.substr(0, i + 1);
                 }
-                if(integer_part.empty()) {
+                if (integer_part.empty()) {
                     i = 0;
-                    while (decimal_part[i]=='0'&&i<decimal_part.length()) {
+                    while (decimal_part[i] == '0' && i < decimal_part.length()) {
                         ++i;
                         --exponent;
                     }
                     decimal_part = decimal_part.substr(i);
                 }
-                if(integer_part.empty()&&decimal_part.empty()) {
+                if (integer_part.empty() && decimal_part.empty()) {
                     this->_digits = {0};
                     this->_exponent = 0;
                     return;
                 }
                 this->_exponent = exponent;
                 for (const auto& c : integer_part ) {
-                    this->_digits.push_back(c-'0');
+                    this->_digits.push_back(c - '0');
                 }
                 for (const auto& c : decimal_part ) {
-                    this->_digits.push_back(c-'0');
+                    this->_digits.push_back(c - '0');
                 }
             }           
 

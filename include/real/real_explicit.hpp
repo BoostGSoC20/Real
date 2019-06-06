@@ -232,34 +232,14 @@ namespace boost {
              * @throws boost::real::invalid_string_number exception
              */
             explicit real_explicit(const std::string& number) {
-                std::regex decimal("((\\+|-)?[[:digit:]]?+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?");
+                std::regex decimal("((\\+|-)?[[:digit:]]*)(\\.(([[:digit:]]+)?))?((e|E)(((\\+|-)?)[[:digit:]]+))?");
                 if (!std::regex_match (number, decimal))
                     throw boost::real::invalid_string_number_exception();
                 //Know at this point that representation is valid
-                std::string decimal_part;
-                std::string integer_part;
-                std::size_t e_pos = number.find('e');
-                if (e_pos == std::string::npos)
-                    std::size_t e_pos = number.find('E');
-                int add_exponent = 0;
-                bool has_exponent = false;
-                if (e_pos != std::string::npos) {
-                    has_exponent = true;
-                    std::string exp = number.substr(e_pos + 1);
-                    add_exponent = std::stoi(exp);
-                }
-                std::size_t dot_pos = number.find('.');
-                if (dot_pos == std::string::npos) {
-                    integer_part = number;
-                    decimal_part = "";
-                }
-                else {
-                    integer_part = number.substr(0, dot_pos);
-                    if (has_exponent)
-                        decimal_part = number.substr(dot_pos + 1, e_pos - dot_pos - 1);
-                    else
-                        decimal_part = number.substr(dot_pos + 1);
-                }
+                std::string decimal_part = regex_replace(number, decimal, "$5");
+                std::string integer_part = regex_replace(number, decimal, "$1");
+                std::string exp = regex_replace(number, decimal, "$8");
+                int add_exponent = exp.length() == 0 ? 0 : std::stoi(exp);
                 if (integer_part[0] == '+') {
                     this->_positive = true;
                     integer_part = integer_part.substr(1);
@@ -268,17 +248,13 @@ namespace boost {
                     this->_positive = false;
                     integer_part = integer_part.substr(1);
                 }
-                int i = 0;
-                while (integer_part[i] == '0' && i < integer_part.length()) {
-                    ++i;
-                }
-                integer_part = integer_part.substr(i);
-                i = decimal_part.length() - 1;
+                integer_part = regex_replace(integer_part, std::regex("(0?+)([[:digit:]]?+)"), "$2");
+                int i = decimal_part.length() - 1;
                 while (decimal_part[i] == '0' && i > 0) {
                     --i;
                 }
                 decimal_part = decimal_part.substr(0, i + 1);
-                //decimal and integer parts stripped of zeroes
+                //decimal and integer parts are stripped of zeroes
                 int exponent = integer_part.length() + add_exponent;
                 if (decimal_part.empty()) {
                     i = integer_part.length() - 1;

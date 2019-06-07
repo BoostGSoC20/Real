@@ -3,13 +3,13 @@
 Boost.Real numerical data type for real numbers representation using range arithmetic.
 
 [![Build Status](https://travis-ci.org/BoostGSoC18/Real.svg?branch=master)](https://travis-ci.org/BoostGSoC18/Real) 
-[![codecov](https://codecov.io/gh/BoostGSoC18/Real/branch/master/graph/badge.svg)](https://codecov.io/gh/BoostGSoC18/Real)
+[![codecov](https://codecov.io/gh/BoostGSoC19/Real/branch/master/graph/badge.svg)](https://codecov.io/gh/BoostGSoC19/Real)
 
 
 ## Documentation
-   * [Project documentation main page](https://boostgsoc18.github.io/Real/)
-   * [Doxygen documentation](https://boostgsoc18.github.io/Real/doc/html/index.html)
-   * [Medium post](https://medium.com/@laobelloli/boost-real-9e2dfbfbed5b)
+   * [Project documentation main page](https://boostgsoc19.github.io/Real/)
+   * [Doxygen documentation](https://boostgsoc19.github.io/Real/doc/html/index.html)
+   * [Medium post 2018](https://medium.com/@laobelloli/boost-real-9e2dfbfbed5b)
 
 
 ## Introduction

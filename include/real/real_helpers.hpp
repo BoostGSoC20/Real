@@ -35,6 +35,8 @@ namespace boost {
                             const std::vector<int> &rhs,
                             int rhs_exponent,
                             std::vector<int> &result) {
+
+                std::vector<int> temp;
                 int carry = 0;
 
                 int fractional_length = std::max((int)lhs.size() - lhs_exponent, (int)rhs.size() - rhs_exponent);
@@ -62,14 +64,15 @@ namespace boost {
                         carry = 0;
                     }
 
-                    result.insert(result.begin(), digit);
+                    temp.insert(temp.begin(), digit);
                 }
 
                 if (carry == 1) {
-                    result.insert(result.begin(), 1);
+                    temp.insert(temp.begin(), 1);
                     integral_length++;
                 }
 
+                result = temp;
                 return integral_length;
             }
 
@@ -95,6 +98,7 @@ namespace boost {
                                  int rhs_exponent,
                                  std::vector<int> &result) {
 
+                std::vector<int> temp;
                 int fractional_length = std::max((int)lhs.size() - lhs_exponent, (int)rhs.size() - rhs_exponent);
                 int integral_length = std::max(lhs_exponent, rhs_exponent);
 
@@ -124,9 +128,10 @@ namespace boost {
                         borrow++;
                     }
 
-                    result.insert(result.begin(), lhs_digit - rhs_digit);
+                    temp.insert(temp.begin(), lhs_digit - rhs_digit);
                 }
 
+                result = temp;
                 return lhs_exponent;
             }
 
@@ -155,18 +160,18 @@ namespace boost {
                 // will keep the result number in vector in reverse order
                 // Digits: .123 | Exponent: -3 | .000123 <--- Number size is the Digits size less the exponent
                 // Digits: .123 | Exponent: 2  | 12.3
+                std::vector<int> temp;
                 size_t new_size = lhs.size() + rhs.size();
                 if (lhs_exponent < 0) new_size -= lhs_exponent; // <--- Less the exponent
                 if (rhs_exponent < 0) new_size -= rhs_exponent; // <--- Less the exponent
 
-                if (!result.empty()) result.clear();
-                for (int i = 0; i < (int)new_size; i++) result.push_back(0);
+                for (int i = 0; i < (int)new_size; i++) temp.push_back(0);
                 // TODO: Check why the assign method crashes.
                 //result.assign(new_size, 0);
 
                 // Below two indexes are used to find positions
                 // in result.
-                auto i_n1 = (int) result.size() - 1;
+                auto i_n1 = (int) temp.size() - 1;
 
                 // Go from right to left in lhs
                 for (int i = (int)lhs.size()-1; i>=0; i--) {
@@ -181,20 +186,20 @@ namespace boost {
 
                         // Multiply current digit of second number with current digit of first number
                         // and add result to previously stored result at current position.
-                        int sum = lhs[i]*rhs[j] + result[i_n1 - i_n2] + carry;
+                        int sum = lhs[i]*rhs[j] + temp[i_n1 - i_n2] + carry;
 
                         // Carry for next iteration
                         carry = sum / 10;
 
                         // Store result
-                        result[i_n1 - i_n2] = sum % 10;
+                        temp[i_n1 - i_n2] = sum % 10;
 
                         i_n2++;
                     }
 
                     // store carry in next cell
                     if (carry > 0) {
-                        result[i_n1 - i_n2] += carry;
+                        temp[i_n1 - i_n2] += carry;
                     }
 
                     // To shift position to left after every
@@ -203,8 +208,9 @@ namespace boost {
                 }
 
                 int fractional_part = ((int)lhs.size() - lhs_exponent) + ((int)rhs.size() - rhs_exponent);
-                int result_exponent = (int)result.size() - fractional_part;
+                int result_exponent = (int)temp.size() - fractional_part;
 
+                result = temp;
                 return result_exponent;
             }
 

@@ -249,7 +249,7 @@ namespace boost {
                     integer_part = integer_part.substr(1);
                 }
                 integer_part = regex_replace(integer_part, std::regex("(0?+)([[:digit:]]?+)"), "$2");
-                int i = decimal_part.length() - 1;
+                size_t i = decimal_part.length() - 1;
                 while (decimal_part[i] == '0' && i > 0) {
                     --i;
                 }
@@ -282,6 +282,7 @@ namespace boost {
                 for (const auto& c : decimal_part ) {
                     this->_digits.push_back(c - '0');
                 }
+                this->_maximum_precision = (int)this->_digits.size();
             }           
 
             /**

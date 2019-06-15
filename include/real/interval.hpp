@@ -118,12 +118,14 @@ namespace boost {
             bool is_a_number() const {
                 return this->lower_bound == this->upper_bound;
             }
+
+            friend std::ostream& operator<<(std::ostream& os, const boost::real::interval& interval) {
+                return os << interval.as_string();
+            }
+
         };
     }
 }
 
-std::ostream& operator<<(std::ostream& os, const boost::real::interval& interval) {
-    return os << interval.as_string();
-}
 
 #endif //BOOST_REAL_INTERVAL_HPP

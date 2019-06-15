@@ -5,42 +5,20 @@
 #include <test_helpers.hpp>
 
 
-TEST_CASE("Check whether max precision for real::algorithm and real is declared") {
-
-    SECTION("Checking if real precision is declared") {
-        REQUIRE(boost::real::real::maximum_precision);
-    }
-
-    SECTION("Checking if real::algorithm precision is declared") {
-        REQUIRE(boost::real::real_algorithm::maximum_precision);
-    }
-    
-}
-
 TEST_CASE("Iterate boost::real_algorithm::const_precision_iterator until full precision is reached") {
-    
-    SECTION("Undefined maximum precision error") {
-        boost::real::real_algorithm::maximum_precision.reset(); //Simulating undefined maximum precision
-        boost::real::real_algorithm a([](unsigned int n) -> int { return 3; }, 0);
-        
-        CHECK_THROWS_AS(a.cend(), boost::real::undefined_max_precision_exception);
-
-        boost::real::real_algorithm::maximum_precision = 10;    //Redefining maximum precision for further tests
-    }
-
     SECTION("Positive numbers") {
 
         SECTION("Without carry in the boundary calculations") {
 
             SECTION("Testing for number 0.333333...") {
+                boost::real::real a([](unsigned int n) -> int { return 3; }, 0);
+                auto approximation_it = a.get_real_itr().cbegin();
 
-                boost::real::real_algorithm a([](unsigned int n) -> int { return 3; }, 0);
-                boost::real::real_algorithm::const_precision_iterator approximation_it = a.cbegin();
                 boost::real::interval expected_interval;
-                expected_interval.lower_bound.exponent = a.exponent();
-                expected_interval.lower_bound.positive = a.positive();
-                expected_interval.upper_bound.exponent = a.exponent();
-                expected_interval.upper_bound.positive = a.positive();
+                expected_interval.lower_bound.exponent = approximation_it.get_interval().lower_bound.exponent;
+                expected_interval.lower_bound.positive = approximation_it.get_interval().lower_bound.positive;
+                expected_interval.upper_bound.exponent = approximation_it.get_interval().upper_bound.exponent;
+                expected_interval.upper_bound.positive = approximation_it.get_interval().upper_bound.positive;
                 for (int i = 0; i < 11; i++) {
 
                     if (i > 0) {
@@ -49,30 +27,30 @@ TEST_CASE("Iterate boost::real_algorithm::const_precision_iterator until full pr
                     expected_interval.lower_bound.push_back(a[i]);
                     expected_interval.upper_bound.push_back(a[i] + 1);
 
-                    CHECK( approximation_it.approximation_interval == expected_interval );
+                    CHECK( approximation_it.get_interval() == expected_interval );
                     ++approximation_it;
                 }
             }
         }
 
         SECTION("With carry in the upper boundary calculation, number 1.99999999989999999998999...") {
-            boost::real::real_algorithm a(
+            boost::real::real a(
                     [](unsigned int n) -> int {
                         if (n == 0) return 1;
                         else if (n == 10 || n == 20) return 8;
                         else return 9;
                     }, 3);
-            boost::real::real_algorithm::const_precision_iterator approximation_it = a.cbegin();
+            auto approximation_it = boost::real::real(a).get_real_itr().cbegin();
 
             boost::real::interval expected_interval;
-            expected_interval.lower_bound.exponent = a.exponent();
-            expected_interval.lower_bound.positive = a.positive();
-            expected_interval.upper_bound.exponent = a.exponent();
-            expected_interval.upper_bound.positive = a.positive();
+            expected_interval.lower_bound.exponent = approximation_it.get_interval().lower_bound.exponent;
+            expected_interval.lower_bound.positive = approximation_it.get_interval().lower_bound.positive;
+            expected_interval.upper_bound.exponent = approximation_it.get_interval().upper_bound.exponent;
+            expected_interval.upper_bound.positive = approximation_it.get_interval().upper_bound.positive;
             expected_interval.upper_bound.push_back(2);
             for (int i = 0; i < 10; i++) {
                 expected_interval.lower_bound.push_back(a[i]);
-                CHECK( approximation_it.approximation_interval == expected_interval );
+                CHECK( approximation_it.get_interval() == expected_interval );
                 ++approximation_it;
             }
 
@@ -81,7 +59,7 @@ TEST_CASE("Iterate boost::real_algorithm::const_precision_iterator until full pr
 
             for (int i = 10; i < 20; i++) {
                 expected_interval.lower_bound.push_back(a[i]);
-                CHECK( approximation_it.approximation_interval == expected_interval );
+                CHECK( approximation_it.get_interval() == expected_interval );
                 ++approximation_it;
             }
 
@@ -90,7 +68,7 @@ TEST_CASE("Iterate boost::real_algorithm::const_precision_iterator until full pr
 
             for (int i = 20; i < 50; i++) {
                 expected_interval.lower_bound.push_back(a[i]);
-                CHECK( approximation_it.approximation_interval == expected_interval );
+                CHECK( approximation_it.get_interval() == expected_interval );
                 ++approximation_it;
             }
         }
@@ -100,13 +78,13 @@ TEST_CASE("Iterate boost::real_algorithm::const_precision_iterator until full pr
 
         SECTION("Testing for number -0.333333...") {
 
-            boost::real::real_algorithm a([](unsigned int n) -> int { return 3; }, 0, false);
-            boost::real::real_algorithm::const_precision_iterator approximation_it = a.cbegin();
+            boost::real::real a([](unsigned int n) -> int { return 3; }, 0, false);
+            auto approximation_it = boost::real::real(a).get_real_itr().cbegin();
             boost::real::interval expected_interval;
-            expected_interval.lower_bound.exponent = a.exponent();
-            expected_interval.lower_bound.positive = a.positive();
-            expected_interval.upper_bound.exponent = a.exponent();
-            expected_interval.upper_bound.positive = a.positive();
+            expected_interval.lower_bound.exponent = approximation_it.get_interval().lower_bound.exponent;
+            expected_interval.lower_bound.positive = approximation_it.get_interval().lower_bound.positive;
+            expected_interval.upper_bound.exponent = approximation_it.get_interval().upper_bound.exponent;
+            expected_interval.upper_bound.positive = approximation_it.get_interval().upper_bound.positive;
             for (int i = 0; i < 11; i++) {
 
                 if (i > 0) {
@@ -115,30 +93,30 @@ TEST_CASE("Iterate boost::real_algorithm::const_precision_iterator until full pr
                 expected_interval.upper_bound.push_back(a[i]);
                 expected_interval.lower_bound.push_back(a[i] + 1);
 
-                CHECK( approximation_it.approximation_interval == expected_interval );
+                CHECK( approximation_it.get_interval() == expected_interval );
                 ++approximation_it;
             }
         }
 
         SECTION("With carry in the upper boundary calculation, number -1.99999999989999999998999...") {
-            boost::real::real_algorithm a(
+            boost::real::real a(
                     [](unsigned int n) -> int {
                         if (n == 0) return 1;
                         else if (n == 10 || n == 20) return 8;
                         else return 9;
                     }, 3, false);
-            boost::real::real_algorithm::const_precision_iterator approximation_it = a.cbegin();
+            auto approximation_it = boost::real::real(a).get_real_itr().cbegin();
 
             boost::real::interval expected_interval;
-            expected_interval.lower_bound.exponent = a.exponent();
-            expected_interval.lower_bound.positive = a.positive();
-            expected_interval.upper_bound.exponent = a.exponent();
-            expected_interval.upper_bound.positive = a.positive();
+            expected_interval.lower_bound.exponent = approximation_it.get_interval().lower_bound.exponent;
+            expected_interval.lower_bound.positive = approximation_it.get_interval().lower_bound.positive;
+            expected_interval.upper_bound.exponent = approximation_it.get_interval().upper_bound.exponent;
+            expected_interval.upper_bound.positive = approximation_it.get_interval().upper_bound.positive;
 
             expected_interval.lower_bound.push_back(2);
             for (int i = 0; i < 10; i++) {
                 expected_interval.upper_bound.push_back(a[i]);
-                CHECK( approximation_it.approximation_interval == expected_interval );
+                CHECK( approximation_it.get_interval() == expected_interval );
                 ++approximation_it;
             }
 
@@ -147,7 +125,7 @@ TEST_CASE("Iterate boost::real_algorithm::const_precision_iterator until full pr
 
             for (int i = 10; i < 20; i++) {
                 expected_interval.upper_bound.push_back(a[i]);
-                CHECK( approximation_it.approximation_interval == expected_interval );
+                CHECK( approximation_it.get_interval() == expected_interval );
                 ++approximation_it;
             }
 
@@ -156,7 +134,7 @@ TEST_CASE("Iterate boost::real_algorithm::const_precision_iterator until full pr
 
             for (int i = 20; i < 50; i++) {
                 expected_interval.upper_bound.push_back(a[i]);
-                CHECK( approximation_it.approximation_interval == expected_interval );
+                CHECK( approximation_it.get_interval() == expected_interval );
                 ++approximation_it;
             }
         }
@@ -165,9 +143,9 @@ TEST_CASE("Iterate boost::real_algorithm::const_precision_iterator until full pr
 
 TEST_CASE("Iterator cend") {
 
-    boost::real::real_algorithm a([](unsigned int n) -> int { return 3; }, 0);
-    boost::real::real_algorithm::const_precision_iterator approximation_it = a.cbegin();
-    boost::real::real_algorithm::const_precision_iterator end_it = a.cend();
+    boost::real::real a([](unsigned int n) -> int { return 3; }, 0);
+    auto approximation_it = boost::real::real(a).get_real_itr().cbegin();
+    auto end_it = boost::real::real(a).get_real_itr().cend();
 
     SECTION("Iterate until the maximum set precision returns the end of the iterator") {
 
@@ -181,8 +159,8 @@ TEST_CASE("Iterator cend") {
 
     SECTION("Iterate cend() returns an interval with the lower boundary digit amount as the maximum precision") {
 
-        CHECK( end_it.approximation_interval.lower_bound.digits.size() == a.max_precision() );
-        CHECK( end_it.approximation_interval.lower_bound.positive == a.positive() );
-        CHECK( end_it.approximation_interval.lower_bound.exponent == a.exponent() );
+        CHECK( end_it.get_interval().lower_bound.digits.size() == boost::real::real(a).max_precision() );
+        CHECK( end_it.get_interval().lower_bound.positive == approximation_it.get_interval().lower_bound.positive);
+        CHECK( end_it.get_interval().lower_bound.exponent == approximation_it.get_interval().lower_bound.exponent);
     }
 }

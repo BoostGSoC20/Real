@@ -33,10 +33,10 @@ namespace boost {
             }
         };
 
-        struct undefined_max_precision_exception : public std::exception {
+        struct bad_variant_access_exception: public std::exception {
 
             const char * what () const throw () override {
-                return "The maximum precision for boost::real has not been defined";
+                return "Cannot perform this method on this real variant type";
             }
         };
     }

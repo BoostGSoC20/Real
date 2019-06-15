@@ -18,7 +18,7 @@ TEST_CASE("Operators + + boost::real::const_precision_iterator") {
         SECTION("(a + b) + c") {
             boost::real::real result = (a + b) + c;
 
-            auto result_it = result.cbegin();
+            auto result_it = result.get_real_itr().cbegin();
 
             // ([1, 2] + [1, 2]) + [1, 2]
             // [2, 4] + [1, 2]
@@ -29,7 +29,7 @@ TEST_CASE("Operators + + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {3};
             expected_interval.upper_bound.digits = {6};
-            CHECK(expected_interval == result_it.approximation_interval);
+            CHECK(expected_interval == result_it.get_interval());
 
             // ([1.1, 1.2] + [1.1, 1.2]) + [1.1, 1.2]
             // [2.2, 2.4] + [1.1, 1.2]
@@ -37,7 +37,7 @@ TEST_CASE("Operators + + boost::real::const_precision_iterator") {
             ++result_it;
             expected_interval.lower_bound.digits = {3,3};
             expected_interval.upper_bound.digits = {3,6};
-            CHECK(expected_interval == result_it.approximation_interval);
+            CHECK(expected_interval == result_it.get_interval());
 
             // ([1.19, 1.19] + [1.19, 1.19]) + [1.19, 1.19]
             // [3.38, 3.38] + [1.19, 1.19]
@@ -45,17 +45,17 @@ TEST_CASE("Operators + + boost::real::const_precision_iterator") {
             ++result_it;
             expected_interval.lower_bound.digits = {3,5,7};
             expected_interval.upper_bound.digits = {3,5,7};
-            CHECK(expected_interval == result_it.approximation_interval);
+            CHECK(expected_interval == result_it.get_interval());
 
             // Full precision reached, no more changes are made
             ++result_it;
-            CHECK(expected_interval == result_it.approximation_interval);
+            CHECK(expected_interval == result_it.get_interval());
         }
 
         SECTION("a + (b + c)") {
             boost::real::real result = a + (b + c);
 
-            auto result_it = result.cbegin();
+            auto result_it = result.get_real_itr().cbegin();
 
             // [1, 2] + ([1, 2] + [1, 2])
             // [1, 2] + [2, 4]
@@ -66,7 +66,7 @@ TEST_CASE("Operators + + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {3};
             expected_interval.upper_bound.digits = {6};
-            CHECK(expected_interval == result_it.approximation_interval);
+            CHECK(expected_interval == result_it.get_interval());
 
             // [1.1, 1.2] + ([1.1, 1.2] + [1.1, 1.2])
             // [1.1, 1.2] + [2.2, 2.4]
@@ -74,7 +74,7 @@ TEST_CASE("Operators + + boost::real::const_precision_iterator") {
             ++result_it;
             expected_interval.lower_bound.digits = {3,3};
             expected_interval.upper_bound.digits = {3,6};
-            CHECK(expected_interval == result_it.approximation_interval);
+            CHECK(expected_interval == result_it.get_interval());
 
             // [1.19, 1.19] + ([1.19, 1.19] + [1.19, 1.19])
             // [1.19, 1.19] + [3.8, 3.8]
@@ -82,11 +82,11 @@ TEST_CASE("Operators + + boost::real::const_precision_iterator") {
             ++result_it;
             expected_interval.lower_bound.digits = {3,5,7};
             expected_interval.upper_bound.digits = {3,5,7};
-            CHECK(expected_interval == result_it.approximation_interval);
+            CHECK(expected_interval == result_it.get_interval());
 
             // Full precision reached, no more changes are made
             ++result_it;
-            CHECK(expected_interval == result_it.approximation_interval);
+            CHECK(expected_interval == result_it.get_interval());
         }
     }
 
@@ -100,7 +100,7 @@ TEST_CASE("Operators + + boost::real::const_precision_iterator") {
         SECTION("(a + b) + c") {
             boost::real::real result = (a + b) + c;
 
-            auto result_it = result.cbegin();
+            auto result_it = result.get_real_itr().cbegin();
 
             // ([1, 2] + [1, 2]) + [1, 2]
             // [2, 4] + [1, 2]
@@ -111,7 +111,7 @@ TEST_CASE("Operators + + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {3};
             expected_interval.upper_bound.digits = {6};
-            CHECK(expected_interval == result_it.approximation_interval);
+            CHECK(expected_interval == result_it.get_interval());
 
             // ([1.1, 1.2] + [1.1, 1.2]) + [1.1, 1.2]
             // [2.2, 2.4] + [1.1, 1.2]
@@ -119,7 +119,7 @@ TEST_CASE("Operators + + boost::real::const_precision_iterator") {
             ++result_it;
             expected_interval.lower_bound.digits = {3,3};
             expected_interval.upper_bound.digits = {3,6};
-            CHECK(expected_interval == result_it.approximation_interval);
+            CHECK(expected_interval == result_it.get_interval());
 
             // ([1.11, 1.11] + [1.11, 1.11]) + [1.11, 1.11]
             // [2.22, 2.22] + [1.11, 1.11]
@@ -127,17 +127,17 @@ TEST_CASE("Operators + + boost::real::const_precision_iterator") {
             ++result_it;
             expected_interval.lower_bound.digits = {3,3,3};
             expected_interval.upper_bound.digits = {3,3,3};
-            CHECK(expected_interval == result_it.approximation_interval);
+            CHECK(expected_interval == result_it.get_interval());
 
             // Full precision reached, no more changes are made
             ++result_it;
-            CHECK(expected_interval == result_it.approximation_interval);
+            CHECK(expected_interval == result_it.get_interval());
         }
 
         SECTION("a + (b + c)") {
             boost::real::real result = a + (b + c);
 
-            auto result_it = result.cbegin();
+            auto result_it = result.get_real_itr().cbegin();
 
             // [1, 2] + ([1, 2] + [1, 2])
             // [1, 2] + [2, 4]
@@ -148,7 +148,7 @@ TEST_CASE("Operators + + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {3};
             expected_interval.upper_bound.digits = {6};
-            CHECK(expected_interval == result_it.approximation_interval);
+            CHECK(expected_interval == result_it.get_interval());
 
             // [1.1, 1.2] + ([1.1, 1.2] + [1.1, 1.2])
             // [1.1, 1.2] + [2.2, 2.4]
@@ -156,7 +156,7 @@ TEST_CASE("Operators + + boost::real::const_precision_iterator") {
             ++result_it;
             expected_interval.lower_bound.digits = {3,3};
             expected_interval.upper_bound.digits = {3,6};
-            CHECK(expected_interval == result_it.approximation_interval);
+            CHECK(expected_interval == result_it.get_interval());
 
             // [1.11, 1.11] + ([1.11, 1.11] + [1.11, 1.11])
             // [1.11, 1.11] + [2.22, 2.22]
@@ -164,11 +164,11 @@ TEST_CASE("Operators + + boost::real::const_precision_iterator") {
             ++result_it;
             expected_interval.lower_bound.digits = {3,3,3};
             expected_interval.upper_bound.digits = {3,3,3};
-            CHECK(expected_interval == result_it.approximation_interval);
+            CHECK(expected_interval == result_it.get_interval());
 
             // Full precision reached, no more changes are made
             ++result_it;
-            CHECK(expected_interval == result_it.approximation_interval);
+            CHECK(expected_interval == result_it.get_interval());
         }
     }
 }

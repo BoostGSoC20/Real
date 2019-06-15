@@ -20,7 +20,7 @@ TEST_CASE("Operator ==") {
                 boost::real::real c("0.5");
                 boost::real::real d = b + c;
 
-                CHECK(a == d);
+                CHECK(a == d); 
             }
 
             SECTION("Explicit == Subtraction") {
@@ -941,7 +941,7 @@ TEST_CASE("Operator ==") {
         }
     }
 
-    SECTION("Testing UDL") {
+SECTION("Testing UDL") {
         SECTION("explicit == explicit") {
             SECTION("integer == integer") {
                 auto a = 123_r;

@@ -8,7 +8,7 @@ IF(CMAKE_BUILD_TYPE MATCHES Debug)
     message("debug mode adding coverage report tools and flags")
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake-modules")
     include(CodeCoverage)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} -Wall -g -O0 -fprofile-arcs -ftest-coverage")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} -Wall -g -O0 -fsanitize=address -fno-omit-frame-pointer -fprofile-arcs -ftest-coverage")
 ENDIF(CMAKE_BUILD_TYPE MATCHES Debug)
 
 # Check for standard to use
@@ -20,34 +20,31 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic --std=c++1z")
 endif()
 
-#Detect Boost.Test framework
-set(Boost_USE_MULTITHREADED OFF)
-find_package(Boost COMPONENTS unit_test_framework REQUIRED)
-
-include_directories(include external/include test/include ${Boost_INCLUDE_DIRS})
+include_directories(include external/include ${Boost_INCLUDE_DIRS})
 
 # add Boost.Real as a 'linkable' target
 add_library(Boost.Real INTERFACE)
 
-# Unit tests
-enable_testing()
-FILE(GLOB TestSources RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} test/*_test.cpp)
-foreach(testSrc ${TestSources})
-    get_filename_component(testName ${testSrc} NAME_WE)
-    add_executable(${testName} test/main-test.cpp ${testSrc})
-    add_test(${testName} ${testName})
-endforeach(testSrc)
 
 #Library Headers
 add_executable(Boost.Real_headers include)
 set_target_properties(Boost.Real_headers PROPERTIES
                                                  EXCLUDE_FROM_ALL TRUE
                                                  EXCLUDE_FROM_DEFAULT_BUILD TRUE
-                                                 LINKER_LANGUAGE CXX)
-                                             
-#Google Benchmark, turn on/off with -DBENCH=ON or OFF
-find_package(Threads REQUIRED)
-option(BENCH "Build benchmarks" ON)
-if(BENCH)
+                                                 LINKER_LANGUAGE CXX 
+                                                 )
+# Unit tests
+option(REAL_TEST "Build tests" ON)
+if(REAL_TEST)
+    enable_testing()
+    #Detect Boost.Test framework
+    set(Boost_USE_MULTITHREADED OFF)
+    find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+    add_subdirectory(test)
+endif()
+
+#Google Benchmark, turn on/off with -DREAL_BENCH=ON or OFF
+option(REAL_BENCH "Build benchmarks" OFF)
+if(REAL_BENCH)
     add_subdirectory(bench)
 endif()

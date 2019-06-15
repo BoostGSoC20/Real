@@ -2,11 +2,12 @@
 #define BOOST_REAL_BOUNDARY_HELPER_HPP
 
 #include <algorithm>
-#include "interval.hpp"
+#include <real/interval.hpp>
 
 namespace boost {
     namespace real {
-        namespace helper {
+        class boundary_helper {
+            public:
 
             /**
              * @author Laouen Mayal Louan Belloli
@@ -22,7 +23,7 @@ namespace boost {
              * @return a bool that is true if and only if, the number represented by lsh is lower than
              * the represented number by rhs.
              */
-            bool aligned_vectors_is_lower(const std::vector<int> &lhs, const std::vector<int> &rhs) {
+            static bool aligned_vectors_is_lower(const std::vector<int> &lhs, const std::vector<int> &rhs) {
 
                 // Check if lhs is lower than rhs
                 auto lhs_it = lhs.cbegin();
@@ -42,7 +43,7 @@ namespace boost {
                 return lhs_all_zero && !rhs_all_zero;
             }
 
-        }
+        };
     }
 }
 

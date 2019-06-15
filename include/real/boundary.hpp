@@ -52,7 +52,7 @@ namespace boost {
 
                 if (this->positive) {
                     if (this->exponent == other.exponent) {
-                        return boost::real::helper::aligned_vectors_is_lower(this->digits,
+                        return boost::real::boundary_helper::aligned_vectors_is_lower(this->digits,
                                                                              other.digits);
                     }
 
@@ -60,7 +60,7 @@ namespace boost {
                 }
 
                 if (this->exponent == other.exponent) {
-                    return boost::real::helper::aligned_vectors_is_lower(other.digits,
+                    return boost::real::boundary_helper::aligned_vectors_is_lower(other.digits,
                                                                          this->digits);
                 }
 
@@ -82,14 +82,14 @@ namespace boost {
 
                 if (this->positive) {
                     if (this->exponent == other.exponent) {
-                        return boost::real::helper::aligned_vectors_is_lower(other.digits, this->digits);
+                        return boost::real::boundary_helper::aligned_vectors_is_lower(other.digits, this->digits);
                     }
 
                     return this->exponent > other.exponent;
                 }
 
                 if (this->exponent == other.exponent) {
-                    return boost::real::helper::aligned_vectors_is_lower(this->digits, other.digits);
+                    return boost::real::boundary_helper::aligned_vectors_is_lower(this->digits, other.digits);
                 }
 
                 return other.exponent > this->exponent;
@@ -194,7 +194,7 @@ namespace boost {
              * @param digit - The new digit to add.
              */
             void push_front(int digit) {
-                this->digits.insert(this->digits.begin(), digit);
+                this->digits.insert(this->digits.cbegin(), digit);
             }
 
             /**
@@ -203,7 +203,7 @@ namespace boost {
              */
             void normalize() {
                 while (this->digits.size() > 1 && this->digits.front() == 0) {
-                    this->digits.erase(this->digits.begin());
+                    this->digits.erase(this->digits.cbegin());
                     this->exponent--;
                 }
 
@@ -224,7 +224,7 @@ namespace boost {
              */
             void normalize_left() {
                 while (this->digits.size() > 1 && this->digits.front() == 0) {
-                    this->digits.erase(this->digits.begin());
+                    this->digits.erase(this->digits.cbegin());
                     this->exponent--;
                 }
             }

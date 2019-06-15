@@ -9,3 +9,4 @@ CMakeFiles/
 CMakeScripts/
 CTestTestfile.cmake
 cmake_install.cmake
+.vscode/

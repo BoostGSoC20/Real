@@ -25,7 +25,7 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
 
             boost::real::real a = numbers["E(+1.9)"] + numbers["A(+1.99..)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -35,27 +35,27 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {2};
             expected_interval.upper_bound.digits = {4};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3, 8};
             expected_interval.upper_bound.digits = {3, 9};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3, 8, 9};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3, 8, 9, 9};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Explicit, Algorithm] - overflow: [No, No]") {
 
             boost::real::real a = numbers["E(+1.1)"] + numbers["A(+1.11..)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -65,29 +65,29 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {2};
             expected_interval.upper_bound.digits = {4};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {2, 2};
             expected_interval.upper_bound.digits = {2, 3};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {2, 2, 1};
             expected_interval.upper_bound.digits = {2, 2, 2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {2, 2, 1, 1};
             expected_interval.upper_bound.digits = {2, 2, 1, 2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Explicit, Algorithm] - overflow: [Yes, No]") {
 
             boost::real::real a = numbers["E(+1.9)"] + numbers["A(+1.11..)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -97,29 +97,29 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {2};
             expected_interval.upper_bound.digits = {4};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3};
             expected_interval.upper_bound.digits = {3,1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3,0,1};
             expected_interval.upper_bound.digits = {3,0,2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3,0,1,1};
             expected_interval.upper_bound.digits = {3,0,1,2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Explicit, Explicit] - overflow: [Yes, Yes]") {
 
             boost::real::real a = numbers["E(+1.9)"] + numbers["E(+1.9)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -129,25 +129,25 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {2};
             expected_interval.upper_bound.digits = {4};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3,8};
             expected_interval.upper_bound.digits = {3,8};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Explicit, Explicit] - overflow: [No, No]") {
 
             boost::real::real a = numbers["E(+1.1)"] + numbers["E(+1.1)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -157,25 +157,25 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {2};
             expected_interval.upper_bound.digits = {4};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {2,2};
             expected_interval.upper_bound.digits = {2,2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Explicit, Explicit] - overflow: [Yes, No]") {
 
             boost::real::real a = numbers["E(+1.9)"] + numbers["E(+1.1)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -185,25 +185,25 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {2};
             expected_interval.upper_bound.digits = {4};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3};
             expected_interval.upper_bound.digits = {3};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Algorithm, Algorithm] - overflow: [Yes, Yes]") {
 
             boost::real::real a = numbers["A(+1.99..)"] + numbers["A(+1.99..)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -213,26 +213,26 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {2};
             expected_interval.upper_bound.digits = {4};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3,8};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3,9,8};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3,9,9,8};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Algorithm, Algorithm] - overflow: [No, No]") {
 
             boost::real::real a = numbers["A(+1.11..)"] + numbers["A(+1.11..)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -242,29 +242,29 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {2};
             expected_interval.upper_bound.digits = {4};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {2,2};
             expected_interval.upper_bound.digits = {2,4};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {2,2,2};
             expected_interval.upper_bound.digits = {2,2,4};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {2,2,2,2};
             expected_interval.upper_bound.digits = {2,2,2,4};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Algorithm, Algorithm] - overflow: [Yes, No]") {
 
             boost::real::real a = numbers["A(+1.99..)"] + numbers["A(+1.11..)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -274,22 +274,22 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {2};
             expected_interval.upper_bound.digits = {4};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3};
             expected_interval.upper_bound.digits = {3,2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3,1};
             expected_interval.upper_bound.digits = {3,1,2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3,1,1};
             expected_interval.upper_bound.digits = {3,1,1,2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
     }
 
@@ -299,7 +299,7 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
 
             boost::real::real a = numbers["E(-1.9)"] + numbers["A(-1.99..)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -309,27 +309,27 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {4};
             expected_interval.upper_bound.digits = {2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3, 9};
             expected_interval.upper_bound.digits = {3, 8};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.upper_bound.digits = {3, 8, 9};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.upper_bound.digits = {3, 8, 9, 9};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Explicit, Algorithm] - overflow: [No, No]") {
 
             boost::real::real a = numbers["E(-1.1)"] + numbers["A(-1.11..)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -339,22 +339,22 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {4};
             expected_interval.upper_bound.digits = {2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {2, 3};
             expected_interval.upper_bound.digits = {2, 2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {2, 2, 2};
             expected_interval.upper_bound.digits = {2, 2, 1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {2, 2, 1, 2};
             expected_interval.upper_bound.digits = {2, 2, 1, 1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
 
@@ -362,7 +362,7 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
 
             boost::real::real a = numbers["E(-1.9)"] + numbers["A(-1.11..)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -372,29 +372,29 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {4};
             expected_interval.upper_bound.digits = {2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3,1};
             expected_interval.upper_bound.digits = {3};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3,0,2};
             expected_interval.upper_bound.digits = {3,0,1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3,0,1,2};
             expected_interval.upper_bound.digits = {3,0,1,1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Explicit, Explicit] - overflow: [Yes, Yes]") {
 
             boost::real::real a = numbers["E(-1.9)"] + numbers["E(-1.9)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -404,25 +404,25 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {4};
             expected_interval.upper_bound.digits = {2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3,8};
             expected_interval.upper_bound.digits = {3,8};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Explicit, Explicit] - overflow: [No, No]") {
 
             boost::real::real a = numbers["E(-1.1)"] + numbers["E(-1.1)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -432,25 +432,25 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {4};
             expected_interval.upper_bound.digits = {2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {2,2};
             expected_interval.upper_bound.digits = {2,2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Explicit, Explicit] - overflow: [Yes, No]") {
 
             boost::real::real a = numbers["E(-1.9)"] + numbers["E(-1.1)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -460,25 +460,25 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {4};
             expected_interval.upper_bound.digits = {2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3};
             expected_interval.upper_bound.digits = {3};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Algorithm, Algorithm] - overflow: [Yes, Yes]") {
 
             boost::real::real a = numbers["A(-1.99..)"] + numbers["A(-1.99..)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -488,26 +488,26 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {4};
             expected_interval.upper_bound.digits = {2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.upper_bound.digits = {3,8};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.upper_bound.digits = {3,9,8};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.upper_bound.digits = {3,9,9,8};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Algorithm, Algorithm] - overflow: [No, No]") {
 
             boost::real::real a = numbers["A(-1.11..)"] + numbers["A(-1.11..)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -517,29 +517,31 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {4};
             expected_interval.upper_bound.digits = {2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {2,4};
             expected_interval.upper_bound.digits = {2,2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval); 
+            //failing, a_it was iterated twice. this is because operation has
+            // two pointers to the same number. Hmmm
 
             ++a_it;
             expected_interval.lower_bound.digits = {2,2,4};
             expected_interval.upper_bound.digits = {2,2,2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {2,2,2,4};
             expected_interval.upper_bound.digits = {2,2,2,2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Algorithm, Algorithm] - overflow: [Yes, No]") {
 
             boost::real::real a = numbers["A(-1.99..)"] + numbers["A(-1.11..)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -549,22 +551,22 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {4};
             expected_interval.upper_bound.digits = {2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3,2};
             expected_interval.upper_bound.digits = {3};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3,1,2};
             expected_interval.upper_bound.digits = {3,1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {3,1,1,2};
             expected_interval.upper_bound.digits = {3,1,1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
     }
 
@@ -573,7 +575,7 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
 
             boost::real::real a = numbers["E(-1.9)"] + numbers["A(+1.99..)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
 
             boost::real::interval expected_interval({});
             expected_interval.lower_bound.positive = false;
@@ -584,7 +586,7 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.lower_bound.digits = {1};
             expected_interval.upper_bound.digits = {1};
 
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.positive = true;
@@ -593,23 +595,23 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 0;
             expected_interval.lower_bound.digits = {0};
             expected_interval.upper_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.exponent = -1;
             expected_interval.lower_bound.digits = {9};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {9,9};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Explicit, Algorithm] - overflow: [No, No]") {
 
             boost::real::real a = numbers["E(-1.1)"] + numbers["A(+1.11..)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
             expected_interval.lower_bound.positive = false;
@@ -618,7 +620,7 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {1};
             expected_interval.upper_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.positive = true;
@@ -626,26 +628,26 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 0;
             expected_interval.lower_bound.digits = {0};
             expected_interval.upper_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.exponent = -1;
             expected_interval.upper_bound.exponent = -1;
             expected_interval.lower_bound.digits = {1};
             expected_interval.upper_bound.digits = {2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {1,1};
             expected_interval.upper_bound.digits = {1,2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Explicit, Algorithm] - overflow: [Yes, No]") {
 
             boost::real::real a = numbers["E(-1.9)"] + numbers["A(+1.11..)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
             expected_interval.lower_bound.positive = false;
@@ -654,7 +656,7 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.upper_bound.digits = {1};
             expected_interval.lower_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.upper_bound.positive = false;
@@ -662,24 +664,24 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 0;
             expected_interval.lower_bound.digits = {8};
             expected_interval.upper_bound.digits = {7};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {7,9};
             expected_interval.upper_bound.digits = {7,8};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {7,8,9};
             expected_interval.upper_bound.digits = {7,8,8};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Explicit, Explicit] - overflow: [Yes, Yes]") {
 
             boost::real::real a = numbers["E(-1.9)"] + numbers["E(+1.9)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -689,7 +691,7 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {1};
             expected_interval.upper_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.positive = true;
@@ -697,20 +699,20 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 0;
             expected_interval.lower_bound.digits = {0};
             expected_interval.upper_bound.digits = {0};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Explicit, Explicit] - overflow: [No, No]") {
 
             boost::real::real a = numbers["E(-1.1)"] + numbers["E(+1.1)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -720,7 +722,7 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {1};
             expected_interval.upper_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.positive = true;
@@ -728,20 +730,20 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 0;
             expected_interval.lower_bound.digits = {0};
             expected_interval.upper_bound.digits = {0};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Explicit, Explicit] - overflow: [Yes, No]") {
 
             boost::real::real a = numbers["E(-1.9)"] + numbers["E(+1.1)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
             expected_interval.lower_bound.positive = false;
@@ -750,7 +752,7 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.upper_bound.digits = {1};
             expected_interval.lower_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.upper_bound.positive = false;
@@ -758,20 +760,20 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 0;
             expected_interval.lower_bound.digits = {8};
             expected_interval.upper_bound.digits = {8};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Algorithm, Algorithm] - overflow: [Yes, Yes]") {
 
             boost::real::real a = numbers["A(-1.99..)"] + numbers["A(+1.99..)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -781,31 +783,31 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {1};
             expected_interval.upper_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.exponent = 0;
             expected_interval.upper_bound.exponent = 0;
             expected_interval.lower_bound.digits = {1};
             expected_interval.upper_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.exponent = -1;
             expected_interval.upper_bound.exponent = -1;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.exponent = -2;
             expected_interval.upper_bound.exponent = -2;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Algorithm, Algorithm] - overflow: [No, No]") {
 
             boost::real::real a = numbers["A(-1.11..)"] + numbers["A(+1.11..)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -815,29 +817,29 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {1};
             expected_interval.upper_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.exponent = 0;
             expected_interval.upper_bound.exponent = 0;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.exponent = -1;
             expected_interval.upper_bound.exponent = -1;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.exponent = -2;
             expected_interval.upper_bound.exponent = -2;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Algorithm, Algorithm] - overflow: [Yes, No]") {
 
             boost::real::real a = numbers["A(-1.99..)"] + numbers["A(+1.11..)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -847,7 +849,7 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.upper_bound.digits = {1};
             expected_interval.lower_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.upper_bound.positive = false;
@@ -855,17 +857,17 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 0;
             expected_interval.lower_bound.digits = {9};
             expected_interval.upper_bound.digits = {7};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {8,9};
             expected_interval.upper_bound.digits = {8,7};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {8,8,9};
             expected_interval.upper_bound.digits = {8,8,7};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
     }
 
@@ -876,7 +878,7 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
 
             boost::real::real a = numbers["A(+1.99..)"] + numbers["E(-1.9)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -886,7 +888,7 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {1};
             expected_interval.upper_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.positive = true;
@@ -895,23 +897,23 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 0;
             expected_interval.lower_bound.digits = {0};
             expected_interval.upper_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.exponent = -1;
             expected_interval.lower_bound.digits = {9};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {9,9};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Algorithm, Explicit] - overflow: [No, No]") {
 
             boost::real::real a = numbers["A(+1.11..)"] + numbers["E(-1.1)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
             expected_interval.lower_bound.positive = false;
@@ -920,7 +922,7 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {1};
             expected_interval.upper_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.positive = true;
@@ -928,26 +930,26 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 0;
             expected_interval.lower_bound.digits = {0};
             expected_interval.upper_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.exponent = -1;
             expected_interval.upper_bound.exponent = -1;
             expected_interval.lower_bound.digits = {1};
             expected_interval.upper_bound.digits = {2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {1,1};
             expected_interval.upper_bound.digits = {1,2};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Algorithm, Explicit] - overflow: [No, Yes]") {
 
             boost::real::real a = numbers["A(+1.11..)"] + numbers["E(-1.9)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
             expected_interval.lower_bound.positive = false;
@@ -956,7 +958,7 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.upper_bound.digits = {1};
             expected_interval.lower_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.upper_bound.positive = false;
@@ -964,24 +966,24 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 0;
             expected_interval.lower_bound.digits = {8};
             expected_interval.upper_bound.digits = {7};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {7,9};
             expected_interval.upper_bound.digits = {7,8};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {7,8,9};
             expected_interval.upper_bound.digits = {7,8,8};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Explicit, Explicit] - overflow: [Yes, Yes]") {
 
             boost::real::real a = numbers["E(+1.9)"] + numbers["E(-1.9)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -991,7 +993,7 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {1};
             expected_interval.upper_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.positive = true;
@@ -999,20 +1001,20 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 0;
             expected_interval.lower_bound.digits = {0};
             expected_interval.upper_bound.digits = {0};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Explicit, Explicit] - overflow: [No, No]") {
 
             boost::real::real a = numbers["E(+1.1)"] + numbers["E(-1.1)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -1022,7 +1024,7 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {1};
             expected_interval.upper_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.positive = true;
@@ -1030,20 +1032,20 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 0;
             expected_interval.lower_bound.digits = {0};
             expected_interval.upper_bound.digits = {0};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Explicit, Explicit] - overflow: [No, Yes]") {
 
             boost::real::real a = numbers["E(+1.1)"] + numbers["E(-1.9)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
             expected_interval.lower_bound.positive = false;
@@ -1052,7 +1054,7 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.upper_bound.digits = {1};
             expected_interval.lower_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.upper_bound.positive = false;
@@ -1060,20 +1062,20 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 0;
             expected_interval.lower_bound.digits = {8};
             expected_interval.upper_bound.digits = {8};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Algorithm, Algorithm] - overflow: [Yes, Yes]") {
 
             boost::real::real a = numbers["A(+1.99..)"] + numbers["A(-1.99..)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -1083,31 +1085,31 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {1};
             expected_interval.upper_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.exponent = 0;
             expected_interval.upper_bound.exponent = 0;
             expected_interval.lower_bound.digits = {1};
             expected_interval.upper_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.exponent = -1;
             expected_interval.upper_bound.exponent = -1;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.exponent = -2;
             expected_interval.upper_bound.exponent = -2;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Algorithm, Algorithm] - overflow: [No, No]") {
 
             boost::real::real a = numbers["A(+1.11..)"] + numbers["A(-1.11..)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -1117,29 +1119,29 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.lower_bound.digits = {1};
             expected_interval.upper_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.exponent = 0;
             expected_interval.upper_bound.exponent = 0;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.exponent = -1;
             expected_interval.upper_bound.exponent = -1;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.exponent = -2;
             expected_interval.upper_bound.exponent = -2;
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
 
         SECTION("Type: [Algorithm, Algorithm] - overflow: [No, Yes]") {
 
             boost::real::real a = numbers["A(+1.11..)"] + numbers["A(-1.99..)"];
 
-            auto a_it = a.cbegin();
+            auto a_it = a.get_real_itr().cbegin();
             boost::real::interval expected_interval({});
 
 
@@ -1149,7 +1151,7 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 1;
             expected_interval.upper_bound.digits = {1};
             expected_interval.lower_bound.digits = {1};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.upper_bound.positive = false;
@@ -1157,17 +1159,17 @@ TEST_CASE("Operator + boost::real::const_precision_iterator") {
             expected_interval.upper_bound.exponent = 0;
             expected_interval.lower_bound.digits = {9};
             expected_interval.upper_bound.digits = {7};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {8,9};
             expected_interval.upper_bound.digits = {8,7};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
 
             ++a_it;
             expected_interval.lower_bound.digits = {8,8,9};
             expected_interval.upper_bound.digits = {8,8,7};
-            CHECK(a_it.approximation_interval == expected_interval);
+            CHECK(a_it.get_interval() == expected_interval);
         }
     }
 }

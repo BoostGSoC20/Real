@@ -1,20 +1,16 @@
 #ifndef BOOST_REAL_TEST_HELPERS_HPP
 #define BOOST_REAL_TEST_HELPERS_HPP
 
-#include <real/interval.hpp>
 #include <real/real.hpp>
-#include <real/real_algorithm.hpp>
 #include <sstream>
 
-std::optional<unsigned int> boost::real::real::maximum_precision = 10;
-std::optional<unsigned int> boost::real::real_algorithm::maximum_precision = 10;
+std::optional<unsigned int> boost::real::const_precision_iterator::maximum_precision = 10;
 
 namespace Catch {
     template<>
     struct StringMaker<boost::real::interval> {
-        static std::string convert( boost::real::interval const& value ) {
+        static std::string convert( boost::real::interval value ) {
             return value.as_string();
-
         }
     };
 }
@@ -22,9 +18,8 @@ namespace Catch {
 namespace Catch {
     template<>
     struct StringMaker<boost::real::real> {
-        static std::string convert( boost::real::real const& value ) {
-            return value.cend().approximation_interval.as_string();
-
+        static std::string convert( boost::real::real value ) {
+            return value.get_real_itr().cend().get_interval().as_string();
         }
     };
 }

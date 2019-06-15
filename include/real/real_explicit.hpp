@@ -20,6 +20,7 @@ namespace boost {
          * @brief boost::real::real_explicit is a C++ class that fully represents real numbers as
          * a vector of digits, a sign and an exponent.
          */
+
         class real_explicit {
 
             // Number representation as a vector of digits with an integer part and a sign (+/-)
@@ -31,183 +32,8 @@ namespace boost {
 
             // The number max precision is the same as the explicit number digits size.
             unsigned int _maximum_precision = 1;
+            
         public:
-
-            /**
-             * @author Laouen Mayal Louan Belloli
-             *
-             * @brief is a forward iterator that iterates a boost::real::real_explicit number approximation
-             * intervals. The iterator calculates the initial interval with the initial precision and
-             * then it increases the precision in each iteration (++) and recalculates the interval.
-             */
-            class const_precision_iterator {
-            private:
-
-                // Iterator precision
-                int _n;
-
-                // Internal number to iterate
-                real_explicit const* _real_ptr = nullptr;
-
-                void check_and_swap_boundaries() {
-                    if (!this->_real_ptr->_positive) {
-                        this->approximation_interval.swap_bounds();
-                    }
-                }
-
-            public:
-
-                // Number approximation_interval boundaries
-                boost::real::interval approximation_interval;
-
-                /**
-                 * @brief **Default constructor:** Constructs an empty
-                 * boost::real::real_explicit::const_precision_iterator that points to nullptr.
-                 */
-                const_precision_iterator() = default;
-
-                /**
-                 * @brief **Copy constructor:**
-                 * Construct a new boost::real::real_explicit::const_precision_iterator which is
-                 * a copy of the other iterator.
-                 *
-                 * @param other - the boost::real::real::const_precision_iterator to copy.
-                 */
-                const_precision_iterator(const const_precision_iterator& other) = default;
-
-                /**
-                 * @brief *Pointer constructor:* Construct a new boost::real::real_explicit::const_precision_iterator
-                 * pointing to the boost::real::real_explicit number to iterate the number approximation intervals.
-                 *
-                 * The iterator will start pointing the lowest precision interval.
-                 *
-                 * @param real_number - the boost::real::real number to iterate.
-                 */
-                explicit const_precision_iterator(real_explicit const* real_number) : _n(1), _real_ptr(real_number) {
-                    this->approximation_interval.lower_bound.exponent = this->_real_ptr->_exponent;
-                    this->approximation_interval.upper_bound.exponent = this->_real_ptr->_exponent;
-                    this->approximation_interval.lower_bound.positive = this->_real_ptr->_positive;
-                    this->approximation_interval.upper_bound.positive = this->_real_ptr->_positive;
-
-                    int first_digit = this->_real_ptr->_digits[0];
-                    this->approximation_interval.lower_bound.digits.push_back(first_digit);
-
-                    if (first_digit == 9) {
-                        this->approximation_interval.upper_bound.digits.push_back(1);
-                        this->approximation_interval.upper_bound.exponent++;
-                    } else if (this->_n < (int)this->_real_ptr->_digits.size()) {
-                        this->approximation_interval.upper_bound.digits.push_back(first_digit + 1);
-                    } else {
-                        this->approximation_interval.upper_bound.digits.push_back(first_digit);
-                    }
-
-                    this->check_and_swap_boundaries();
-                }
-
-                /**
-                 * @brief It recalculates the approximation interval boundaries increasing the used
-                 * precision, the new pointed approximation interval is smaller than the current one.
-                 */
-                void operator++() {
-                    this->iterate_n_times(1);
-                }
-
-                /**
-                 * @brief It recalculates the approximation interval boundaries increasing the used
-                 * precision n times, the new pointed approximation interval is smaller than the current one.
-                 */
-                void iterate_n_times(int n) {
-                    // If the explicit number full precision has been already reached (the end)
-                    // is the end of the iterator
-                    if (this->_n >= (int)this->_real_ptr->_digits.size()) {
-                        // TODO: Remove commented lines that are depreciated code
-                        //this->approximation_interval.lower_bound.push_back(0);
-                        //this->approximation_interval.upper_bound.push_back(0);
-                        //this->_n++;
-                        return;
-                    }
-
-                    // If the number is negative, boundaries are interpreted as mirrored:
-                    // First, the operation is made as positive, and after boundary calculation
-                    // boundaries are swapped to come back to the negative representation.
-                    this->check_and_swap_boundaries();
-
-                    // If the explicit number just reaches the full precision (the end)
-                    // then set both boundaries are equals.
-                    if (this->_n + n >= (int)this->_real_ptr->_digits.size()) {
-
-                        for(int i = this->_n; i < (int)this->_real_ptr->_digits.size(); i++) {
-                            this->approximation_interval.lower_bound.push_back(this->_real_ptr->_digits[i]);
-                        }
-                        this->approximation_interval.upper_bound = this->approximation_interval.lower_bound;
-
-
-                    } else {
-
-                        // If the explicit number didn't reaches the full precision (the end)
-                        // then the number interval is defined by truncation.
-
-                        for(int i = 0; i < n; i++) {
-                            this->approximation_interval.lower_bound.push_back(this->_real_ptr->_digits[this->_n]);
-                        }
-
-                        this->approximation_interval.upper_bound.clear();
-                        this->approximation_interval.upper_bound.digits.resize(this->approximation_interval.lower_bound.size());
-
-                        int carry = 1;
-                        for (int i = (int)this->approximation_interval.lower_bound.size() - 1; i >= 0; --i) {
-                            if (this->approximation_interval.lower_bound[i] + carry == 10) {
-                                this->approximation_interval.upper_bound[i] = 0;
-                            } else {
-                                this->approximation_interval.upper_bound[i] = this->approximation_interval.lower_bound[i] + carry;
-                                carry = 0;
-                            }
-                        }
-
-                        if (carry > 0) {
-                            this->approximation_interval.upper_bound.push_front(carry);
-                            this->approximation_interval.upper_bound.exponent = this->approximation_interval.lower_bound.exponent + 1;
-                        } else {
-                            this->approximation_interval.upper_bound.exponent = this->approximation_interval.lower_bound.exponent;
-                        }
-                    }
-
-                    // Left normalization of boundaries representation
-                    this->approximation_interval.lower_bound.normalize_left();
-                    this->approximation_interval.upper_bound.normalize_left();
-
-                    this->check_and_swap_boundaries();
-                    this->_n = std::min(this->_n + n, (int)this->_real_ptr->_digits.size());
-                }
-
-                /**
-                 * @brief It compares by value equality; two boost::real::real_explicit::const_precision_iterators
-                 * are equals if they are pointing to the same real number and are in the same precision iteration.
-                 *
-                 * @param other - A boost::real::real_explicit::const_precision_iterator that is the right side operand
-                 * @return a bool that is true if and only if both iterators are equals.
-                 */
-                bool operator==(const const_precision_iterator& other) const {
-                    // uninitialized iterators are never equals
-                    if (this->_real_ptr == nullptr || other._real_ptr == nullptr) {
-                        return false;
-                    }
-
-                    return (other._real_ptr == this->_real_ptr) &&
-                            (other._n == this->_n) &&
-                            (other.approximation_interval == this->approximation_interval);
-                }
-
-                /**
-                 * @brief It compares by value not equal; two boost::real::real_explicit::const_precision_iterators.
-                 *
-                 * @param other - A boost::real::real_explicit::const_precision_iterator that is the right side operand
-                 * @return a bool that is true if and only if both iterators are not equals.
-                 */
-                bool operator!=(const const_precision_iterator& other) const {
-                    return !(*this == other);
-                }
-            };
 
             /**
              * @brief *Default constructor:* Constructs an empty boost::real::real_explicit with
@@ -319,25 +145,6 @@ namespace boost {
             {};
 
             /**
-             * @brief Returns the maximum allowed precision, if that precision is reached and an
-             * operator needs more precision, a precision_exception should be thrown.
-             *
-             * @return an integer with the maximum allowed precision.
-             */
-            unsigned int max_precision() const {
-                return this->_maximum_precision;
-            }
-
-            /**
-             * @brief Set a new maximum precision for the instance.
-             *
-             * @param maximum_precision - an unsigned int to set as the new precision.
-             */
-            void set_maximum_precision(unsigned int maximum_precision) {
-                this->_maximum_precision = maximum_precision;
-            }
-
-            /**
              * @return An integer with the number exponent
              */
             int exponent() const {
@@ -359,18 +166,6 @@ namespace boost {
             }
 
             /**
-             * @brief Construct a new boost::real::real_explicit::const_precision_iterator that iterates the number
-             * approximation intervals in increasing order according to the approximation precision.
-             *
-             * The iterator starts pointing to the interval with the minimum precision.
-             *
-             * @return a boost::real::real_explicit::const_precision_iterator of the number.
-             */
-            const_precision_iterator cbegin() const {
-                return const_precision_iterator(this);
-            }
-
-            /**
              * @brief Constructs a new boost::real::real_explicit::const_precision_iterator that iterates the number
              * approximation intervals in increasing order according to the approximation precision.
              *
@@ -378,11 +173,6 @@ namespace boost {
              *
              * @return a boost::real::real_explicit::const_precision_iterator of the number.
              */
-            const_precision_iterator cend() const {
-                const_precision_iterator it(this);
-                it.iterate_n_times((int)this->_digits.size() + 1);
-                return it;
-            }
 
             /**
              * @brief Returns the n-th digit the number.
@@ -409,21 +199,6 @@ namespace boost {
     }
 }
 
-/**
- * @bief overload of the << operator for std::ostream and boost::real::real_explicit
- *
- * @param os - The std::ostream object where to print the r number.
- * @param r - the boost::real::real_explicit number to print
- * @return a reference of the modified os object.
- */
-std::ostream& operator<<(std::ostream& os, const boost::real::real_explicit& r) {
-    auto it = r.cbegin();
-    for (unsigned int i = 0; i <= r.max_precision(); i++) {
-        ++it;
-    }
-    os << it.approximation_interval;
-    return os;
-}
 
 
 #endif //BOOST_REAL_REAL_EXPLICIT_HPP

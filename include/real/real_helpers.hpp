@@ -8,9 +8,10 @@
 
 namespace boost {
     namespace real {
-        namespace helper {
+        class real_helper {
+            public:
 
-            boundary abs(const boundary& b) {
+            static boundary abs(const boundary& b) {
                 boundary result = b;
                 result.positive = true;
                 return result;
@@ -30,13 +31,14 @@ namespace boost {
              * @param result - a std::vector<int> that is used to store the result.
              * @return a integer representing the exponent of the result.
              */
-            int add_vectors(const std::vector<int> &lhs,
+            static int add_vectors(const std::vector<int> &lhs,
                             int lhs_exponent,
                             const std::vector<int> &rhs,
                             int rhs_exponent,
                             std::vector<int> &result) {
+                if (!result.empty()) result.clear();
                 int carry = 0;
-
+                std::vector<int> temp;
                 int fractional_length = std::max((int)lhs.size() - lhs_exponent, (int)rhs.size() - rhs_exponent);
                 int integral_length = std::max(lhs_exponent, rhs_exponent);
 
@@ -62,14 +64,13 @@ namespace boost {
                         carry = 0;
                     }
 
-                    result.insert(result.begin(), digit);
-                }
-
+                    temp.insert(temp.cbegin(), digit);
+                    }
                 if (carry == 1) {
-                    result.insert(result.begin(), 1);
+                    temp.insert(temp.cbegin(), 1);
                     integral_length++;
                 }
-
+                result = temp;
                 return integral_length;
             }
 
@@ -89,15 +90,15 @@ namespace boost {
              * @param result - a std::vector<int> that is used to store the result.
              * @return a integer representing the exponent of the result.
              */
-            int subtract_vectors(const std::vector<int> &lhs,
+            static int subtract_vectors(const std::vector<int> &lhs,
                                  int lhs_exponent,
                                  const std::vector<int> &rhs,
                                  int rhs_exponent,
                                  std::vector<int> &result) {
-
+                if (!result.empty()) result.clear();
+                std::vector<int> temp;
                 int fractional_length = std::max((int)lhs.size() - lhs_exponent, (int)rhs.size() - rhs_exponent);
                 int integral_length = std::max(lhs_exponent, rhs_exponent);
-
                 int borrow = 0;
                 // we walk the numbers from the lowest to the highest digit
                 for (int i = fractional_length - 1; i >= -integral_length; i--) {
@@ -124,8 +125,9 @@ namespace boost {
                         borrow++;
                     }
 
-                    result.insert(result.begin(), lhs_digit - rhs_digit);
+                    temp.insert(temp.cbegin(), lhs_digit - rhs_digit);
                 }
+                result = temp;
 
                 return lhs_exponent;
             }
@@ -144,30 +146,29 @@ namespace boost {
              * @param result - a std::vector<int> that is used to store the result.
              * @return a integer representing the exponent of the result.
              */
-            int multiply_vectors(
+            static int multiply_vectors(
                     const std::vector<int>& lhs,
                     int lhs_exponent,
                     const std::vector<int>& rhs,
                     int rhs_exponent,
                     std::vector<int>& result
             ) {
-
+                if (!result.empty()) result.clear();
                 // will keep the result number in vector in reverse order
                 // Digits: .123 | Exponent: -3 | .000123 <--- Number size is the Digits size less the exponent
                 // Digits: .123 | Exponent: 2  | 12.3
+                std::vector<int> temp;
                 size_t new_size = lhs.size() + rhs.size();
                 if (lhs_exponent < 0) new_size -= lhs_exponent; // <--- Less the exponent
                 if (rhs_exponent < 0) new_size -= rhs_exponent; // <--- Less the exponent
 
-                if (!result.empty()) result.clear();
-                for (int i = 0; i < (int)new_size; i++) result.push_back(0);
+                for (int i = 0; i < (int)new_size; i++) temp.push_back(0);
                 // TODO: Check why the assign method crashes.
                 //result.assign(new_size, 0);
 
                 // Below two indexes are used to find positions
                 // in result.
-                auto i_n1 = (int) result.size() - 1;
-
+                auto i_n1 = (int) temp.size() - 1;
                 // Go from right to left in lhs
                 for (int i = (int)lhs.size()-1; i>=0; i--) {
                     int carry = 0;
@@ -181,20 +182,20 @@ namespace boost {
 
                         // Multiply current digit of second number with current digit of first number
                         // and add result to previously stored result at current position.
-                        int sum = lhs[i]*rhs[j] + result[i_n1 - i_n2] + carry;
+                        int sum = lhs[i]*rhs[j] + temp[i_n1 - i_n2] + carry;
 
                         // Carry for next iteration
                         carry = sum / 10;
 
                         // Store result
-                        result[i_n1 - i_n2] = sum % 10;
+                        temp[i_n1 - i_n2] = sum % 10;
 
                         i_n2++;
                     }
 
                     // store carry in next cell
                     if (carry > 0) {
-                        result[i_n1 - i_n2] += carry;
+                        temp[i_n1 - i_n2] += carry;
                     }
 
                     // To shift position to left after every
@@ -203,8 +204,9 @@ namespace boost {
                 }
 
                 int fractional_part = ((int)lhs.size() - lhs_exponent) + ((int)rhs.size() - rhs_exponent);
-                int result_exponent = (int)result.size() - fractional_part;
-
+                int result_exponent = (int)temp.size() - fractional_part;
+                
+                result = temp;
                 return result_exponent;
             }
 
@@ -217,9 +219,11 @@ namespace boost {
              * @param rhs - a boost::real::boundary representing the right operand.
              * @param result - a boost::real::boundary to store the result.
              */
-            void add_boundaries(const boundary &lhs,
+            static void add_boundaries(const boundary &lhs,
                                 const boundary &rhs,
                                 boundary &result) {
+                if (!result.digits.empty()) result.clear();
+
                 if (lhs.positive == rhs.positive) {
                     result.exponent = add_vectors(lhs.digits,
                                                   lhs.exponent,
@@ -255,9 +259,11 @@ namespace boost {
              * @param rhs - a boost::real::boundary representing the right operand.
              * @param result - a boost::real::boundary to store the result.
              */
-            void subtract_boundaries(const boundary &lhs,
+            static void subtract_boundaries(const boundary &lhs,
                                      const boundary &rhs,
                                      boundary &result) {
+                if (!result.digits.empty()) result.clear();
+
                 if (lhs.positive != rhs.positive) {
                     result.exponent = add_vectors(lhs.digits,
                                                       lhs.exponent,
@@ -296,7 +302,7 @@ namespace boost {
              * @param rhs - a boost::real::boundary representing the right operand.
              * @param result - a boost::real::boundary to store the result.
              */
-            void multiply_boundaries(const boundary &lhs,
+            static void multiply_boundaries(const boundary &lhs,
                                      const boundary &rhs,
                                      boundary &result) {
 
@@ -309,7 +315,7 @@ namespace boost {
 
                 result.normalize();
             }
-        }
+        };
     }
 }
 

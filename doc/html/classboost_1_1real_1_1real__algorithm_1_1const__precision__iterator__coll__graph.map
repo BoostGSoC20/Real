@@ -1,4 +1,0 @@
-<map id="boost::real::real_algorithm::const_precision_iterator" name="boost::real::real_algorithm::const_precision_iterator">
-<area shape="rect" id="node2" href="$structboost_1_1real_1_1interval.html" title="Represent an interval composed by two boundaries, a lower boundary and an upper boundary. The boundaries are boost::real::boundary structs that represent fully represented numbers. " alt="" coords="25,109,158,136"/>
-<area shape="rect" id="node3" href="$structboost_1_1real_1_1boundary.html" title="Explicitly represents a number as a vector of digits with a sign and an exponent. ..." alt="" coords="19,5,163,32"/>
-</map>

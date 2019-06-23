@@ -1,6 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node2" href="$structboost_1_1real_1_1invalid__representation__exception.html" title="boost::real::invalid\l_representation_exception" alt="" coords="134,5,309,47"/>
-<area shape="rect" id="node3" href="$structboost_1_1real_1_1invalid__string__number__exception.html" title="boost::real::invalid\l_string_number_exception" alt="" coords="134,71,309,112"/>
-<area shape="rect" id="node4" href="$structboost_1_1real_1_1none__operation__exception.html" title="boost::real::none_operation\l_exception" alt="" coords="132,136,311,177"/>
-<area shape="rect" id="node5" href="$structboost_1_1real_1_1precision__exception.html" title="boost::real::precision\l_exception" alt="" coords="150,201,293,243"/>
-</map>

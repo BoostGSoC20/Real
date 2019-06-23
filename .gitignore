@@ -1,4 +1,6 @@
 .idea/
+.vscode/
+doc/html
 
 #cmake products
 cmake-build-debug/
@@ -9,4 +11,3 @@ CMakeFiles/
 CMakeScripts/
 CTestTestfile.cmake
 cmake_install.cmake
-.vscode/

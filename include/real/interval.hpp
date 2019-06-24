@@ -3,8 +3,7 @@
 
 #include <vector>
 
-#include <real/boundary.hpp>
-#include <real/boundary_helper.hpp>
+#include <real/exact_number.hpp>
 
 namespace boost {
     namespace real {
@@ -16,8 +15,8 @@ namespace boost {
          * The boundaries are boost::real::boundary structs that represent fully represented numbers.
          */
         struct interval {
-            boost::real::boundary lower_bound;
-            boost::real::boundary upper_bound;
+            boost::real::exact_number lower_bound;
+            boost::real::exact_number upper_bound;
 
             /**
             * @brief *default constructor*: It constructs a representation of the interval [0,0].

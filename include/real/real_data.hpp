@@ -10,6 +10,7 @@
 #include <real/real_explicit.hpp>
 #include <real/real_algorithm.hpp>
 #include <real/real_operation.hpp>
+#include <real/real_exception.hpp>
 
 namespace boost { 
     namespace real{
@@ -47,32 +48,22 @@ namespace boost {
         void const_precision_iterator::update_operation_boundaries(real_operation &ro) {
             switch (ro.get_operation()) {
                 case OPERATION::ADDITION:
-                    boost::real::real_helper::add_boundaries(
-                            ro.get_lhs_itr().get_interval().lower_bound,
-                            ro.get_rhs_itr().get_interval().lower_bound,
-                            this->_approximation_interval.lower_bound
-                    );
+                        this->_approximation_interval.lower_bound = ro.get_lhs_itr().get_interval().lower_bound +
+                                                                    ro.get_rhs_itr().get_interval().lower_bound;
 
-                    boost::real::real_helper::add_boundaries(
-                            ro.get_lhs_itr().get_interval().upper_bound,
-                            ro.get_rhs_itr().get_interval().upper_bound,
-                            this->_approximation_interval.upper_bound
-                    );
+                        this->_approximation_interval.upper_bound = ro.get_lhs_itr().get_interval().upper_bound +
+                                                                    ro.get_rhs_itr().get_interval().upper_bound;
                     break;
 
 
                 case OPERATION::SUBTRACTION:
-                    boost::real::real_helper::subtract_boundaries(
-                            ro.get_lhs_itr().get_interval().lower_bound,
-                            ro.get_rhs_itr().get_interval().upper_bound,
-                            this->_approximation_interval.lower_bound
-                    );
+                            this->_approximation_interval.lower_bound =
+                                ro.get_lhs_itr().get_interval().lower_bound -
+                                ro.get_rhs_itr().get_interval().upper_bound;
 
-                    boost::real::real_helper::subtract_boundaries(
-                            ro.get_lhs_itr().get_interval().upper_bound,
-                            ro.get_rhs_itr().get_interval().lower_bound,
-                            this->_approximation_interval.upper_bound
-                    );
+                            this->_approximation_interval.upper_bound =
+                                ro.get_lhs_itr().get_interval().upper_bound -
+                                ro.get_rhs_itr().get_interval().lower_bound;
                     break;
 
 
@@ -83,76 +74,56 @@ namespace boost {
                     bool rhs_negative = ro.get_rhs_itr().get_interval().negative();
 
                     if (lhs_positive && rhs_positive) { // Positive - Positive
-                        boost::real::real_helper::multiply_boundaries(
-                                ro.get_lhs_itr().get_interval().lower_bound,
-                                ro.get_rhs_itr().get_interval().lower_bound,
-                                this->_approximation_interval.lower_bound
-                        );
+                                this->_approximation_interval.lower_bound = 
+                                    ro.get_lhs_itr().get_interval().lower_bound *
+                                    ro.get_rhs_itr().get_interval().lower_bound;
 
-                        boost::real::real_helper::multiply_boundaries(
-                                ro.get_lhs_itr().get_interval().upper_bound,
-                                ro.get_rhs_itr().get_interval().upper_bound,
-                                this->_approximation_interval.upper_bound
-                        );
+                                this->_approximation_interval.upper_bound =
+                                    ro.get_lhs_itr().get_interval().upper_bound *
+                                    ro.get_rhs_itr().get_interval().upper_bound;
 
                     } else if (lhs_negative && rhs_negative) { // Negative - Negative
-                        boost::real::real_helper::multiply_boundaries(
-                                ro.get_lhs_itr().get_interval().upper_bound,
-                                ro.get_rhs_itr().get_interval().upper_bound,
-                                this->_approximation_interval.lower_bound
-                        );
+                                this->_approximation_interval.lower_bound = 
+                                    ro.get_lhs_itr().get_interval().upper_bound *
+                                    ro.get_rhs_itr().get_interval().upper_bound;
 
-                        boost::real::real_helper::multiply_boundaries(
-                                ro.get_lhs_itr().get_interval().lower_bound,
-                                ro.get_rhs_itr().get_interval().lower_bound,
-                                this->_approximation_interval.upper_bound
-                        );
+                                this->_approximation_interval.upper_bound =
+                                    ro.get_lhs_itr().get_interval().lower_bound *
+                                    ro.get_rhs_itr().get_interval().lower_bound;
                     } else if (lhs_negative && rhs_positive) { // Negative - Positive
-                        boost::real::real_helper::multiply_boundaries(
-                                ro.get_lhs_itr().get_interval().lower_bound,
-                                ro.get_rhs_itr().get_interval().upper_bound,
-                                this->_approximation_interval.lower_bound
-                        );
+                                this->_approximation_interval.lower_bound =
+                                    ro.get_lhs_itr().get_interval().lower_bound *
+                                    ro.get_rhs_itr().get_interval().upper_bound;
 
-                        boost::real::real_helper::multiply_boundaries(
-                                ro.get_lhs_itr().get_interval().upper_bound,
-                                ro.get_rhs_itr().get_interval().lower_bound,
-                                this->_approximation_interval.upper_bound
-                        );
+                                this->_approximation_interval.upper_bound =
+                                    ro.get_lhs_itr().get_interval().upper_bound *
+                                    ro.get_rhs_itr().get_interval().lower_bound;
 
                     } else if (lhs_positive && rhs_negative) { // Positive - Negative
-                        boost::real::real_helper::multiply_boundaries(
-                                ro.get_lhs_itr().get_interval().upper_bound,
-                                ro.get_rhs_itr().get_interval().lower_bound,
-                                this->_approximation_interval.lower_bound
-                        );
+                                this->_approximation_interval.lower_bound =
+                                    ro.get_lhs_itr().get_interval().upper_bound *
+                                    ro.get_rhs_itr().get_interval().lower_bound;
 
-                        boost::real::real_helper::multiply_boundaries(
-                                ro.get_lhs_itr().get_interval().lower_bound,
-                                ro.get_rhs_itr().get_interval().upper_bound,
-                                this->_approximation_interval.upper_bound
-                        );
+                                this->_approximation_interval.upper_bound =
+                                    ro.get_lhs_itr().get_interval().lower_bound *
+                                    ro.get_rhs_itr().get_interval().upper_bound;
 
                     } else { // One is around zero all possible combinations are be tested
 
-                        boundary current_boundary;
+                        exact_number current_boundary;
 
                         // Lower * Lower
-                        boost::real::real_helper::multiply_boundaries(
-                                ro.get_lhs_itr().get_interval().lower_bound,
-                                ro.get_rhs_itr().get_interval().lower_bound,
-                                current_boundary
-                        );
+                                current_boundary = 
+                                    ro.get_lhs_itr().get_interval().lower_bound *
+                                    ro.get_rhs_itr().get_interval().lower_bound;
 
                         this->_approximation_interval.lower_bound = current_boundary;
                         this->_approximation_interval.upper_bound = current_boundary;
 
                         // Upper * upper
-                        boost::real::real_helper::multiply_boundaries(
-                                ro.get_lhs_itr().get_interval().upper_bound,
-                                ro.get_rhs_itr().get_interval().upper_bound,
-                                current_boundary
-                        );
+                                current_boundary = 
+                                ro.get_lhs_itr().get_interval().upper_bound *
+                                ro.get_rhs_itr().get_interval().upper_bound;
 
                         if (current_boundary < this->_approximation_interval.lower_bound) {
                             this->_approximation_interval.lower_bound = current_boundary;
@@ -163,11 +134,9 @@ namespace boost {
                         }
 
                         // Lower * upper
-                        boost::real::real_helper::multiply_boundaries(
-                                ro.get_lhs_itr().get_interval().lower_bound,
-                                ro.get_rhs_itr().get_interval().upper_bound,
-                                current_boundary
-                        );
+                                current_boundary =
+                                ro.get_lhs_itr().get_interval().lower_bound *
+                                ro.get_rhs_itr().get_interval().upper_bound;
 
                         if (current_boundary < this->_approximation_interval.lower_bound) {
                             this->_approximation_interval.lower_bound = current_boundary;
@@ -178,11 +147,9 @@ namespace boost {
                         }
 
                         // Upper * lower
-                        boost::real::real_helper::multiply_boundaries(
-                                ro.get_lhs_itr().get_interval().upper_bound,
-                                ro.get_rhs_itr().get_interval().lower_bound,
-                                current_boundary
-                        );
+                                current_boundary =
+                                    ro.get_lhs_itr().get_interval().upper_bound *
+                                    ro.get_rhs_itr().get_interval().lower_bound;
 
                         if (current_boundary < this->_approximation_interval.lower_bound) {
                             this->_approximation_interval.lower_bound = current_boundary;

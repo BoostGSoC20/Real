@@ -36,9 +36,13 @@ TEST_CASE( "Addition between vectors", "[vector]" ) {
         for (int i = 0; i < (int)expected_results.size(); i++) {
             int exponent = 5 - i;
             SECTION( "Exponent: " + std::to_string(exponent)) {
-                int exponent_c = boost::real::real_helper::add_vectors(a,exponent,b,0,c);
-                CHECK( exponent_c == expected_results[i].first);
-                CHECK( c == expected_results[i].second);
+                boost::real::exact_number av(a, exponent);
+                boost::real::exact_number bv(b, 0);
+
+                boost::real::exact_number result = av + bv;
+
+                CHECK(result.exponent == expected_results[i].first);
+                CHECK(result.digits == expected_results[i].second);
             }
         }
     }
@@ -60,9 +64,13 @@ TEST_CASE( "Addition between vectors", "[vector]" ) {
         for (int i = 0; i < (int)expected_results.size(); i++) {
             int exponent = 5 - i;
             SECTION( "Exponent: " + std::to_string(exponent)) {
-                int exponent_c = boost::real::real_helper::add_vectors(b,0,a,exponent,c);
-                CHECK( exponent_c == expected_results[i].first);
-                CHECK( c == expected_results[i].second);
+                boost::real::exact_number av(a, exponent);
+                boost::real::exact_number bv(b, 0);
+
+                boost::real::exact_number result = bv + av;
+
+                CHECK(result.exponent == expected_results[i].first);
+                CHECK(result.digits == expected_results[i].second);
             }
         }
     }

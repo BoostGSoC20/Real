@@ -10,7 +10,6 @@
 #include <variant>
 
 #include <real/real_exception.hpp>
-#include <real/real_helpers.hpp>
 #include <real/real_explicit.hpp>
 #include <real/real_algorithm.hpp>
 #include <real/real_operation.hpp>
@@ -418,8 +417,10 @@ namespace boost {
 
                     bool this_full_precision = this_it.get_interval().is_a_number();
                     bool other_full_precision = other_it.get_interval().is_a_number();
+
+                    /// TODO: get rid of recursive calls, use while loop instead                    
                     if (this_full_precision && other_full_precision) {
-                        return this_it.get_interval()> other_it.get_interval();
+                        return this_it.get_interval() > other_it.get_interval();
                     }
 
                     if (this_it.get_interval()> other_it.get_interval()) {

@@ -1,16 +1,17 @@
 #ifndef BOOST_CONST_PRECISION_ITERATOR_HPP
 #define BOOST_CONST_PRECISION_ITERATOR_HPP
 
-#include <real/boundary_helper.hpp>
 #include <real/interval.hpp>
 #include <real/real_explicit.hpp>
 #include <real/real_algorithm.hpp>
 #include <real/real_operation.hpp>
-#include <real/real_helpers.hpp>
+#include <real/exact_number.hpp>
+#include <real/real_exception.hpp>
 #include <memory>
 #include <variant>
 #include <assert.h>
 #include <iterator>
+#include <optional>
 
 namespace boost {
     namespace real{
@@ -36,7 +37,7 @@ namespace boost {
         class const_precision_iterator {
             public:
             /**
-             * @brief Determines the maximum precision to use
+             * @brief Optional user-provided maximum precision for all const_precision_iterators. 
              */
             static std::optional<unsigned int> maximum_precision;
 

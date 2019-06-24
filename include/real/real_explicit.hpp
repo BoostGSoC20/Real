@@ -8,8 +8,8 @@
 #include <regex>
 
 #include <real/real_exception.hpp>
-#include <real/real_helpers.hpp>
 #include <real/interval.hpp>
+#include <real/exact_number.hpp>
 
 namespace boost {
     namespace real {
@@ -24,11 +24,8 @@ namespace boost {
         class real_explicit {
 
             // Number representation as a vector of digits with an integer part and a sign (+/-)
-            // TODO: Replace this by a boost::real::boundary type
             // TODO: Add normalizations to the constructors
-            std::vector<int> _digits = {};
-            int _exponent = 1;
-            bool _positive = true;
+            exact_number explicit_number;
 
             // The number max precision is the same as the explicit number digits size.
             unsigned int _maximum_precision = 1;
@@ -67,11 +64,11 @@ namespace boost {
                 std::string exp = regex_replace(number, decimal, "$8");
                 int add_exponent = exp.length() == 0 ? 0 : std::stoi(exp);
                 if (integer_part[0] == '+') {
-                    this->_positive = true;
+                    explicit_number.positive = true;
                     integer_part = integer_part.substr(1);
                 }
                 else if (integer_part[0] == '-') {
-                    this->_positive = false;
+                    explicit_number.positive = false;
                     integer_part = integer_part.substr(1);
                 }
                 integer_part = regex_replace(integer_part, std::regex("(0?+)([[:digit:]]?+)"), "$2");
@@ -97,16 +94,16 @@ namespace boost {
                     decimal_part = decimal_part.substr(i);
                 }
                 if (integer_part.empty() && decimal_part.empty()) {
-                    this->_digits = {0};
-                    this->_exponent = 0;
+                    explicit_number.digits = {0};
+                    explicit_number.exponent = 0;
                     return;
                 }
-                this->_exponent = exponent;
+                explicit_number.exponent = exponent;
                 for (const auto& c : integer_part ) {
-                    this->_digits.push_back(c - '0');
+                    explicit_number.digits.push_back(c - '0');
                 }
                 for (const auto& c : decimal_part ) {
-                    this->_digits.push_back(c - '0');
+                    explicit_number.digits.push_back(c - '0');
                 }
             }           
 
@@ -119,10 +116,8 @@ namespace boost {
              * @param digits - an initializer_list<int> that represents the number digits.
              * @param exponent - an integer representing the number exponent.
              */
-            real_explicit(std::initializer_list<int> digits, int exponent) :
-                    _digits(digits),
-                    _exponent(exponent),
-                    _maximum_precision((int)this->_digits.size())
+            real_explicit(std::initializer_list<int> digits, int exponent) : explicit_number(digits, exponent),
+                                                                            _maximum_precision((int)explicit_number.digits.size())
             {};
 
             /**
@@ -137,32 +132,30 @@ namespace boost {
              * @param positive - a bool that represents the number sign. If positive is set to true,
              * the number is positive, otherwise is negative.
              */
-            real_explicit(std::initializer_list<int> digits, int exponent, bool positive):
-                    _digits(digits),
-                    _exponent(exponent),
-                    _positive(positive),
-                    _maximum_precision((int)this->_digits.size())
+            real_explicit(std::initializer_list<int> digits, int exponent, bool positive) : 
+                                                                                explicit_number(digits,exponent,positive) ,
+                                                                                _maximum_precision((int)explicit_number.digits.size())
             {};
 
             /**
              * @return An integer with the number exponent
              */
             int exponent() const {
-                return this->_exponent;
+                return explicit_number.exponent;
             }
 
             /**
              * @return A bool indicating if the number is positive (true) or negative (false)
              */
             bool positive() const {
-                return this->_positive;
+                return explicit_number.positive;
             }
 
             /**
              * @return a const reference to the vector holding the number digits
              */
             const std::vector<int>& digits() const {
-                return this->_digits;
+                return explicit_number.digits;
             }
 
             /**
@@ -181,8 +174,8 @@ namespace boost {
              * @return an integer with the value of the number n-th digit.
              */
             int operator[](unsigned int n) const {
-                if (n < this->_digits.size()) {
-                    return this->_digits.at(n);
+                if (n < explicit_number.digits.size()) {
+                    return explicit_number.digits.at(n);
                 }
 
                 return 0;

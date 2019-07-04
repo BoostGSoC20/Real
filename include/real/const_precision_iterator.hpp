@@ -126,7 +126,7 @@ namespace boost {
 
 
                 // fwd decl'd. Definition found in real_data.hpp
-                void update_operation_boundaries(real_operation &ro);
+                inline void update_operation_boundaries(real_operation &ro);
 
                 /**
                  * @brief Constructor for the least precise precision iterator
@@ -182,7 +182,7 @@ namespace boost {
                 }
 
                 // fwd decl, defined in real_data.hpp
-                void init_operation_itr(real_operation &ro, bool cend);
+                inline void init_operation_itr(real_operation &ro, bool cend);
 
                 /**
                  * @brief Constructor for max_precision precision iterator, from real_number
@@ -234,7 +234,7 @@ namespace boost {
                 }
 
                 // fwd decl, defined in real_data.hpp
-                void operation_iterate(real_operation &ro);
+                inline void operation_iterate(real_operation &ro);
 
                 /**
                  * @brief It recalculates the approximation interval boundaries increasing the used
@@ -258,7 +258,7 @@ namespace boost {
                 }
 
                 // fwd decl, defined in real_data.hpp
-                void operation_iterate_n_times(real_operation &ro, int n);
+                inline void operation_iterate_n_times(real_operation &ro, int n);
 
                 void iterate_n_times(int n) {
                     std::visit( overloaded { // perform operation on whatever is held in variant

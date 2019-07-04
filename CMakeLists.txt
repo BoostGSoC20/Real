@@ -25,7 +25,6 @@ include_directories(include external/include ${Boost_INCLUDE_DIRS})
 # add Boost.Real as a 'linkable' target
 add_library(Boost.Real INTERFACE)
 
-
 #Library Headers
 add_executable(Boost.Real_headers include)
 set_target_properties(Boost.Real_headers PROPERTIES

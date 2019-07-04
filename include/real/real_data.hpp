@@ -42,10 +42,11 @@ namespace boost {
         };
 
         // Now that real_data and const_precision_iterator have been defined, we may now define the following.
+        // Note these are all inline to avoid linker issues.
 
         /* const_precision_iterator member functions */
         /// determines a real_operation's approximation interval from its operands'
-        void const_precision_iterator::update_operation_boundaries(real_operation &ro) {
+        inline void const_precision_iterator::update_operation_boundaries(real_operation &ro) {
             switch (ro.get_operation()) {
                 case OPERATION::ADDITION:
                         this->_approximation_interval.lower_bound = ro.get_lhs_itr().get_interval().lower_bound +
@@ -170,7 +171,7 @@ namespace boost {
         // remember to update afterwards
         // inits the precision of the real_operation, depending on those of its operands, to either
         // cbegin or cend.
-        void const_precision_iterator::init_operation_itr(real_operation &ro, bool cend){
+        inline void const_precision_iterator::init_operation_itr(real_operation &ro, bool cend){
             if (cend) {
                 ro.get_lhs_itr() = const_precision_iterator(ro.get_lhs_itr().cend());
                 ro.get_rhs_itr() = const_precision_iterator(ro.get_rhs_itr().cend());
@@ -180,7 +181,7 @@ namespace boost {
             }
         }
 
-        void const_precision_iterator::operation_iterate_n_times(real_operation &ro, int n) {
+        inline void const_precision_iterator::operation_iterate_n_times(real_operation &ro, int n) {
             /// @warning there could be issues if operands have different precisions/max precisions
 
             if (ro.get_lhs_itr()._precision < this->_precision + n)
@@ -194,7 +195,7 @@ namespace boost {
             update_operation_boundaries(ro);
         }
 
-        void const_precision_iterator::operation_iterate(real_operation &ro) {
+        inline void const_precision_iterator::operation_iterate(real_operation &ro) {
             // only iterate if we must. If operand precision < this precision, then it must have
             // hit its maximum_precision. If operand precision == this precision, we try iterating. Otherwise,
             // it is == this->_precision + 1 (from being iterated elsewhere in the operation tree) and
@@ -215,11 +216,11 @@ namespace boost {
 
         // note that we return a reference. It is necessary, for now, since iterating operands 
         // (see operation_iterate, above) REQUIRES modifying the operands' precision iterators
-        const_precision_iterator& real_operation::get_lhs_itr() {
+        inline const_precision_iterator& real_operation::get_lhs_itr() {
             return _lhs->get_precision_itr();
         }
         
-        const_precision_iterator& real_operation::get_rhs_itr() {
+        inline const_precision_iterator& real_operation::get_rhs_itr() {
             return _rhs->get_precision_itr();
         }
     }

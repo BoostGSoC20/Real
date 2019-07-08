@@ -28,7 +28,7 @@ namespace boost {
         // fwd decl
         class real;
 
-        typedef std::variant<std::monostate, real_explicit, real_algorithm, real_operation> real_number;
+        using real_number=std::variant<std::monostate, real_explicit, real_algorithm, real_operation>;
         /// the default max precision to use if the user hasn't provided one.
         const size_t DEFAULT_MAX_PRECISION = 10;
 
@@ -39,7 +39,6 @@ namespace boost {
              */
 
             static std::optional<size_t> maximum_precision;
-
             /// @TODO look into STL-style iterators
             // typedef std::forward_iterator_tag iterator_category;
             // typedef void difference_type (?);
@@ -274,7 +273,6 @@ namespace boost {
                            // If the explicit number just reaches the full precision (the end)
                            // then set both boundaries are equals.
                            if (this->_precision + n >= real.digits().size()) {
-
                                for(int i = this->_precision; i < (int)real.digits().size(); i++) {
                                    this->_approximation_interval.lower_bound.push_back(real.digits()[i]);
                                }

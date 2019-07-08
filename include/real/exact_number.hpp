@@ -216,7 +216,7 @@ namespace boost {
 
                 if (divisor == tmp) {
                     this->exponent = exponent_dif + 1;
-                    (*this).positive = positive;
+                    this->positive = positive;
                     return;
                 }
 
@@ -226,7 +226,7 @@ namespace boost {
                     return;
                 }
 
-                exact_number zero = exact_number(); 
+                exact_number zero = exact_number();
 
                 if (divisor == zero) {
                     throw(boost::real::divide_by_zero());
@@ -290,7 +290,7 @@ namespace boost {
                     // recalculate residual  N/D = Q ---> QD - N = residual
                     residual = ((*this) * divisor) - numerator;
                     residual.normalize();
-                } // end while
+                }
                 // at this point, we may have exited early. we should be within +- min_boundary_p of the solution.
                 
                 // truncate (*this)
@@ -555,7 +555,7 @@ namespace boost {
                 if (this->digits == zero || this->digits.empty()) {
                     return !(other.digits == zero || other.positive || other.digits.empty());
                 } else {
-                    if ((other.digits == zero || other.digits.empty()) && this->positive)
+                    if ((other.digits == zero) && this->positive)
                         return true;
                 }
 
@@ -661,6 +661,7 @@ namespace boost {
             void operator*=(exact_number other) {
                 *this = *this * other;
             }
+
 
             /**
              * @brief Generates a string representation of the boost::real::exact_number.

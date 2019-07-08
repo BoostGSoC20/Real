@@ -15,6 +15,7 @@
 namespace boost { 
     namespace real{
 
+        // T is the generator type for real_algorithm
         class real_data {
             real_number _real;
             const_precision_iterator _precision_itr;

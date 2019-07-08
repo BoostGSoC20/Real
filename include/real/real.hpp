@@ -516,7 +516,7 @@ namespace boost {
              * @param other - the right side operand boost::real::real number.
              */
             void operator/=(real other) {
-                this->_real_p = 
+                this->_real_p =
                     std::make_shared<real_data>(real_operation(this->_real_p, other._real_p, OPERATION::DIVISION));
             }
 
@@ -695,7 +695,7 @@ namespace boost {
 }
 
 inline boost::real::real operator "" _r(long double x) {
-    return boost::real::real(std::to_string(x));
+    return boost::real::real (std::to_string(x));
 }
 
 inline boost::real::real operator "" _r(unsigned long long x) {

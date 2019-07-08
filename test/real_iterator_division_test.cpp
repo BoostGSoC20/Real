@@ -43,6 +43,7 @@ TEST_CASE("Operator / boost::real::const_precision_iterator") { // assumes max p
             boost::real::real result = b/a; 
             // 12 / 144 
             // [10, 20] / [100, 200] = [10/200, 20/100] = [.05, .2]
+
             auto result_it = result.get_real_itr().cbegin();
 
             boost::real::interval expected_interval({});
@@ -55,6 +56,7 @@ TEST_CASE("Operator / boost::real::const_precision_iterator") { // assumes max p
             CHECK(expected_interval == result_it.get_interval()); 
 
             result_it = result.get_real_itr().cend();
+
             // [12, 12] / [144, 144] = [.08333...3, .0833...4]
             expected_interval.lower_bound.positive = true;
             expected_interval.upper_bound.positive = true;
@@ -121,7 +123,7 @@ TEST_CASE("Operator / boost::real::const_precision_iterator") { // assumes max p
             CHECK(expected_interval == result_it.get_interval());
         }
 
-        SECTION("1/2") {             
+        SECTION("1/2") {
         boost::real::real a("1"); // [1, 1]
         boost::real::real b("2");  // [3, 3]
         boost::real::real result = a/b; // [1,1] / [3,3]

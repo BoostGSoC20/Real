@@ -5,12 +5,20 @@
 #include <string>
 #include <algorithm>
 #include <math.h>
+<<<<<<< HEAD
 #include <type_traits>
+=======
+#include<type_traits>
+>>>>>>> finished exponential, made changes to division
 
 namespace boost {
     namespace real {
         struct exact_number {
+<<<<<<< HEAD
             using exponent_t = int;
+=======
+            typedef int exponent_t;
+>>>>>>> finished exponential, made changes to division
 
             std::vector<int> digits = {};
             exponent_t exponent = 0;
@@ -216,7 +224,11 @@ namespace boost {
 
                 if (divisor == tmp) {
                     this->exponent = exponent_dif + 1;
+<<<<<<< HEAD
                     this->positive = positive;
+=======
+                    (*this).positive = positive;
+>>>>>>> finished exponential, made changes to division
                     return;
                 }
 
@@ -226,7 +238,11 @@ namespace boost {
                     return;
                 }
 
+<<<<<<< HEAD
                 exact_number zero = exact_number();
+=======
+                exact_number zero = exact_number(); 
+>>>>>>> finished exponential, made changes to division
 
                 if (divisor == zero) {
                     throw(boost::real::divide_by_zero());
@@ -250,7 +266,11 @@ namespace boost {
                 (*this) = left + distance;
                 // N/D = Q -> QD -N = 0
                 residual = (*this) * divisor - numerator;
+<<<<<<< HEAD
                 if (residual == zero) {
+=======
+                if (residual == 0) {
+>>>>>>> finished exponential, made changes to division
                     this->exponent += exponent_dif;
                     this->positive = positive;
                     return;
@@ -290,7 +310,11 @@ namespace boost {
                     // recalculate residual  N/D = Q ---> QD - N = residual
                     residual = ((*this) * divisor) - numerator;
                     residual.normalize();
+<<<<<<< HEAD
                 }
+=======
+                } // end while
+>>>>>>> finished exponential, made changes to division
                 // at this point, we may have exited early. we should be within +- min_boundary_p of the solution.
                 
                 // truncate (*this)
@@ -405,9 +429,14 @@ namespace boost {
                     if(this->digits[index] != 0) {
                         --this->digits[index];
                         keep_carrying = false;
+<<<<<<< HEAD
                     } else { // digits[index] == 0, we keep carrying
                         this->digits[index] = DIGIT_MAX;
                     }
+=======
+                    } else // digits[index] == 0, we keep carrying
+                        this->digits[index] = DIGIT_MAX;
+>>>>>>> finished exponential, made changes to division
                     --index;
                 }
                 // we should be ok at this point because the first number in digits should != 0
@@ -423,9 +452,21 @@ namespace boost {
             /// ctor from vector of digits, integer exponent, and optional bool positive
             exact_number(std::vector<int> vec, int exp, bool pos = true) : digits(vec), exponent(exp), positive(pos) {};
 
+<<<<<<< HEAD
             /// ctor from any integral type
             template<typename I, typename std::enable_if_t<std::is_integral<I>::value>>
             exact_number(I x) {
+=======
+
+            // exact_number(std::initializer_list<int> list, int exp, bool pos= true) :
+                // digits(list), exponent(exp), positive(pos) {};
+
+            /// ctor from any integral type
+            template<typename I>
+            exact_number(I x) {
+                static_assert(std::numeric_limits<I>::is_integer);
+
+>>>>>>> finished exponential, made changes to division
                 if (x < 0)
                     positive = false;
                 else
@@ -439,6 +480,7 @@ namespace boost {
                 }
             }
 
+<<<<<<< HEAD
             explicit exact_number (const std::string& number) {
                 std::regex decimal("((\\+|-)?[[:digit:]]*)(\\.(([[:digit:]]+)?))?((e|E)(((\\+|-)?)[[:digit:]]+))?");
                 if (!std::regex_match (number, decimal))
@@ -491,6 +533,8 @@ namespace boost {
                 }
             }           
 
+=======
+>>>>>>> finished exponential, made changes to division
             /**
              * @brief *Copy constructor:* It constructs a new boost::real::exact_number that is a copy of the
              * other boost::real::exact_number.
@@ -555,7 +599,11 @@ namespace boost {
                 if (this->digits == zero || this->digits.empty()) {
                     return !(other.digits == zero || other.positive || other.digits.empty());
                 } else {
+<<<<<<< HEAD
                     if ((other.digits == zero) && this->positive)
+=======
+                    if ((other.digits == zero || other.digits.empty()) && this->positive)
+>>>>>>> finished exponential, made changes to division
                         return true;
                 }
 
@@ -579,11 +627,19 @@ namespace boost {
             }
 
             bool operator>=(const exact_number& other) const {
+<<<<<<< HEAD
                 return (!((*this) < other));
             }
 
             bool operator<=(const exact_number& other) const {
                 return (!((*this) > other));
+=======
+                return (((*this) == other) || ((*this) > other));
+            }
+
+            bool operator<=(const exact_number& other) const {
+                return (((*this) == other) || ((*this) < other));
+>>>>>>> finished exponential, made changes to division
             }
 
             /**
@@ -661,7 +717,6 @@ namespace boost {
             void operator*=(exact_number other) {
                 *this = *this * other;
             }
-
 
             /**
              * @brief Generates a string representation of the boost::real::exact_number.

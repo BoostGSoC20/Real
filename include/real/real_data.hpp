@@ -226,11 +226,9 @@ namespace boost {
                         if (residual.abs() > zero) {
                             this->_approximation_interval.upper_bound.round_up();
                         }
-
                         // if both operands are numbers (not intervals), then we can skip doing the lower bound separately
                         if (ro.get_rhs_itr().get_interval().is_a_number() && ro.get_lhs_itr().get_interval().is_a_number()) {
                             _approximation_interval.lower_bound = quotient;
-
                             if (residual == zero) {
                                 _approximation_interval.upper_bound = _approximation_interval.lower_bound;
                             }  else {

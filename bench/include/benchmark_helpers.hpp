@@ -3,30 +3,41 @@
 
 #include <real/real.hpp>
 
+
+struct bench_invalid_operation_exception : public std::exception {
+    const char * what () const throw () override {
+        return "This operation is not supported by real benchmarks at this time.";
+    }
+};
+
 constexpr void realOperationEq(boost::real::real& lhs, boost::real::real& rhs, 
                                boost::real::OPERATION op) {
     switch (op) {
-    case boost::real::OPERATION::ADDITION:
-        lhs += rhs;
-        break;
-    case boost::real::OPERATION::SUBTRACTION:
-        lhs -= rhs;
-        break;
-    case boost::real::OPERATION::MULTIPLICATION:
-        lhs *= rhs;
-        break;
+        case boost::real::OPERATION::ADDITION:
+            lhs += rhs;
+            break;
+        case boost::real::OPERATION::SUBTRACTION:
+            lhs -= rhs;
+            break;
+        case boost::real::OPERATION::MULTIPLICATION:
+            lhs *= rhs;
+            break;
+        default:
+            throw bench_invalid_operation_exception();
     }
 }
 
-enum class Comparison {greater_than, less_than, equals};
+enum class Comparison {GREATER_THAN, LESS_THAN, EQUALS};
 constexpr bool realComp(boost::real::real& lhs,boost::real::real& rhs, Comparison comp) {
     switch (comp) {
-        case (Comparison::greater_than):
+        case (Comparison::GREATER_THAN):
             return lhs > rhs;
-        case (Comparison::less_than):
+        case (Comparison::LESS_THAN):
             return lhs < rhs;
-        case(Comparison::equals):
+        case(Comparison::EQUALS):
             return lhs==rhs;
+        default:
+            throw bench_invalid_operation_exception();
     }
 }
 

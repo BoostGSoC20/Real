@@ -20,8 +20,9 @@ void BM_RealOperationTreeConstruction(benchmark::State& state, boost::real::OPER
         // than in +=, -= trees. This should make the benchmarks more meaningful
         a.set_maximum_precision(10);
 
-        for (int i = 0; i < state.range(0); i++)
+        for (int i = 0; i < state.range(0); i++) {
             realOperationEq(a,b,op);
+        }
 
         state.SetComplexityN(state.range(0));
     }

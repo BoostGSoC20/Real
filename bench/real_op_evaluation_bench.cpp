@@ -9,17 +9,17 @@ const int MULTIPLIER_TE = 10;  // for range evaluation of tree evaluation benchm
 /// MULTIPLIER_TE between MIN_TREE_NODES and MAX_TREE_NODES
 void BM_RealOperationTreeEvaluation(benchmark::State& state, boost::real::OPERATION op) {
     for (auto i : state) {
-    boost::real::real a ("12");
-    boost::real::real b ("34");
+        boost::real::real a ("12");
+        boost::real::real b ("34");
 
-    state.PauseTiming();
-    for (int i = 0; i < state.range(0); i++) {
-        realOperationEq(a,b,op);
-    }
-    state.ResumeTiming();
+        state.PauseTiming();
+        for (int i = 0; i < state.range(0); i++) {
+            realOperationEq(a,b,op);
+        }
+        state.ResumeTiming();
 
-    a.get_real_itr().cend(); // force evaluation
-    state.SetComplexityN(state.range(0));
+        a.get_real_itr().cend(); // force evaluation
+        state.SetComplexityN(state.range(0));
     }
 }
 
@@ -60,8 +60,8 @@ void BM_RealOperationEvaluation(benchmark::State& state, boost::real::OPERATION 
         realOperationEq(a,b,op);
         state.ResumeTiming();
 
-    a.get_real_itr().cend(); // force evaluation
-    state.SetComplexityN(state.range(0));
+        a.get_real_itr().cend(); // force evaluation
+        state.SetComplexityN(state.range(0));
     }
 }
 
@@ -98,14 +98,14 @@ void BM_RealComparisonEvaluation(benchmark::State& state, Comparison comp) {
     }
 }
 
-BENCHMARK_CAPTURE(BM_RealComparisonEvaluation, less_than, Comparison::less_than)
+BENCHMARK_CAPTURE(BM_RealComparisonEvaluation, LESS_THAN, Comparison::LESS_THAN)
     ->RangeMultiplier(MULTIPLIER_OE)->Range(MIN_NUM_DIGITS,MAX_NUM_DIGITS)->Unit(benchmark::kMillisecond)
     ->Complexity();
 
-BENCHMARK_CAPTURE(BM_RealComparisonEvaluation, greater_than, Comparison::greater_than)
+BENCHMARK_CAPTURE(BM_RealComparisonEvaluation, GREATER_THAN, Comparison::GREATER_THAN)
     ->RangeMultiplier(MULTIPLIER_OE)->Range(MIN_NUM_DIGITS,MAX_NUM_DIGITS)->Unit(benchmark::kMillisecond)
     ->Complexity();
 
-BENCHMARK_CAPTURE(BM_RealComparisonEvaluation, equals, Comparison::equals)
+BENCHMARK_CAPTURE(BM_RealComparisonEvaluation, EQUALS, Comparison::EQUALS)
     ->RangeMultiplier(MULTIPLIER_OE)->Range(MIN_NUM_DIGITS,MAX_NUM_DIGITS)->Unit(benchmark::kMillisecond)
     ->Complexity();

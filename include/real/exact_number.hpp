@@ -989,7 +989,7 @@ namespace boost {
                     }
                 }
 
-                return result;
+                //return result;
 
                 //Form new string below in base 10.
                 std::vector<T> new_result = {0};

@@ -11,164 +11,96 @@ TEST_CASE("Operators + + boost::real::const_precision_iterator") {
     SECTION("With carry") {
 
         // Explicit numbers
-        boost::real::real a("1.19");
-        boost::real::real b("1.19");
-        boost::real::real c("1.19");
+        boost::real::real a("9999999999999999999999999999999");
+        boost::real::real b("9999999999999999999999999999999");
+        boost::real::real c("9999999999999999999999999999999");
 
         SECTION("(a + b) + c") {
             boost::real::real result = (a + b) + c;
+            boost::real::real result2 = (a + b) + c;
+            auto end_it = result2.get_real_itr().cend();
+            CHECK(end_it.get_interval().lower_bound == end_it.get_interval().upper_bound);
 
             auto result_it = result.get_real_itr().cbegin();
 
-            // ([1, 2] + [1, 2]) + [1, 2]
-            // [2, 4] + [1, 2]
-            // [3, 6]
-            expected_interval.lower_bound.positive = true;
-            expected_interval.upper_bound.positive = true;
-            expected_interval.lower_bound.exponent = 1;
-            expected_interval.upper_bound.exponent = 1;
-            expected_interval.lower_bound.digits = {3};
-            expected_interval.upper_bound.digits = {6};
-            CHECK(expected_interval == result_it.get_interval());
+            CHECK(result_it.get_interval().lower_bound < end_it.get_interval().upper_bound);
+            CHECK(result_it.get_interval().upper_bound > end_it.get_interval().upper_bound);
 
-            // ([1.1, 1.2] + [1.1, 1.2]) + [1.1, 1.2]
-            // [2.2, 2.4] + [1.1, 1.2]
-            // [3.3, 3.6]
             ++result_it;
-            expected_interval.lower_bound.digits = {3,3};
-            expected_interval.upper_bound.digits = {3,6};
-            CHECK(expected_interval == result_it.get_interval());
-
-            // ([1.19, 1.19] + [1.19, 1.19]) + [1.19, 1.19]
-            // [3.38, 3.38] + [1.19, 1.19]
-            // [3.57, 3.57]
-            ++result_it;
-            expected_interval.lower_bound.digits = {3,5,7};
-            expected_interval.upper_bound.digits = {3,5,7};
-            CHECK(expected_interval == result_it.get_interval());
+            CHECK(result_it.get_interval().lower_bound < end_it.get_interval().upper_bound);
+            CHECK(result_it.get_interval().upper_bound > end_it.get_interval().upper_bound);
 
             // Full precision reached, no more changes are made
             ++result_it;
-            CHECK(expected_interval == result_it.get_interval());
+            CHECK(end_it.get_interval() == result_it.get_interval());
         }
 
         SECTION("a + (b + c)") {
             boost::real::real result = a + (b + c);
+            boost::real::real result2 = a + (b + c);
+            auto end_it = result2.get_real_itr().cend();
+            CHECK(end_it.get_interval().lower_bound == end_it.get_interval().upper_bound);
 
             auto result_it = result.get_real_itr().cbegin();
 
-            // [1, 2] + ([1, 2] + [1, 2])
-            // [1, 2] + [2, 4]
-            // [3, 6]
-            expected_interval.lower_bound.positive = true;
-            expected_interval.upper_bound.positive = true;
-            expected_interval.lower_bound.exponent = 1;
-            expected_interval.upper_bound.exponent = 1;
-            expected_interval.lower_bound.digits = {3};
-            expected_interval.upper_bound.digits = {6};
-            CHECK(expected_interval == result_it.get_interval());
+            CHECK(result_it.get_interval().lower_bound < end_it.get_interval().upper_bound);
+            CHECK(result_it.get_interval().upper_bound > end_it.get_interval().upper_bound);
 
-            // [1.1, 1.2] + ([1.1, 1.2] + [1.1, 1.2])
-            // [1.1, 1.2] + [2.2, 2.4]
-            // [3.3, 3.6]
             ++result_it;
-            expected_interval.lower_bound.digits = {3,3};
-            expected_interval.upper_bound.digits = {3,6};
-            CHECK(expected_interval == result_it.get_interval());
-
-            // [1.19, 1.19] + ([1.19, 1.19] + [1.19, 1.19])
-            // [1.19, 1.19] + [3.8, 3.8]
-            // [3.57, 3.57]
-            ++result_it;
-            expected_interval.lower_bound.digits = {3,5,7};
-            expected_interval.upper_bound.digits = {3,5,7};
-            CHECK(expected_interval == result_it.get_interval());
+            CHECK(result_it.get_interval().lower_bound < end_it.get_interval().upper_bound);
+            CHECK(result_it.get_interval().upper_bound > end_it.get_interval().upper_bound);
 
             // Full precision reached, no more changes are made
             ++result_it;
-            CHECK(expected_interval == result_it.get_interval());
+            CHECK(end_it.get_interval() == result_it.get_interval());
         }
     }
 
     SECTION("Without carry") {
 
         // Explicit numbers
-        boost::real::real a("1.11");
-        boost::real::real b("1.11");
-        boost::real::real c("1.11");
+        boost::real::real a("123");
+        boost::real::real b("123");
+        boost::real::real c("123");
 
         SECTION("(a + b) + c") {
             boost::real::real result = (a + b) + c;
+            boost::real::real result2 = (a + b) + c;
+            auto end_it = result2.get_real_itr().cend();
+            CHECK(end_it.get_interval().lower_bound == end_it.get_interval().upper_bound);
 
             auto result_it = result.get_real_itr().cbegin();
 
-            // ([1, 2] + [1, 2]) + [1, 2]
-            // [2, 4] + [1, 2]
-            // [3, 6]
-            expected_interval.lower_bound.positive = true;
-            expected_interval.upper_bound.positive = true;
-            expected_interval.lower_bound.exponent = 1;
-            expected_interval.upper_bound.exponent = 1;
-            expected_interval.lower_bound.digits = {3};
-            expected_interval.upper_bound.digits = {6};
-            CHECK(expected_interval == result_it.get_interval());
+            CHECK(result_it.get_interval().lower_bound < end_it.get_interval().upper_bound);
+            CHECK(result_it.get_interval().upper_bound > end_it.get_interval().upper_bound);
 
-            // ([1.1, 1.2] + [1.1, 1.2]) + [1.1, 1.2]
-            // [2.2, 2.4] + [1.1, 1.2]
-            // [3.3, 3.6]
             ++result_it;
-            expected_interval.lower_bound.digits = {3,3};
-            expected_interval.upper_bound.digits = {3,6};
-            CHECK(expected_interval == result_it.get_interval());
-
-            // ([1.11, 1.11] + [1.11, 1.11]) + [1.11, 1.11]
-            // [2.22, 2.22] + [1.11, 1.11]
-            // [3.33, 3.33]
-            ++result_it;
-            expected_interval.lower_bound.digits = {3,3,3};
-            expected_interval.upper_bound.digits = {3,3,3};
-            CHECK(expected_interval == result_it.get_interval());
+            CHECK(result_it.get_interval().lower_bound < end_it.get_interval().upper_bound);
+            CHECK(result_it.get_interval().upper_bound > end_it.get_interval().upper_bound);
 
             // Full precision reached, no more changes are made
             ++result_it;
-            CHECK(expected_interval == result_it.get_interval());
+            CHECK(end_it.get_interval() == result_it.get_interval());
         }
 
         SECTION("a + (b + c)") {
             boost::real::real result = a + (b + c);
+            boost::real::real result2 = a + (b + c);
+            auto end_it = result2.get_real_itr().cend();
+            CHECK(end_it.get_interval().lower_bound == end_it.get_interval().upper_bound);
 
             auto result_it = result.get_real_itr().cbegin();
 
-            // [1, 2] + ([1, 2] + [1, 2])
-            // [1, 2] + [2, 4]
-            // [3, 6]
-            expected_interval.lower_bound.positive = true;
-            expected_interval.upper_bound.positive = true;
-            expected_interval.lower_bound.exponent = 1;
-            expected_interval.upper_bound.exponent = 1;
-            expected_interval.lower_bound.digits = {3};
-            expected_interval.upper_bound.digits = {6};
-            CHECK(expected_interval == result_it.get_interval());
+            CHECK(result_it.get_interval().lower_bound < end_it.get_interval().upper_bound);
+            CHECK(result_it.get_interval().upper_bound > end_it.get_interval().upper_bound);
 
-            // [1.1, 1.2] + ([1.1, 1.2] + [1.1, 1.2])
-            // [1.1, 1.2] + [2.2, 2.4]
-            // [3.3, 3.6]
             ++result_it;
-            expected_interval.lower_bound.digits = {3,3};
-            expected_interval.upper_bound.digits = {3,6};
-            CHECK(expected_interval == result_it.get_interval());
-
-            // [1.11, 1.11] + ([1.11, 1.11] + [1.11, 1.11])
-            // [1.11, 1.11] + [2.22, 2.22]
-            // [3.33, 3.33]
-            ++result_it;
-            expected_interval.lower_bound.digits = {3,3,3};
-            expected_interval.upper_bound.digits = {3,3,3};
-            CHECK(expected_interval == result_it.get_interval());
+            CHECK(result_it.get_interval().lower_bound < end_it.get_interval().upper_bound);
+            CHECK(result_it.get_interval().upper_bound > end_it.get_interval().upper_bound);
 
             // Full precision reached, no more changes are made
             ++result_it;
-            CHECK(expected_interval == result_it.get_interval());
+            CHECK(end_it.get_interval() == result_it.get_interval());
         }
     }
 }

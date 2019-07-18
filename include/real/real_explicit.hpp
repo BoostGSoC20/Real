@@ -102,8 +102,6 @@ namespace boost {
                 for (const auto& c : decimal_part ) {
                     explicit_number.digits.push_back(c - '0');
                 }
-
-                this->_maximum_precision = (int)this->explicit_number.digits.size();
             }           
 
             /**

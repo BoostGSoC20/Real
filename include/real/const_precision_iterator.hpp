@@ -241,10 +241,11 @@ namespace boost {
 
                 // fwd decl, defined in real_data.hpp
                 void operation_iterate(real_operation<T> &ro);
+                void operation_iterate_n_times(real_operation<T> &ro, int n);
 
                 /**
                  * @brief It recalculates the approximation interval boundaries increasing the used
-                 * precision, the new pointed approximation interval is smaller than the current one.
+                 * precision, the new approximation interval is smaller than the current one.
                  */
                 void operator++() {
                     std::visit( overloaded { // perform operation on whatever is held in variant
@@ -255,16 +256,13 @@ namespace boost {
                             this->iterate_n_times(1);
                         },
                         [this] (real_operation<T>& real) {
-                            operation_iterate(real);
+                            operation_iterate_n_times(real, 1);
                         },
                         [] (auto& real) {
                             throw boost::real::bad_variant_access_exception();
                         }
                     }, *_real_ptr);
                 }
-
-                // fwd decl, defined in real_data.hpp
-                void operation_iterate_n_times(real_operation<T> &ro, int n);
 
                 void iterate_n_times(int n) {
                     std::visit( overloaded { // perform operation on whatever is held in variant

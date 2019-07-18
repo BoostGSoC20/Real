@@ -14,13 +14,8 @@ namespace boost {
     namespace real {
         template <typename T = int>
         struct exact_number {
-<<<<<<< HEAD
             using exponent_t = int;
 
-            std::vector<int> digits = {};
-=======
-            typedef int exponent_t;
->>>>>>> Merge branch 'merging_bc' into mbc
             exponent_t exponent = 0;
             static const int BASE = 10;
             std::vector<T> digits = {};
@@ -434,11 +429,7 @@ namespace boost {
                     return;
                 }
 
-<<<<<<< HEAD
-                exact_number zero = exact_number();
-=======
                 ///@TODO: remember signs at the end of this function
->>>>>>> Merge branch 'merging_bc' into mbc
 
                 exact_number<T> zero = exact_number<T>(); 
 
@@ -503,14 +494,9 @@ namespace boost {
                     // recalculate residual  N/D = Q ---> QD - N = residual
                     residual = ((*this) * divisor) - numerator;
                     residual.normalize();
-<<<<<<< HEAD
                 }
-                // at this point, we may have exited early. we should be within +- min_boundary_p of the solution.
+                /// @TODO Is this still true?: at this point, we may have exited early. we should be within +- min_boundary_p of the solution.
                 
-=======
-                } // end while
-                // now (*this) is correct, or at least within +-epsilon of correct value 
->>>>>>> Merge branch 'merging_bc' into mbc
                 // truncate (*this)
                 this->normalize();
 
@@ -600,7 +586,7 @@ namespace boost {
             }
 
             void round_up(T base) {
-                if (positive)
+e                if (positive)
                     this->round_up_abs(base);
                 else
                     this->round_down_abs(base);
@@ -1203,6 +1189,24 @@ namespace boost {
              */
             unsigned long size() {
                 return this->digits.size();
+            }
+
+            /// returns an exact_number that has the precision given
+            exact_number up_to(size_t precision, bool upper) {
+
+                exact_number ret = *this;
+                ret.digits = std::vector(digits.begin(), digits.begin() + precision);
+
+                bool round = (precision < digits.size());
+                if (round) {
+                    if(upper) {
+                        ret.round_up();
+                    } else {
+                        ret.round_down();
+                    }
+                }
+
+                return ret;
             }
 
             bool is_integral() { 

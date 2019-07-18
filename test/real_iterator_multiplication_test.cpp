@@ -6,7 +6,7 @@
 
 TEST_CASE("Operator * boost::real::const_precision_iterator") {
 
-    std::map<std::string, boost::real::real> numbers;
+    std::map<std::string, boost::real::real<int>> numbers;
 
     // Explicit numbers
     numbers.emplace("E(+1.9)", "1.9");

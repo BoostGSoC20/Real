@@ -7,6 +7,7 @@
 #include <real/real_operation.hpp>
 #include <real/exact_number.hpp>
 #include <real/real_exception.hpp>
+#include <limits>
 #include <memory>
 #include <variant>
 #include <assert.h>
@@ -26,12 +27,17 @@ namespace boost {
         template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
         template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
         // fwd decl
+        template <typename T>
         class real;
 
-        using real_number=std::variant<std::monostate, real_explicit, real_algorithm, real_operation>;
+        // same typedef is also found in real_data.hpp
+        template <typename T>
+        using real_number = std::variant<std::monostate, real_explicit<T>, real_algorithm<T>, real_operation<T>>;
+
         /// the default max precision to use if the user hasn't provided one.
         const size_t DEFAULT_MAX_PRECISION = 10;
 
+        template <typename T>
         class const_precision_iterator {
             public:
             /**
@@ -52,7 +58,7 @@ namespace boost {
                  */ 
                 // raw pointer here is ok, precision iterator is always attached to the variant it points to
                 // (refer to real_data.hpp). Any time the variant is destroyed, so is this pointer.
-                real_number * _real_ptr;
+                real_number<T> * _real_ptr;
 
                 /// current iterator precision
                 size_t _precision;
@@ -60,21 +66,21 @@ namespace boost {
                 /// local max precision, is used if set to > 0 by user
                 size_t _maximum_precision = 0;
 
-                interval _approximation_interval;
+                interval<T> _approximation_interval;
 
                 void check_and_swap_boundaries() {
                     std::visit( overloaded { // perform operation on whatever is held in variant
-                        [this] (real_explicit& real) { 
+                        [this] (real_explicit<T>& real) { 
                             if (!real.positive()) {
                             this->_approximation_interval.swap_bounds();
                             }
                         },
-                        [this] (real_algorithm& real) {
+                        [this] (real_algorithm<T>& real) {
                             if (!real.positive()) {
                             this->_approximation_interval.swap_bounds();
                             }
                         },
-                        [] (real_operation& real) {
+                        [] (real_operation<T>& real) {
                             throw boost::real::bad_variant_access_exception();
                         },
                         [] (auto& real) {
@@ -124,23 +130,24 @@ namespace boost {
 
 
                 // fwd decl'd. Definition found in real_data.hpp
-                inline void update_operation_boundaries(real_operation &ro);
+                void update_operation_boundaries(real_operation<T> &ro);
 
                 /**
                  * @brief Constructor for the least precise precision iterator
                  */ 
-                explicit const_precision_iterator(real_number * a) : _real_ptr(a), _precision(1) {
+                explicit const_precision_iterator(real_number<T> * a) : _real_ptr(a), _precision(1) {
                     std::visit( overloaded { // perform operation on whatever is held in variant
-                        [this] (real_explicit& real) { 
+                        [this] (real_explicit<T>& real) {
+                            T base = (std::numeric_limits<T>::max() /4)*2 - 1;
                             this->_approximation_interval.lower_bound.exponent = real.exponent();
                             this->_approximation_interval.upper_bound.exponent = real.exponent();
                             this->_approximation_interval.lower_bound.positive = real.positive();
                             this->_approximation_interval.upper_bound.positive = real.positive();
 
-                            int first_digit = real.digits()[0];
+                            T first_digit = real.digits()[0];
                             this->_approximation_interval.lower_bound.digits.push_back(first_digit);
 
-                            if (first_digit == 9) {
+                            if (first_digit == base) {
                                 this->_approximation_interval.upper_bound.digits.push_back(1);
                                 this->_approximation_interval.upper_bound.exponent++;
                             } else if (this->_precision < real.digits().size()) {
@@ -151,16 +158,17 @@ namespace boost {
                             this->check_and_swap_boundaries();
                         },
 
-                        [this] (real_algorithm& real) {
+                        [this] (real_algorithm<T>& real) {
+                            T base = (std::numeric_limits<T>::max() /4)*2 - 1;
                             this->_approximation_interval.lower_bound.exponent = real.exponent();
                             this->_approximation_interval.upper_bound.exponent = real.exponent();
                             this->_approximation_interval.lower_bound.positive = real.positive();
                             this->_approximation_interval.upper_bound.positive = real.positive();
 
-                            int first_digit = real[0];
+                            T first_digit = real[0];
                             this->_approximation_interval.lower_bound.digits.push_back(first_digit);
 
-                            if (first_digit == 9) {
+                            if (first_digit == base) {
                                 this->_approximation_interval.upper_bound.digits.push_back(1);
                                 this->_approximation_interval.upper_bound.exponent++;
                             } else {
@@ -169,8 +177,8 @@ namespace boost {
                             this->check_and_swap_boundaries();
                         },
 
-                        [this] (real_operation& real) {
-                            // we shouldn't need to init operands here - they *SHOULD* already be at cbegin or >
+                        [this] (real_operation<T>& real) {
+                            // we don't need to init operands here - they *SHOULD* already be at cbegin or >
                             update_operation_boundaries(real);
                             // _maximum_precision = std::max(real.get_lhs_itr().max_precision(), real.get_rhs_itr().max_precision());
                             },
@@ -181,24 +189,24 @@ namespace boost {
                 }
 
                 // fwd decl, defined in real_data.hpp
-                inline void init_operation_itr(real_operation &ro, bool cend);
+                void init_operation_itr(real_operation<T> &ro, bool cend);
 
                 /**
                  * @brief Constructor for max_precision precision iterator, from real_number
                  */
-                explicit const_precision_iterator(real_number * a, bool cend) : _real_ptr(a) {
+                explicit const_precision_iterator(real_number<T> * a, bool cend) : _real_ptr(a) {
                     if (cend) {
                         std::visit( overloaded { // perform operation on whatever is held in variant
-                            [this, &a] (real_explicit& real) {
+                            [this, &a] (real_explicit<T>& real) {
                                 *this = const_precision_iterator(a);
                                 this->iterate_n_times((int)real.digits().size() + 1);
                             },
-                            [this, &a] (real_algorithm& real) {
+                            [this, &a] (real_algorithm<T>& real) {
                                 *this = const_precision_iterator(a);
                                 this->iterate_n_times(this->max_precision() - 1);
                             },
-                            [this, cend] (real_operation& real) {
-                                init_operation_itr(real, cend);
+                            [this] (real_operation<T>& real) {
+                                init_operation_itr(real, true);
                                 update_operation_boundaries(real);
                             },
                             [] (auto & real) {
@@ -227,12 +235,12 @@ namespace boost {
                     return *this;
                 }
 
-                interval get_interval() const {
+                interval<T> get_interval() const {
                     return _approximation_interval;
                 }
 
                 // fwd decl, defined in real_data.hpp
-                inline void operation_iterate(real_operation &ro);
+                void operation_iterate(real_operation<T> &ro);
 
                 /**
                  * @brief It recalculates the approximation interval boundaries increasing the used
@@ -240,13 +248,13 @@ namespace boost {
                  */
                 void operator++() {
                     std::visit( overloaded { // perform operation on whatever is held in variant
-                        [this] (real_explicit& real) { 
+                        [this] (real_explicit<T>& real) { 
                             this->iterate_n_times(1);
                         },
-                        [this] (real_algorithm& real) {
+                        [this] (real_algorithm<T>& real) {
                             this->iterate_n_times(1);
                         },
-                        [this] (real_operation& real) {
+                        [this] (real_operation<T>& real) {
                             operation_iterate(real);
                         },
                         [] (auto& real) {
@@ -256,15 +264,15 @@ namespace boost {
                 }
 
                 // fwd decl, defined in real_data.hpp
-                inline void operation_iterate_n_times(real_operation &ro, int n);
+                void operation_iterate_n_times(real_operation<T> &ro, int n);
 
                 void iterate_n_times(int n) {
                     std::visit( overloaded { // perform operation on whatever is held in variant
-                        [this, &n] (real_explicit& real) { 
+                        [this, &n] (real_explicit<T>& real) { 
                             if (this->_precision >= real.digits().size()) {
                                 return;
                             }
-
+                            T base = (std::numeric_limits<T>::max() /4)*2 - 1;
                            // If the number is negative, boundaries are interpreted as mirrored:
                            // First, the operation is made as positive, and after boundary calculation
                            // boundaries are swapped to come back to the negative representation.
@@ -283,7 +291,7 @@ namespace boost {
                                // If the explicit number didn't reaches the full precision (the end)
                                // then the number interval is defined by truncation.
 
-                               for(int i = _precision; i < _precision + n; i++) {
+                               for(size_t i = _precision; i < _precision + n; i++) {
                                    this->_approximation_interval.lower_bound.push_back(real.digits()[i]);
                                }
 
@@ -292,7 +300,7 @@ namespace boost {
 
                                int carry = 1;
                                for (int i = (int)this->_approximation_interval.lower_bound.size() - 1; i >= 0; --i) {
-                                   if (this->_approximation_interval.lower_bound[i] + carry == 10) {
+                                   if (this->_approximation_interval.lower_bound[i] + carry == base + 1) {
                                        this->_approximation_interval.upper_bound[i] = 0;
                                    } else {
                                        this->_approximation_interval.upper_bound[i] = this->_approximation_interval.lower_bound[i] + carry;
@@ -315,10 +323,11 @@ namespace boost {
                            this->check_and_swap_boundaries();
                            this->_precision = std::min(this->_precision + n, real.digits().size());
                         },
-                        [this, &n] (real_algorithm& real) {
+                        [this, &n] (real_algorithm<T>& real) {
                            // If the number is negative, bounds are interpreted as mirrored:
                            // First, the operation is made as positive, and after bound calculation
                            // bounds are swapped to come back to the negative representation.
+                           T base = (std::numeric_limits<T>::max() /4)*2 - 1;
                            this->check_and_swap_boundaries();
 
                            for (int i = 0; i < n; i++) {
@@ -329,7 +338,7 @@ namespace boost {
                            this->_approximation_interval.upper_bound.digits.resize(this->_approximation_interval.lower_bound.size());
                            int carry = 1;
                            for (int i = (int)this->_approximation_interval.lower_bound.size() - 1; i >= 0; --i) {
-                               if (this->_approximation_interval.lower_bound[i] + carry == 10) {
+                               if (this->_approximation_interval.lower_bound[i] + carry == base + 1) {
                                    this->_approximation_interval.upper_bound[i] = 0;
                                } else {
                                    this->_approximation_interval.upper_bound[i] = this->_approximation_interval.lower_bound[i] + carry;
@@ -351,7 +360,7 @@ namespace boost {
                            this->check_and_swap_boundaries();
                            this->_precision += n;
                         },
-                        [this, &n] (real_operation& real) {
+                        [this, &n] (real_operation<T>& real) {
                             operation_iterate_n_times(real, n);
                         },
                         [] (auto & real) {

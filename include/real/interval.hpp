@@ -14,9 +14,10 @@ namespace boost {
          * @brief Represent an interval composed by two boundaries, a lower boundary and an upper boundary.
          * The boundaries are boost::real::boundary structs that represent fully represented numbers.
          */
+        template <typename T = int>
         struct interval {
-            boost::real::exact_number lower_bound;
-            boost::real::exact_number upper_bound;
+            boost::real::exact_number<T> lower_bound;
+            boost::real::exact_number<T> upper_bound;
 
             /**
             * @brief *default constructor*: It constructs a representation of the interval [0,0].
@@ -60,7 +61,7 @@ namespace boost {
              * @param other - a boost::real::interval to compare with *this.
              * @return a bool that is true if and only if *this is lower than other.
              */
-            bool operator<(const boost::real::interval& other) const {
+            bool operator<(const boost::real::interval<T>& other) const {
                 return this->upper_bound < other.lower_bound;
             }
 
@@ -72,7 +73,7 @@ namespace boost {
              * @param other - a boost::real::interval to compare with *this.
              * @return a bool that is true if and only if *this is greater than other.
              */
-            bool operator>(const boost::real::interval& other) const {
+            bool operator>(const boost::real::interval<T>& other) const {
                 return this->lower_bound > other.upper_bound;
             }
 
@@ -104,7 +105,7 @@ namespace boost {
              * @param other - a boost::real::interval to compare to *this.
              * @return a bool that is true if and only if *this and other boundaries are equals.
              */
-            bool operator==(const boost::real::interval& other) const {
+            bool operator==(const boost::real::interval<T>& other) const {
                 return this->lower_bound == other.lower_bound && this->upper_bound == other.upper_bound;
             }
 
@@ -118,7 +119,7 @@ namespace boost {
                 return this->lower_bound == this->upper_bound;
             }
 
-            friend std::ostream& operator<<(std::ostream& os, const boost::real::interval& interval) {
+            friend std::ostream& operator<<(std::ostream& os, const boost::real::interval<T>& interval) {
                 return os << interval.as_string();
             }
 

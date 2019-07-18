@@ -4,6 +4,7 @@
 #include <variant>
 #include <assert.h>
 #include <iostream>
+#include <limits>
 
 #include <real/const_precision_iterator.hpp>
 #include <real/interval.hpp>
@@ -15,10 +16,10 @@
 namespace boost { 
     namespace real{
 
-        // T is the generator type for real_algorithm
+        template <typename T = int>
         class real_data {
-            real_number _real;
-            const_precision_iterator _precision_itr;
+            real_number<T> _real;
+            const_precision_iterator<T> _precision_itr;
 
             public:
             /// @TODO: use move constructors, if possible
@@ -29,19 +30,15 @@ namespace boost {
             real_data(const real_data &other) : _real(other._real), _precision_itr(other._precision_itr) {};
 
             // construct from the three different reals 
-            real_data(real_explicit x) :_real(x), _precision_itr(&_real) {};
-            real_data(real_algorithm x) : _real(x), _precision_itr(&_real) {};
-            real_data(real_operation x) : _real(x), _precision_itr(&_real) {};
+            real_data(real_explicit<T> x) :_real(x), _precision_itr(&_real) {};
+            real_data(real_algorithm<T> x) : _real(x), _precision_itr(&_real) {};
+            real_data(real_operation<T> x) : _real(x), _precision_itr(&_real) {};
 
-            const real_number& get_real_number() const {
+            const real_number<T>& get_real_number() const {
                 return _real;
             }
 
-            real_number const * get_real_ptr() const {
-                return &_real;
-            }
-
-            const_precision_iterator& get_precision_itr() {
+            const_precision_iterator<T>& get_precision_itr() {
                 return _precision_itr;
             }
         };
@@ -51,7 +48,8 @@ namespace boost {
 
         /* const_precision_iterator member functions */
         /// determines a real_operation's approximation interval from its operands'
-        inline void const_precision_iterator::update_operation_boundaries(real_operation &ro) {
+        template <typename T>
+        inline void const_precision_iterator<T>::update_operation_boundaries(real_operation<T> &ro) {
             switch (ro.get_operation()) {
                 case OPERATION::ADDITION:
                         this->_approximation_interval.lower_bound = ro.get_lhs_itr().get_interval().lower_bound +
@@ -115,7 +113,7 @@ namespace boost {
 
                     } else { // One is around zero all possible combinations are be tested
 
-                        exact_number current_boundary;
+                        exact_number<T> current_boundary;
 
                         // Lower * Lower
                                 current_boundary = 
@@ -167,11 +165,12 @@ namespace boost {
                     break;
                 }
                 case OPERATION::DIVISION: {
-                        exact_number zero = exact_number();
-                        exact_number residual;
-                        exact_number quotient;
-                        exact_number numerator;
-                        exact_number denominator;
+                        T base = (std::numeric_limits<T>::max() /4)*2 - 1;
+                        exact_number<T> zero = exact_number<T>();
+                        exact_number<T> residual;
+                        exact_number<T> quotient;
+                        exact_number<T> numerator;
+                        exact_number<T> denominator;
 
                         // if the interval contains zero, iterate until it doesn't, or until max_precision.
                         while (!ro.get_rhs_itr().get_interval().positive() &&
@@ -224,7 +223,7 @@ namespace boost {
                         this->_approximation_interval.upper_bound = quotient;
 
                         if (residual.abs() > zero) {
-                            this->_approximation_interval.upper_bound.round_up();
+                            this->_approximation_interval.upper_bound.round_up(base);
                         }
                         // if both operands are numbers (not intervals), then we can skip doing the lower bound separately
                         if (ro.get_rhs_itr().get_interval().is_a_number() && ro.get_lhs_itr().get_interval().is_a_number()) {
@@ -232,7 +231,7 @@ namespace boost {
                             if (residual == zero) {
                                 _approximation_interval.upper_bound = _approximation_interval.lower_bound;
                             }  else {
-                                _approximation_interval.lower_bound.round_down();
+                                _approximation_interval.lower_bound.round_down(base);
                             }
                             return;
                         }
@@ -276,7 +275,7 @@ namespace boost {
                         this->_approximation_interval.lower_bound = quotient;
 
                         if (residual.abs() > zero) {
-                            this->_approximation_interval.lower_bound.round_down();
+                            this->_approximation_interval.lower_bound.round_down(base);
                         }
 
                     break;
@@ -290,7 +289,8 @@ namespace boost {
         // remember to update afterwards
         // inits the precision of the real_operation, depending on those of its operands, to either
         // cbegin or cend.
-        inline void const_precision_iterator::init_operation_itr(real_operation &ro, bool cend){
+        template <typename T>
+        inline void const_precision_iterator<T>::init_operation_itr(real_operation<T> &ro, bool cend){
             if (cend) {
                 ro.get_lhs_itr() = const_precision_iterator(ro.get_lhs_itr().cend());
                 ro.get_rhs_itr() = const_precision_iterator(ro.get_rhs_itr().cend());
@@ -300,7 +300,8 @@ namespace boost {
             }
         }
 
-        inline void const_precision_iterator::operation_iterate_n_times(real_operation &ro, int n) {
+        template <typename T>
+        inline void const_precision_iterator<T>::operation_iterate_n_times(real_operation<T> &ro, int n) {
             /// @warning there could be issues if operands have different precisions/max precisions
 
             if (ro.get_lhs_itr()._precision < this->_precision + n) {
@@ -316,7 +317,8 @@ namespace boost {
             update_operation_boundaries(ro);
         }
 
-        inline void const_precision_iterator::operation_iterate(real_operation &ro) {
+        template <typename T>
+        inline void const_precision_iterator<T>::operation_iterate(real_operation<T> &ro) {
             // only iterate if we must. If operand precision < this precision, then it must have
             // hit its maximum_precision. If operand precision == this precision, we try iterating. Otherwise,
             // it is == this->_precision + 1 (from being iterated elsewhere in the operation tree) and
@@ -337,11 +339,13 @@ namespace boost {
 
         // note that we return a reference. It is necessary, for now, since iterating operands 
         // (see operation_iterate, above) REQUIRES modifying the operands' precision iterators
-        inline const_precision_iterator& real_operation::get_lhs_itr() {
+        template <typename T>
+        inline const_precision_iterator<T>& real_operation<T>::get_lhs_itr() {
             return _lhs->get_precision_itr();
         }
         
-        inline const_precision_iterator& real_operation::get_rhs_itr() {
+        template <typename T>
+        inline const_precision_iterator<T>& real_operation<T>::get_rhs_itr() {
             return _rhs->get_precision_itr();
         }
     }

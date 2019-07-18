@@ -4,7 +4,9 @@
 #include <iostream>
 #include <optional>
 #include <vector>
+#include <regex>
 #include <initializer_list>
+#include <sstream>
 #include <utility>
 #include <memory> // shared_ptr
 #include <variant>
@@ -55,14 +57,12 @@ namespace boost {
          * operator "==" but for those cases where the class is not able to decide the value of the
          * result before reaching the maximum precision, a precision_exception is thrown.
          */
+        
+        template <typename T = int>
         class real {
         private:
+            std::shared_ptr<real_data<T>> _real_p;
 
-            std::shared_ptr<real_data> _real_p;
-
-            // ctor from shared_ptr to (already init) real_data. used in check_and_distribute.
-            real(std::shared_ptr<real_data> x) : _real_p(x){};
-        
         public:
 
             /// @TODO: Move constructors to move directly from the ctors in real_explicit to the values in real_data
@@ -90,16 +90,83 @@ namespace boost {
              *
              * @throws boost::real::invalid_string_number exception if string doesn't represent a valid number
              */
-            real(const std::string& number) : _real_p(std::make_shared<real_data>(real_explicit(number)))
-            {};
+
+            real(const std::string& number) {
+                bool positive = true;
+                std::regex decimal("((\\+|-)?[[:digit:]]*)(\\.(([[:digit:]]+)?))?((e|E)(((\\+|-)?)[[:digit:]]+))?");
+                if (!std::regex_match (number, decimal))
+                    throw boost::real::invalid_string_number_exception();
+                //Know at this point that representation is valid
+                std::string decimal_part = regex_replace(number, decimal, "$5");
+                std::string integer_part = regex_replace(number, decimal, "$1");
+                std::string exp = regex_replace(number, decimal, "$8");
+                int add_exponent = exp.length() == 0 ? 0 : std::stoi(exp);
+                if (integer_part[0] == '+') {
+                    positive = true;
+                    integer_part = integer_part.substr(1);
+                }
+                else if (integer_part[0] == '-') {
+                    positive = false;
+                    integer_part = integer_part.substr(1);
+                }
+                integer_part = regex_replace(integer_part, std::regex("(0?+)([[:digit:]]?+)"), "$2");
+                size_t i = decimal_part.length() - 1;
+                while (decimal_part[i] == '0' && i >= 0) {
+                    --i;
+                }
+                decimal_part = decimal_part.substr(0, i + 1);
+                //decimal and integer parts are stripped of zeroes
+                int exponent = integer_part.length() + add_exponent;
+                if (decimal_part.empty()) {
+                    i = integer_part.length() - 1;
+                    while (integer_part[i] == '0' && i >= 0)
+                        --i;
+                    integer_part = integer_part.substr(0, i + 1);
+                }
+                if (integer_part.empty()) {
+                    i = 0;
+                    while (decimal_part[i] == '0' && i < decimal_part.length()) {
+                        ++i;
+                        --exponent;
+                    }
+                    decimal_part = decimal_part.substr(i);
+                }
+                if (integer_part.empty() && decimal_part.empty())
+                    exponent = 0;
+                if ((int)(decimal_part.length() + integer_part.length()) <= exponent) {
+                    this->_real_p = std::make_shared<real_data<T>>(real_explicit<T>(integer_part, decimal_part, exponent, positive));
+                }
+                else {
+                    //this->_real_p  = std::make_shared<real_data>(real_operation(this->_real_p, other._real_p, OPERATION::DIVISION));
+                    int zeroes = decimal_part.length() + integer_part.length() - exponent;
+                    std::string denominator = "1";
+                    for (int i = 0; i<zeroes; ++i)
+                        denominator = denominator + "0";
+                    std::string numerator = integer_part + decimal_part;
+                    if (!positive)
+                        numerator = "-" + numerator;
+                    std::shared_ptr<real_data<T>> lhs = std::make_shared<real_data<T>>(real_explicit<T>(numerator));
+                    std::shared_ptr<real_data<T>> rhs = std::make_shared<real_data<T>>(real_explicit<T>(denominator));
+                    
+                    /*
+                    if(this->_real_p.use_count() > 1) {
+                    this->_real_p = std::make_shared<real_data>(real_data(*this->_real_p));
+                    }
+                    this->_real_p = 
+                        std::make_shared<real_data>(real_operation(this->_real_p, other._real_p, OPERATION::DIVISION));
+                    */
+                    //this->_real_p = std::make_shared<real_data<T>>(real_explicit<T>(integer_part, decimal_part, exponent, positive));
+                    this->_real_p  = std::make_shared<real_data<T>>(real_operation(lhs, rhs, OPERATION::DIVISION));
+                }
+            }
 
             /**
              * @brief Initializer list constructor
              *
              * @param digits - a initializer_list<int> that represents the number digits.
              */
-            real(std::initializer_list<int> digits)
-                    : _real_p(std::make_shared<real_data>(real_explicit(digits, digits.size())))
+            real(std::initializer_list<T> digits)
+                    : _real_p(std::make_shared<real_data<T>>(real_explicit<T>(digits, digits.size())))
                 {};
 
             /**
@@ -112,8 +179,8 @@ namespace boost {
              * @param positive - a bool that represents the number sign. If positive is set to true,
              * the number is positive, otherwise is negative.
              */
-            real(std::initializer_list<int> digits, bool positive)
-                    : _real_p(std::make_shared<real_data>(real_explicit(digits, digits.size(), positive)))
+            real(std::initializer_list<T> digits, bool positive)
+                    : _real_p(std::make_shared<real_data<T>>(real_explicit<T>(digits, digits.size(), positive)))
                     {};
 
             /**
@@ -125,8 +192,8 @@ namespace boost {
              * @param digits - an initializer_list<int> that represent the number digits.
              * @param exponent - an integer representing the number exponent.
              */
-            real(std::initializer_list<int> digits, int exponent)
-                    : _real_p(std::make_shared<real_data>(real_explicit(digits, exponent)))
+            real(std::initializer_list<T> digits, int exponent)
+                    : _real_p(std::make_shared<real_data<T>>(real_explicit<T>(digits, exponent)))
                     {};
 
             /**
@@ -140,8 +207,8 @@ namespace boost {
              * @param positive - a bool that represent the number sign. If positive is set to true,
              * the number is positive, otherwise is negative.
              */
-            real(::std::initializer_list<int> digits, int exponent, bool positive)
-                    : _real_p(std::make_shared<real_data>(real_explicit(digits, exponent, positive)))
+            real(::std::initializer_list<T> digits, int exponent, bool positive)
+                    : _real_p(std::make_shared<real_data<T>>(real_explicit<T>(digits, exponent, positive)))
                     {};
 
             /**
@@ -154,8 +221,8 @@ namespace boost {
              * int "n" as parameter, it returns the number n-th digit.
              * @param exponent - an integer representing the number exponent.
              */
-            real(int (*get_nth_digit)(unsigned int), int exponent)
-                    : _real_p(std::make_shared<real_data>(real_algorithm(get_nth_digit, exponent)))
+            real(T (*get_nth_digit)(unsigned int), int exponent)
+                    : _real_p(std::make_shared<real_data<T>>(real_algorithm<T>(get_nth_digit, exponent)))
                     {};
 
             /**
@@ -171,24 +238,24 @@ namespace boost {
              * @param positive - a bool that represent the number sign. If positive is set to true,
              * the number is positive, otherwise is negative.
              */
-            real(int (*get_nth_digit)(unsigned int), int exponent, bool positive) 
-                 : _real_p(::std::make_shared<real_data>(real_algorithm(get_nth_digit, exponent, positive))) {};
+            real(T (*get_nth_digit)(unsigned int), int exponent, bool positive) 
+                 : _real_p(::std::make_shared<real_data<T>>(real_algorithm<T>(get_nth_digit, exponent, positive))) {};
 
             // ctors from the 3 underlying types
-            real(real_explicit x) : _real_p(std::make_shared<real_data>(x)) {};
-            real(real_algorithm x) : _real_p(std::make_shared<real_data>(x)) {};
-            real(real_operation x) : _real_p(std::make_shared<real_data>(x)) {};
+            real(real_explicit<T> x) : _real_p(std::make_shared<real_data<T>>(x)) {};
+            real(real_algorithm<T> x) : _real_p(std::make_shared<real_data<T>>(x)) {};
+            real(real_operation<T> x) : _real_p(std::make_shared<real_data<T>>(x)) {};
 
             /**
              * @brief Default destructor
              */
             ~real() = default;
 
-            const real_number& get_real_number() {
+            const real_number<T>& get_real_number() {
                 return _real_p->get_real_number();
             }
 
-            const_precision_iterator& get_real_itr() const { 
+            const_precision_iterator<T> get_real_itr() const {
                 return _real_p->get_precision_itr();
             }
 
@@ -218,17 +285,17 @@ namespace boost {
              *
              * @throws boost::real::invalid_representation_exception
              */
-            int operator[](unsigned int n) const {
-                int ret; 
+            T operator[](unsigned int n) const {
+                T ret; 
 
                 std::visit( overloaded { // perform operation on whatever is held in variant
-                    [&n, &ret] (const real_explicit& real)  { 
+                    [&n, &ret] (const real_explicit<T>& real)  { 
                         ret = real[n];
                     },
-                    [&n, &ret] (const real_algorithm& real) {
+                    [&n, &ret] (const real_algorithm<T>& real) {
                         ret = real[n];
                     },
-                    [] (const real_operation& real) {
+                    [] (const real_operation<T>& real) {
                         throw boost::real::bad_variant_access_exception();
                     },
                     [] (auto& real) {
@@ -506,18 +573,7 @@ namespace boost {
              * @return A copy of the new boost::real::real number representation.
              */
             real operator*(real other) {
-                return real(real_operation(this->_real_p, other._real_p, OPERATION::MULTIPLICATION));
-            }
-
-            /**
-             * @brief Sets this real_data to that of the operation between 
-             * this previous real_data and other real_data.
-             *
-             * @param other - the right side operand boost::real::real number.
-             */
-            void operator/=(real other) {
-                this->_real_p =
-                    std::make_shared<real_data>(real_operation(this->_real_p, other._real_p, OPERATION::DIVISION));
+                return real(real_operation<T>(this->_real_p, other._real_p, OPERATION::MULTIPLICATION));
             }
 
             /**
@@ -529,6 +585,17 @@ namespace boost {
              */
             real operator/(real other) {
                 return real(real_operation(this->_real_p, other._real_p, OPERATION::DIVISION));
+            }
+
+            /**
+             * @brief Sets this real_data to that of the operation between 
+             * this previous real_data and other real_data.
+             *
+             * @param other - the right side operand boost::real::real number.
+             */
+            void operator/=(real other) {
+                this->_real_p =
+                    std::make_shared<real_data>(real_operation(this->_real_p, other._real_p, OPERATION::DIVISION));
             }
 
             /**
@@ -544,8 +611,8 @@ namespace boost {
              * @param number - a valid string representing a number.
              */
             void operator=(const std::string& number) {
-                this->_real_p = 
-                    std::make_shared<real_data>(real_explicit(number));
+                this->_real_p =
+                    std::make_shared<real_data<T>>(real_explicit<T>(number));
             }
 
             /**
@@ -694,16 +761,16 @@ namespace boost {
     }
 }
 
-inline boost::real::real operator "" _r(long double x) {
-    return boost::real::real(std::to_string(x));
+inline boost::real::real<int> operator "" _r(long double x) {
+    return boost::real::real<int>(std::to_string(x));
 }
 
-inline boost::real::real operator "" _r(unsigned long long x) {
-    return boost::real::real(std::to_string(x));
+inline boost::real::real<int> operator "" _r(unsigned long long x) {
+    return boost::real::real<int>(std::to_string(x));
 }
 
-inline boost::real::real operator "" _r(const char* x, size_t len) {
-    return boost::real::real(x);
+inline boost::real::real<int> operator "" _r(const char* x, size_t len) {
+    return boost::real::real<int>(x);
 }
 
 #endif //BOOST_REAL_HPP

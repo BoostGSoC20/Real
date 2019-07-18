@@ -10,7 +10,9 @@ namespace boost{
     namespace real{
 
         // fwd decl needed
+        template <typename T>
         class real_data;
+        template <typename T>
         class const_precision_iterator;
 
         /*
@@ -21,10 +23,11 @@ namespace boost{
         */
         enum class OPERATION{ADDITION, SUBTRACTION, MULTIPLICATION, DIVISION}; 
 
+        template <typename T = int>
         class real_operation{
         private:
-            std::shared_ptr<real_data> _lhs;
-            std::shared_ptr<real_data> _rhs;
+            std::shared_ptr<real_data<T>> _lhs;
+            std::shared_ptr<real_data<T>> _rhs;
             OPERATION _operation;
 
         public:
@@ -35,26 +38,17 @@ namespace boost{
              * @param rhs - right operand
              * @param op  - operation between the operands
              */
-            real_operation(std::shared_ptr<real_data> &lhs, std::shared_ptr<real_data> &rhs, OPERATION op) : _lhs(lhs), _rhs(rhs), _operation(op) {};
+            real_operation(std::shared_ptr<real_data<T>> &lhs, std::shared_ptr<real_data<T>> &rhs, OPERATION op) : _lhs(lhs), _rhs(rhs), _operation(op) {};
 
             OPERATION get_operation() const {
                 return _operation;
             }
 
             /// fwd decl'd, defined in real_data
-            const_precision_iterator& get_lhs_itr();
+            const_precision_iterator<T>& get_lhs_itr();
             
             /// fwd decl'd, defined in real_data
-            const_precision_iterator& get_rhs_itr();
-
-
-            std::shared_ptr<real_data> rhs() const {
-                return _rhs;
-            }
-
-            std::shared_ptr<real_data> lhs() const {
-                return _lhs;
-            }
+            const_precision_iterator<T>& get_rhs_itr();
         };
     }
 }

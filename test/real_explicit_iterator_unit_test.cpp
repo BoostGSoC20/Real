@@ -15,12 +15,14 @@ TEST_CASE("Iterate boost::real_explicit::const_precision_iterator until full pre
 
                 boost::real::real a(number);
                 boost::real::const_precision_iterator approximation_it = a.get_real_itr().cbegin();
+                boost::real::exact_number length = approximation_it.get_interval().upper_bound - approximation_it.get_interval().lower_bound;
 
-                for (size_t i = 0; i < 2; i++) {
-                    CHECK( approximation_it.get_interval().lower_bound < approximation_it.get_interval().upper_bound );
+                for (size_t i = 0; i < 3; i++) {
+                    CHECK( approximation_it.get_interval().lower_bound <= approximation_it.get_interval().upper_bound );
+                    CHECK( approximation_it.get_interval().upper_bound - approximation_it.get_interval().lower_bound <= length);
+                    length = approximation_it.get_interval().upper_bound - approximation_it.get_interval().lower_bound;
                     ++approximation_it;
                 }
-                CHECK( approximation_it.get_interval().lower_bound == approximation_it.get_interval().upper_bound );
             }
         }
     }
@@ -37,12 +39,14 @@ TEST_CASE("Iterate boost::real_explicit::const_precision_iterator until full pre
 
                 boost::real::real a(number);
                 boost::real::const_precision_iterator approximation_it = a.get_real_itr().cbegin();
+                boost::real::exact_number length = approximation_it.get_interval().upper_bound - approximation_it.get_interval().lower_bound;
 
-                for (size_t i = 0; i < 2; i++) {
-                    CHECK( approximation_it.get_interval().lower_bound < approximation_it.get_interval().upper_bound );
+                for (size_t i = 0; i < 3; i++) {
+                    CHECK( approximation_it.get_interval().lower_bound <= approximation_it.get_interval().upper_bound );
+                    CHECK( approximation_it.get_interval().upper_bound - approximation_it.get_interval().lower_bound <= length);
+                    length = approximation_it.get_interval().upper_bound - approximation_it.get_interval().lower_bound;
                     ++approximation_it;
                 }
-                CHECK( approximation_it.get_interval().lower_bound == approximation_it.get_interval().upper_bound );
             }
         }
     }
@@ -65,11 +69,12 @@ TEST_CASE("Iterator cend") {
         CHECK( approximation_it.get_interval() == end_it.get_interval() );
     }
 
-    SECTION("Iterate cend() returns an interval with both boundaries equal to the number") {
+    SECTION("Iterate cend() returns an interval more precise than cbegin()") {
 
-        CHECK( end_it.get_interval().lower_bound == end_it.get_interval().upper_bound);
-        CHECK( end_it.get_interval().lower_bound.digits == 
-                        std::get<boost::real::real_explicit<>>(a.get_real_number()).digits());
+        CHECK( end_it.get_interval().lower_bound <= end_it.get_interval().upper_bound);
+        approximation_it = a.get_real_itr().cbegin();
+        CHECK (end_it.get_interval().upper_bound - end_it.get_interval().lower_bound <=
+                        approximation_it.get_interval().upper_bound - approximation_it.get_interval().lower_bound);
         CHECK( end_it.get_interval().lower_bound.positive == 
                         std::get<boost::real::real_explicit<>>(a.get_real_number()).positive());
         CHECK( end_it.get_interval().lower_bound.exponent ==

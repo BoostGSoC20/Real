@@ -12,7 +12,6 @@ TEST_CASE("Create boost::real_explicit from strings") {
 
             std::string number_str = "";
             std::string zeros_str = "";
-            std::vector<int> expected_digits = {};
             bool positive = (sign != "-");
 
             SECTION("Test with positive integer numbers") {
@@ -21,10 +20,8 @@ TEST_CASE("Create boost::real_explicit from strings") {
 
                     for (int i = 1; i < 10; i++) {
                         number_str += "1";
-                        expected_digits.push_back(1);
                         boost::real::real_explicit a(sign + number_str);
                         CHECK( a.exponent() == i );
-                        CHECK( a.digits() == expected_digits );
                         CHECK( a.positive() == positive );
                     }
                 }
@@ -34,10 +31,8 @@ TEST_CASE("Create boost::real_explicit from strings") {
                     for (int i = 1; i < 10; i++) {
                         number_str += "1";
                         zeros_str += "0";
-                        expected_digits.push_back(1);
                         boost::real::real_explicit a(sign + zeros_str + number_str);
                         CHECK( a.exponent() == i );
-                        CHECK( a.digits() == expected_digits );
                         CHECK( a.positive() == positive );
                     }
                 }
@@ -47,10 +42,8 @@ TEST_CASE("Create boost::real_explicit from strings") {
                     for (int i = 1; i < 10; i++) {
                         number_str += "1";
                         zeros_str += "0";
-                        expected_digits.push_back(1);
                         boost::real::real_explicit a(sign + number_str + zeros_str);
                         CHECK( a.exponent() == 2*i );
-                        CHECK( a.digits() == expected_digits );
                         CHECK( a.positive() == positive );
                     }
                 }
@@ -60,10 +53,8 @@ TEST_CASE("Create boost::real_explicit from strings") {
                     for (int i = 1; i < 10; i++) {
                         number_str += "1";
                         zeros_str += "0";
-                        expected_digits.push_back(1);
                         boost::real::real_explicit a(sign + zeros_str + number_str + zeros_str);
                         CHECK( a.exponent() == 2*i );
-                        CHECK( a.digits() == expected_digits );
                         CHECK( a.positive() == positive );
                     }
                 }
@@ -78,11 +69,8 @@ TEST_CASE("Create boost::real_explicit from strings") {
 
                         for (int i = 1; i < 10; i++) {
                             number_str += "1";
-                            expected_digits.push_back(1);
-                            expected_digits.push_back(1);
-                            boost::real::real_explicit a(sign + number_str + '.' + number_str);
+                            boost::real::real_explicit a(sign + number_str + number_str);
                             CHECK( a.exponent() == i );
-                            CHECK( a.digits() == expected_digits );
                             CHECK( a.positive() == positive );
                         }
                     }
@@ -91,10 +79,8 @@ TEST_CASE("Create boost::real_explicit from strings") {
 
                         for (int i = 1; i < 10; i++) {
                             number_str += "1";
-                            expected_digits.push_back(1);
-                            boost::real::real_explicit a(sign + '.' + number_str);
+                            boost::real::real_explicit a(sign + number_str);
                             CHECK( a.exponent() == 0 );
-                            CHECK( a.digits() == expected_digits );
                             CHECK( a.positive() == positive );
                         }
                     }
@@ -104,10 +90,8 @@ TEST_CASE("Create boost::real_explicit from strings") {
                         for (int i = 1; i < 10; i++) {
                             number_str += "1";
                             zeros_str += "0";
-                            expected_digits.push_back(1);
-                            boost::real::real_explicit a(sign + '.' + zeros_str + number_str);
+                            boost::real::real_explicit a(sign + zeros_str + number_str);
                             CHECK( a.exponent() == -i );
-                            CHECK( a.digits() == expected_digits );
                             CHECK( a.positive() == positive );
                         }
                     }
@@ -121,11 +105,8 @@ TEST_CASE("Create boost::real_explicit from strings") {
                         for (int i = 1; i < 10; i++) {
                             number_str += "1";
                             zeros_str += "0";
-                            expected_digits.push_back(1);
-                            expected_digits.push_back(1);
-                            boost::real::real_explicit a(sign + number_str + '.' + number_str + zeros_str);
+                            boost::real::real_explicit a(sign + number_str + number_str + zeros_str);
                             CHECK( a.exponent() == i );
-                            CHECK( a.digits() == expected_digits );
                             CHECK( a.positive() == positive );
                         }
                     }
@@ -135,10 +116,8 @@ TEST_CASE("Create boost::real_explicit from strings") {
                         for (int i = 1; i < 10; i++) {
                             number_str += "1";
                             zeros_str += "0";
-                            expected_digits.push_back(1);
-                            boost::real::real_explicit a(sign + '.' + number_str + zeros_str);
+                            boost::real::real_explicit a(sign + number_str + zeros_str);
                             CHECK( a.exponent() == 0 );
-                            CHECK( a.digits() == expected_digits );
                             CHECK( a.positive() == positive );
                         }
                     }
@@ -148,10 +127,8 @@ TEST_CASE("Create boost::real_explicit from strings") {
                         for (int i = 1; i < 10; i++) {
                             number_str += "1";
                             zeros_str += "0";
-                            expected_digits.push_back(1);
-                            boost::real::real_explicit a(sign + '.' + zeros_str + number_str + zeros_str);
+                            boost::real::real_explicit a(sign + zeros_str + number_str + zeros_str);
                             CHECK( a.exponent() == -i );
-                            CHECK( a.digits() == expected_digits );
                             CHECK( a.positive() == positive );
                         }
                     }
@@ -164,11 +141,8 @@ TEST_CASE("Create boost::real_explicit from strings") {
                         for (int i = 1; i < 10; i++) {
                             number_str += "1";
                             zeros_str += "0";
-                            expected_digits.push_back(1);
-                            expected_digits.push_back(1);
-                            boost::real::real_explicit a(sign + zeros_str + number_str + '.' + number_str);
+                            boost::real::real_explicit a(sign + zeros_str + number_str + number_str);
                             CHECK( a.exponent() == i );
-                            CHECK( a.digits() == expected_digits );
                             CHECK( a.positive() == positive );
                         }
                     }
@@ -178,10 +152,8 @@ TEST_CASE("Create boost::real_explicit from strings") {
                         for (int i = 1; i < 10; i++) {
                             number_str += "1";
                             zeros_str += "0";
-                            expected_digits.push_back(1);
-                            boost::real::real_explicit a(sign + zeros_str + '.' + number_str);
+                            boost::real::real_explicit a(sign + zeros_str + number_str);
                             CHECK( a.exponent() == 0 );
-                            CHECK( a.digits() == expected_digits );
                             CHECK( a.positive() == positive );
                         }
                     }
@@ -191,10 +163,8 @@ TEST_CASE("Create boost::real_explicit from strings") {
                         for (int i = 1; i < 10; i++) {
                             number_str += "1";
                             zeros_str += "0";
-                            expected_digits.push_back(1);
-                            boost::real::real_explicit a(sign + zeros_str + '.' + zeros_str + number_str);
+                            boost::real::real_explicit a(sign + zeros_str + zeros_str + number_str);
                             CHECK( a.exponent() == -i );
-                            CHECK( a.digits() == expected_digits );
                             CHECK( a.positive() == positive );
                         }
                     }
@@ -207,11 +177,8 @@ TEST_CASE("Create boost::real_explicit from strings") {
                         for (int i = 1; i < 10; i++) {
                             number_str += "1";
                             zeros_str += "0";
-                            expected_digits.push_back(1);
-                            expected_digits.push_back(1);
-                            boost::real::real_explicit a(sign + zeros_str + number_str + '.' + number_str + zeros_str);
+                            boost::real::real_explicit a(sign + zeros_str + number_str + number_str + zeros_str);
                             CHECK( a.exponent() == i );
-                            CHECK( a.digits() == expected_digits );
                             CHECK( a.positive() == positive );
                         }
                     }
@@ -221,10 +188,8 @@ TEST_CASE("Create boost::real_explicit from strings") {
                         for (int i = 1; i < 10; i++) {
                             number_str += "1";
                             zeros_str += "0";
-                            expected_digits.push_back(1);
-                            boost::real::real_explicit a(sign + zeros_str + '.' + number_str + zeros_str + zeros_str);
+                            boost::real::real_explicit a(sign + zeros_str + number_str + zeros_str + zeros_str);
                             CHECK( a.exponent() == 0 );
-                            CHECK( a.digits() == expected_digits );
                             CHECK( a.positive() == positive );
                         }
                     }
@@ -234,10 +199,8 @@ TEST_CASE("Create boost::real_explicit from strings") {
                         for (int i = 1; i < 10; i++) {
                             number_str += "1";
                             zeros_str += "0";
-                            expected_digits.push_back(1);
-                            boost::real::real_explicit a(sign + zeros_str + '.' + zeros_str + number_str + zeros_str);
+                            boost::real::real_explicit a(sign + zeros_str + zeros_str + number_str + zeros_str);
                             CHECK( a.exponent() == -i );
-                            CHECK( a.digits() == expected_digits );
                             CHECK( a.positive() == positive );
                         }
                     }

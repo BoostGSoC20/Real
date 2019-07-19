@@ -5,175 +5,61 @@
 #include <test_helpers.hpp>
 
 TEST_CASE("Operators - - boost::real::const_precision_iterator") {
-    boost::real::interval expected_interval({});
+    
+    // Explicit numbers
+    boost::real::real a("9999999999999999999999999999999");
+    boost::real::real b("9999999999999999999999999999999");
+    boost::real::real c("9999999999999999999999999999999");
 
-    SECTION("With carry") {
+    SECTION("(a - b) - c") {
+        boost::real::real result = (a - b) - c;
+        auto end_it = result.get_real_itr().cend();
 
-        // Explicit numbers
-        boost::real::real a("1.19");
-        boost::real::real b("1.19");
-        boost::real::real c("1.19");
+        auto result_it = result.get_real_itr().cbegin();
 
-        SECTION("(a - b) - c") {
-            boost::real::real result = (a - b) - c;
+        boost::real::exact_number length = result_it.get_interval().upper_bound - result_it.get_interval().lower_bound;
+        CHECK(result_it.get_interval().lower_bound <= result_it.get_interval().upper_bound);
+        CHECK(result_it.get_interval().upper_bound - result_it.get_interval().lower_bound <= length);
+        length = result_it.get_interval().upper_bound - result_it.get_interval().lower_bound;
 
-            auto result_it = result.get_real_itr().cbegin();
+        ++result_it;
+        CHECK(result_it.get_interval().lower_bound <= result_it.get_interval().upper_bound);
+        CHECK(result_it.get_interval().upper_bound - result_it.get_interval().lower_bound <= length);
+        length = result_it.get_interval().upper_bound - result_it.get_interval().lower_bound;
 
-            // ([1, 2] - [1, 2]) - [1, 2]
-            // [-1, 1] - [1, 2]
-            // [-3, 0]
-            expected_interval.lower_bound.positive = false;
-            expected_interval.upper_bound.positive = true;
-            expected_interval.lower_bound.exponent = 1;
-            expected_interval.upper_bound.exponent = 0;
-            expected_interval.lower_bound.digits = {3};
-            expected_interval.upper_bound.digits = {0};
-            CHECK(expected_interval == result_it.get_interval());
+        ++result_it;
+        CHECK(result_it.get_interval().lower_bound <= result_it.get_interval().upper_bound);
+        CHECK(result_it.get_interval().upper_bound - result_it.get_interval().lower_bound <= length);
+        length = result_it.get_interval().upper_bound - result_it.get_interval().lower_bound;
 
-            // ([1.1, 1.2] - [1.1, 1.2]) - [1.1, 1.2]
-            // [-0.1, 0.1] - [1.1, 1.2]
-            // [-1.3, -1]
-            ++result_it;
-            expected_interval.upper_bound.positive = false;
-            expected_interval.upper_bound.exponent = 1;
-            expected_interval.lower_bound.digits = {1,3};
-            expected_interval.upper_bound.digits = {1};
-            CHECK(expected_interval == result_it.get_interval());
-
-            // ([1.19, 1.19] - [1.19, 1.19]) - [1.19, 1.19]
-            // [0, 0] - [1.19, 1.19]
-            // [-1.19, -1.19]
-            ++result_it;
-            expected_interval.lower_bound.digits = {1,1,9};
-            expected_interval.upper_bound.digits = {1,1,9};
-            CHECK(expected_interval == result_it.get_interval());
-
-            // Full precision reached, no more changes are made
-            ++result_it;
-            CHECK(expected_interval == result_it.get_interval());
-        }
-
-        SECTION("a - (b - c)") {
-            boost::real::real result = a - (b - c);
-
-            auto result_it = result.get_real_itr().cbegin();
-
-            // [1, 2] - ([1, 2] - [1, 2])
-            // [1, 2] - [-1, 1]
-            // [0, 3]
-            expected_interval.lower_bound.positive = true;
-            expected_interval.upper_bound.positive = true;
-            expected_interval.lower_bound.exponent = 0;
-            expected_interval.upper_bound.exponent = 1;
-            expected_interval.lower_bound.digits = {0};
-            expected_interval.upper_bound.digits = {3};
-            CHECK(expected_interval == result_it.get_interval());
-
-            // [1.1, 1.2] - ([1.1, 1.2] - [1.1, 1.2])
-            // [1.1, 1.2] - [-0.1, 0.1]
-            // [1, 1.3]
-            ++result_it;
-            expected_interval.lower_bound.exponent = 1;
-            expected_interval.lower_bound.digits = {1};
-            expected_interval.upper_bound.digits = {1,3};
-            CHECK(expected_interval == result_it.get_interval());
-
-            // [1.19, 1.19] - ([1.19, 1.19] - [1.19, 1.19])
-            // [1.19, 1.19] - [0, 0]
-            // [1.19, 1.19]
-            ++result_it;
-            expected_interval.lower_bound.digits = {1,1,9};
-            expected_interval.upper_bound.digits = {1,1,9};
-            CHECK(expected_interval == result_it.get_interval());
-
-            // Full precision reached, no more changes are made
-            ++result_it;
-            CHECK(expected_interval == result_it.get_interval());
-        }
+        // Full precision reached, no more changes are made
+        ++result_it;
+        CHECK(end_it == result_it);
     }
 
-    SECTION("Without carry") {
+    SECTION("a - (b - c)") {
+        boost::real::real result = a - (b - c);
+        auto end_it = result.get_real_itr().cend();
 
-        // Explicit numbers
-        boost::real::real a("1.11");
-        boost::real::real b("1.11");
-        boost::real::real c("1.11");
+        auto result_it = result.get_real_itr().cbegin();
 
-        SECTION("(a - b) - c") {
-            boost::real::real result = (a - b) - c;
+        boost::real::exact_number length = result_it.get_interval().upper_bound - result_it.get_interval().lower_bound;
+        CHECK(result_it.get_interval().lower_bound <= result_it.get_interval().upper_bound);
+        CHECK(result_it.get_interval().upper_bound - result_it.get_interval().lower_bound <= length);
+        length = result_it.get_interval().upper_bound - result_it.get_interval().lower_bound;
 
-            auto result_it = result.get_real_itr().cbegin();
+        ++result_it;
+        CHECK(result_it.get_interval().lower_bound <= result_it.get_interval().upper_bound);
+        CHECK(result_it.get_interval().upper_bound - result_it.get_interval().lower_bound <= length);
+        length = result_it.get_interval().upper_bound - result_it.get_interval().lower_bound;
 
-            // ([1, 2] - [1, 2]) - [1, 2]
-            // [-1, 1] - [1, 2]
-            // [-3, 0]
-            expected_interval.lower_bound.positive = false;
-            expected_interval.upper_bound.positive = true;
-            expected_interval.lower_bound.exponent = 1;
-            expected_interval.upper_bound.exponent = 0;
-            expected_interval.lower_bound.digits = {3};
-            expected_interval.upper_bound.digits = {0};
-            CHECK(expected_interval == result_it.get_interval());
+        ++result_it;
+        CHECK(result_it.get_interval().lower_bound <= result_it.get_interval().upper_bound);
+        CHECK(result_it.get_interval().upper_bound - result_it.get_interval().lower_bound <= length);
+        length = result_it.get_interval().upper_bound - result_it.get_interval().lower_bound;
 
-            // ([1.1, 1.2] - [1.1, 1.2]) - [1.1, 1.2]
-            // [-0.1, 0.1] - [1.1, 1.2]
-            // [-1.3, -1]
-            ++result_it;
-            expected_interval.upper_bound.positive = false;
-            expected_interval.upper_bound.exponent = 1;
-            expected_interval.lower_bound.digits = {1,3};
-            expected_interval.upper_bound.digits = {1};
-            CHECK(expected_interval == result_it.get_interval());
-
-            // ([1.11, 1.11] - [1.11, 1.11]) - [1.11, 1.11]
-            // [0, 0] - [1.11, 1.11]
-            // [-1.11, -1.11]
-            ++result_it;
-            expected_interval.lower_bound.digits = {1,1,1};
-            expected_interval.upper_bound.digits = {1,1,1};
-            CHECK(expected_interval == result_it.get_interval());
-
-            // Full precision reached, no more changes are made
-            ++result_it;
-            CHECK(expected_interval == result_it.get_interval());
-        }
-
-        SECTION("a - (b - c)") {
-            boost::real::real result = a - (b - c);
-
-            auto result_it = result.get_real_itr().cbegin();
-
-            // [1, 2] - ([1, 2] - [1, 2])
-            // [1, 2] - [-1, 1]
-            // [0, 3]
-            expected_interval.lower_bound.positive = true;
-            expected_interval.upper_bound.positive = true;
-            expected_interval.lower_bound.exponent = 0;
-            expected_interval.upper_bound.exponent = 1;
-            expected_interval.lower_bound.digits = {0};
-            expected_interval.upper_bound.digits = {3};
-            CHECK(expected_interval == result_it.get_interval());
-
-            // [1.1, 1.2] - ([1.1, 1.2] - [1.1, 1.2])
-            // [1.1, 1.2] - [-0.1, 0.1]
-            // [1, 1.3]
-            ++result_it;
-            expected_interval.lower_bound.exponent = 1;
-            expected_interval.lower_bound.digits = {1};
-            expected_interval.upper_bound.digits = {1,3};
-            CHECK(expected_interval == result_it.get_interval());
-
-            // [1.11, 1.11] - ([1.11, 1.11] - [1.11, 1.11])
-            // [1.11, 1.11] - [0, 0]
-            // [1.11, 1.11]
-            ++result_it;
-            expected_interval.lower_bound.digits = {1,1,1};
-            expected_interval.upper_bound.digits = {1,1,1};
-            CHECK(expected_interval == result_it.get_interval());
-
-            // Full precision reached, no more changes are made
-            ++result_it;
-            CHECK(expected_interval == result_it.get_interval());
-        }
+        // Full precision reached, no more changes are made
+        ++result_it;
+        CHECK(end_it == result_it);
     }
 }

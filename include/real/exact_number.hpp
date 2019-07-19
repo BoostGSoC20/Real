@@ -1192,19 +1192,20 @@ e                if (positive)
             }
 
             /// returns an exact_number that has the precision given
-            exact_number up_to(size_t precision, bool upper) {
+            exact_number<T> up_to(size_t precision, bool upper) {
+                T base = (std::numeric_limits<T>::max() /4)*2 - 1;
                 if (precision >= digits.size())
                     return *this;
 
-                exact_number ret = *this;
-                ret.digits = std::vector(digits.begin(), digits.begin() + precision);
+                exact_number<T> ret = *this;
+                ret.digits = std::vector<T>(digits.begin(), digits.begin() + precision);
 
                 bool round = (precision < digits.size());
                 if (round) {
                     if(upper) {
-                        ret.round_up();
+                        ret.round_up(base);
                     } else {
-                        ret.round_down();
+                        ret.round_down(base);
                     }
                 }
 

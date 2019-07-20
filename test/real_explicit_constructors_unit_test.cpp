@@ -21,191 +21,66 @@ TEST_CASE("Create boost::real_explicit from strings") {
                     for (int i = 1; i < 10; i++) {
                         number_str += "1";
                         boost::real::real_explicit a(sign + number_str);
-                        CHECK( a.exponent() == i );
+                        CHECK( a.as_string() == ((sign == "+") ? "" : sign) + number_str);
                         CHECK( a.positive() == positive );
                     }
                 }
 
                 SECTION("With zeros to take out form the right") {
 
+                    number_str = "";
+                    zeros_str = "";
                     for (int i = 1; i < 10; i++) {
                         number_str += "1";
                         zeros_str += "0";
-                        boost::real::real_explicit a(sign + zeros_str + number_str);
-                        CHECK( a.exponent() == i );
+                        boost::real::real_explicit a(sign + number_str + '.' + zeros_str);
+                        CHECK( a.as_string() == ((sign == "+") ? "" : sign) + number_str);
                         CHECK( a.positive() == positive );
                     }
                 }
 
                 SECTION("With zeros to take out form the left side") {
 
+                    number_str = "";
+                    zeros_str = "";
                     for (int i = 1; i < 10; i++) {
                         number_str += "1";
                         zeros_str += "0";
-                        boost::real::real_explicit a(sign + number_str + zeros_str);
-                        CHECK( a.exponent() == 2*i );
+                        boost::real::real_explicit a(sign + zeros_str + number_str);
+                        CHECK( a.as_string() == ((sign == "+") ? "" : sign) + number_str);
                         CHECK( a.positive() == positive );
                     }
                 }
 
                 SECTION("With zeros to take out form the both sides") {
 
+                    number_str = "";
+                    zeros_str = "";
                     for (int i = 1; i < 10; i++) {
                         number_str += "1";
                         zeros_str += "0";
-                        boost::real::real_explicit a(sign + zeros_str + number_str + zeros_str);
-                        CHECK( a.exponent() == 2*i );
+                        boost::real::real_explicit a(sign + zeros_str + number_str + '.' + zeros_str);
+                        CHECK( a.as_string() == ((sign == "+") ? "" : sign) + number_str);
                         CHECK( a.positive() == positive );
                     }
                 }
-            }
 
+                SECTION("With exponent") {
 
-            SECTION("Positive numbers not integers") {
-
-                SECTION("Without zeros to take out") {
-
-                    SECTION("positive exponent") {
-
-                        for (int i = 1; i < 10; i++) {
-                            number_str += "1";
-                            boost::real::real_explicit a(sign + number_str + number_str);
-                            CHECK( a.exponent() == i );
-                            CHECK( a.positive() == positive );
-                        }
-                    }
-
-                    SECTION("exponent zero") {
-
-                        for (int i = 1; i < 10; i++) {
-                            number_str += "1";
-                            boost::real::real_explicit a(sign + number_str);
-                            CHECK( a.exponent() == 0 );
-                            CHECK( a.positive() == positive );
-                        }
-                    }
-
-                    SECTION("negative exponent") {
-
-                        for (int i = 1; i < 10; i++) {
-                            number_str += "1";
-                            zeros_str += "0";
-                            boost::real::real_explicit a(sign + zeros_str + number_str);
-                            CHECK( a.exponent() == -i );
-                            CHECK( a.positive() == positive );
-                        }
-                    }
-                }
-
-
-                SECTION("With zeros to take out from the right") {
-
-                    SECTION("positive exponent") {
-
-                        for (int i = 1; i < 10; i++) {
-                            number_str += "1";
-                            zeros_str += "0";
-                            boost::real::real_explicit a(sign + number_str + number_str + zeros_str);
-                            CHECK( a.exponent() == i );
-                            CHECK( a.positive() == positive );
-                        }
-                    }
-
-                    SECTION("exponent zero") {
-
-                        for (int i = 1; i < 10; i++) {
-                            number_str += "1";
-                            zeros_str += "0";
-                            boost::real::real_explicit a(sign + number_str + zeros_str);
-                            CHECK( a.exponent() == 0 );
-                            CHECK( a.positive() == positive );
-                        }
-                    }
-
-                    SECTION("negative exponent") {
-
-                        for (int i = 1; i < 10; i++) {
-                            number_str += "1";
-                            zeros_str += "0";
-                            boost::real::real_explicit a(sign + zeros_str + number_str + zeros_str);
-                            CHECK( a.exponent() == -i );
-                            CHECK( a.positive() == positive );
-                        }
-                    }
-                }
-
-                SECTION("With zeros to take out from the left") {
-
-                    SECTION("positive exponent") {
-
-                        for (int i = 1; i < 10; i++) {
-                            number_str += "1";
-                            zeros_str += "0";
-                            boost::real::real_explicit a(sign + zeros_str + number_str + number_str);
-                            CHECK( a.exponent() == i );
-                            CHECK( a.positive() == positive );
-                        }
-                    }
-
-                    SECTION("exponent zero") {
-
-                        for (int i = 1; i < 10; i++) {
-                            number_str += "1";
-                            zeros_str += "0";
-                            boost::real::real_explicit a(sign + zeros_str + number_str);
-                            CHECK( a.exponent() == 0 );
-                            CHECK( a.positive() == positive );
-                        }
-                    }
-
-                    SECTION("negative exponent") {
-
-                        for (int i = 1; i < 10; i++) {
-                            number_str += "1";
-                            zeros_str += "0";
-                            boost::real::real_explicit a(sign + zeros_str + zeros_str + number_str);
-                            CHECK( a.exponent() == -i );
-                            CHECK( a.positive() == positive );
-                        }
-                    }
-                }
-
-                SECTION("With zeros to take out from both sides") {
-
-                    SECTION("positive exponent") {
-
-                        for (int i = 1; i < 10; i++) {
-                            number_str += "1";
-                            zeros_str += "0";
-                            boost::real::real_explicit a(sign + zeros_str + number_str + number_str + zeros_str);
-                            CHECK( a.exponent() == i );
-                            CHECK( a.positive() == positive );
-                        }
-                    }
-
-                    SECTION("exponent zero") {
-
-                        for (int i = 1; i < 10; i++) {
-                            number_str += "1";
-                            zeros_str += "0";
-                            boost::real::real_explicit a(sign + zeros_str + number_str + zeros_str + zeros_str);
-                            CHECK( a.exponent() == 0 );
-                            CHECK( a.positive() == positive );
-                        }
-                    }
-
-                    SECTION("negative exponent") {
-
-                        for (int i = 1; i < 10; i++) {
-                            number_str += "1";
-                            zeros_str += "0";
-                            boost::real::real_explicit a(sign + zeros_str + zeros_str + number_str + zeros_str);
-                            CHECK( a.exponent() == -i );
-                            CHECK( a.positive() == positive );
-                        }
+                    number_str = "1111";
+                    zeros_str = "";
+                    for (int i = 0; i < 10; i++) {
+                        boost::real::real_explicit a(sign + "0000" + number_str + '.' + zeros_str + 'e' + std::to_string(i));
+                        CHECK( a.as_string() == ((sign == "+") ? "" : sign) + number_str + zeros_str);
+                        CHECK( a.positive() == positive );
+                        zeros_str += "0";
                     }
                 }
             }
         }
+    }
+
+    SECTION("Invalid string") {
+        //CHECK_THROWS_AS( boost::real::real_explicit a("12e23.2"));
     }
 }

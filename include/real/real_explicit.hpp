@@ -117,6 +117,7 @@ namespace boost {
             }
             
             explicit real_explicit(const std::string& number) {
+                bool positive = true;
                 std::regex decimal("((\\+|-)?[[:digit:]]*)(\\.(([[:digit:]]+)?))?((e|E)(((\\+|-)?)[[:digit:]]+))?");
                 if (!std::regex_match (number, decimal))
                     throw boost::real::invalid_string_number_exception();
@@ -126,16 +127,16 @@ namespace boost {
                 std::string exp = regex_replace(number, decimal, "$8");
                 int add_exponent = exp.length() == 0 ? 0 : std::stoi(exp);
                 if (integer_part[0] == '+') {
-                    explicit_number.positive = true;
+                    positive = true;
                     integer_part = integer_part.substr(1);
                 }
                 else if (integer_part[0] == '-') {
-                    explicit_number.positive = false;
+                    positive = false;
                     integer_part = integer_part.substr(1);
                 }
                 integer_part = regex_replace(integer_part, std::regex("(0?+)([[:digit:]]?+)"), "$2");
                 size_t i = decimal_part.length() - 1;
-                while (decimal_part[i] == '0' && i > 0) {
+                while (decimal_part[i] == '0' && i >= 0) {
                     --i;
                 }
                 decimal_part = decimal_part.substr(0, i + 1);
@@ -143,7 +144,7 @@ namespace boost {
                 int exponent = integer_part.length() + add_exponent;
                 if (decimal_part.empty()) {
                     i = integer_part.length() - 1;
-                    while (integer_part[i] == '0' && i > 0)
+                    while (integer_part[i] == '0' && i >= 0)
                         --i;
                     integer_part = integer_part.substr(0, i + 1);
                 }
@@ -168,6 +169,7 @@ namespace boost {
                 for (const auto& c : decimal_part ) {
                     explicit_number.digits.push_back(c - '0');
                 }
+                explicit_number.positive = positive;
                 //changing base below.
                 exponent = 0;
                 //int b = 30;
@@ -267,6 +269,10 @@ namespace boost {
 
             exact_number get_exact_number() const {
                 return explicit_number;
+            }
+
+            const std::string as_string() const {
+                return explicit_number.as_string();
             }
 
             /**

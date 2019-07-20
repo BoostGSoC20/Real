@@ -1092,13 +1092,17 @@ e                if (positive)
                 }
                 //@TODO The decimal part. And dont forget negative. Also, add exponent notation later.
                 std::stringstream sslast;
+                while (!fraction.empty() && fraction.back() == 0)
+                    fraction.pop_back();
                 std::copy( fraction.begin(), fraction.end(), std::ostream_iterator<T>(sslast, ""));
                 std::string fractionstr = sslast.str();
                 while (fractionstr.length() < precision)
                     fractionstr = "0" + fractionstr;
                 
-                
-                return (positive ? "" : "-") + res_decimal + "." + fractionstr;
+                if (fraction.empty())
+                    return (positive ? "" : "-") + res_decimal;
+                else
+                    return (positive ? "" : "-") + res_decimal + "." + fractionstr;
             }
 
             /**

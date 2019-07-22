@@ -137,14 +137,24 @@ TEST_CASE("Operator / boost::real::const_precision_iterator") { // assumes max p
             CHECK(result_it.get_interval().upper_bound - result_it.get_interval().lower_bound <= length);
             length = result_it.get_interval().upper_bound - result_it.get_interval().lower_bound;
 
+            ++result_it;
+            CHECK(result_it.get_interval().lower_bound <= result_it.get_interval().upper_bound);
+            CHECK(result_it.get_interval().upper_bound - result_it.get_interval().lower_bound <= length);
+            length = result_it.get_interval().upper_bound - result_it.get_interval().lower_bound;
+
+            ++result_it;
+            CHECK(result_it.get_interval().lower_bound <= result_it.get_interval().upper_bound);
+            CHECK(result_it.get_interval().upper_bound - result_it.get_interval().lower_bound <= length);
+            length = result_it.get_interval().upper_bound - result_it.get_interval().lower_bound;
+
             CHECK(result_it.get_interval().lower_bound == result_it.get_interval().upper_bound);
-            CHECK(result_it.get_interval().lower_bound.as_string() == "345");
+            CHECK(result_it.get_interval().lower_bound.as_string() == "-345");
         }
 
         SECTION("1/2") {
-        boost::real::real a("1"); // [1, 1]
-        boost::real::real b("2");  // [3, 3]
-        boost::real::real result = a/b; // [1,1] / [3,3]
+            boost::real::real a("1"); // [1, 1]
+            boost::real::real b("2");  // [3, 3]
+            boost::real::real result = a/b; // [1,1] / [3,3]
 
             auto result_it = result.get_real_itr().cbegin(); // same as .cend(), in this case
 

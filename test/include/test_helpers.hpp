@@ -4,7 +4,7 @@
 #include <real/real.hpp>
 #include <sstream>
 
-std::optional<unsigned int> boost::real::const_precision_iterator::maximum_precision = 10;
+std::optional<size_t> boost::real::const_precision_iterator::maximum_precision = 10;
 
 namespace Catch {
     template<>

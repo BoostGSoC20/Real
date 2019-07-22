@@ -26,7 +26,7 @@ namespace boost {
             // Number representation as a vector of digits with an integer part and a sign (+/-)
             // TODO: Add normalizations to the constructors
             exact_number explicit_number;
-
+            
         public:
 
             /**
@@ -51,58 +51,8 @@ namespace boost {
              *
              * @throws boost::real::invalid_string_number exception
              */
-            explicit real_explicit(const std::string& number) {
-                std::regex decimal("((\\+|-)?[[:digit:]]*)(\\.(([[:digit:]]+)?))?((e|E)(((\\+|-)?)[[:digit:]]+))?");
-                if (!std::regex_match (number, decimal))
-                    throw boost::real::invalid_string_number_exception();
-                //Know at this point that representation is valid
-                std::string decimal_part = regex_replace(number, decimal, "$5");
-                std::string integer_part = regex_replace(number, decimal, "$1");
-                std::string exp = regex_replace(number, decimal, "$8");
-                int add_exponent = exp.length() == 0 ? 0 : std::stoi(exp);
-                if (integer_part[0] == '+') {
-                    explicit_number.positive = true;
-                    integer_part = integer_part.substr(1);
-                }
-                else if (integer_part[0] == '-') {
-                    explicit_number.positive = false;
-                    integer_part = integer_part.substr(1);
-                }
-                integer_part = regex_replace(integer_part, std::regex("(0?+)([[:digit:]]?+)"), "$2");
-                size_t i = decimal_part.length() - 1;
-                while (decimal_part[i] == '0' && i > 0) {
-                    --i;
-                }
-                decimal_part = decimal_part.substr(0, i + 1);
-                //decimal and integer parts are stripped of zeroes
-                int exponent = integer_part.length() + add_exponent;
-                if (decimal_part.empty()) {
-                    i = integer_part.length() - 1;
-                    while (integer_part[i] == '0' && i > 0)
-                        --i;
-                    integer_part = integer_part.substr(0, i + 1);
-                }
-                if (integer_part.empty()) {
-                    i = 0;
-                    while (decimal_part[i] == '0' && i < decimal_part.length()) {
-                        ++i;
-                        --exponent;
-                    }
-                    decimal_part = decimal_part.substr(i);
-                }
-                if (integer_part.empty() && decimal_part.empty()) {
-                    explicit_number.digits = {0};
-                    explicit_number.exponent = 0;
-                    return;
-                }
-                explicit_number.exponent = exponent;
-                for (const auto& c : integer_part ) {
-                    explicit_number.digits.push_back(c - '0');
-                }
-                for (const auto& c : decimal_part ) {
-                    explicit_number.digits.push_back(c - '0');
-                }
-            }           
+            explicit real_explicit(const std::string& number) : explicit_number(number) 
+            {};
 
             /**
              * @brief *Initializer list constructor with exponent:* Creates a boost::real::real_explicit
@@ -153,6 +103,10 @@ namespace boost {
                 return explicit_number.digits;
             }
 
+            exact_number get_exact_number() const {
+                return explicit_number;
+            }
+
             /**
              * @brief Constructs a new boost::real::real_explicit::const_precision_iterator that iterates the number
              * approximation intervals in increasing order according to the approximation precision.
@@ -172,7 +126,6 @@ namespace boost {
                 if (n < explicit_number.digits.size()) {
                     return explicit_number.digits.at(n);
                 }
-
                 return 0;
             }
 
@@ -183,6 +136,8 @@ namespace boost {
              * @return a reference of *this with the new represented number.
              */
             real_explicit& operator=(const real_explicit& other) = default;
+
+            
         };
     }
 }

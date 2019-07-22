@@ -39,6 +39,38 @@ namespace boost {
                 return "Cannot perform this method on this real variant type";
             }
         };
+
+        struct divide_by_zero : public std::exception {
+
+            const char * what () const throw () override {
+                return "Divison by zero is undefined";
+            }
+        };
+
+        struct invalid_denominator : public std::exception {
+
+            const char * what () const throw () override {
+                return "Divison with denominators 0 < d < 1 is currently undefined.";
+            }
+        };
+
+        struct divergent_division_result_exception : public std::exception {
+            const char * what () const throw () override {
+                return "The divisor approximation interval contains 0, so the quotient is unbounded";
+            }
+        };
+
+        struct pi_precision_exception : public std::exception {
+            const char * what () const throw () override {
+                return "pi is currently undefined for precision > 2000 digits";
+            }
+        };
+
+        struct invalid_distribution_operation_exception : public std::exception {
+            const char * what () const throw () override {
+                return "Distribution does not work for this operation.";
+            }
+        };
     }
 }
 

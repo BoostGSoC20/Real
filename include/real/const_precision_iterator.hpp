@@ -28,18 +28,17 @@ namespace boost {
         // fwd decl
         class real;
 
-        // same typedef is also found in real_data.hpp
         typedef std::variant<std::monostate, real_explicit, real_algorithm, real_operation> real_number;
-
         /// the default max precision to use if the user hasn't provided one.
-        const unsigned int DEFAULT_MAX_PRECISION = 10;
+        const size_t DEFAULT_MAX_PRECISION = 10;
 
         class const_precision_iterator {
             public:
             /**
              * @brief Optional user-provided maximum precision for all const_precision_iterators. 
              */
-            static std::optional<unsigned int> maximum_precision;
+
+            static std::optional<size_t> maximum_precision;
 
             /// @TODO look into STL-style iterators
             // typedef std::forward_iterator_tag iterator_category;
@@ -57,10 +56,10 @@ namespace boost {
                 real_number * _real_ptr;
 
                 /// current iterator precision
-                int _precision;
+                size_t _precision;
 
                 /// local max precision, is used if set to > 0 by user
-                unsigned int _maximum_precision = 0;
+                size_t _maximum_precision = 0;
 
                 interval _approximation_interval;
 
@@ -97,7 +96,7 @@ namespace boost {
                  * They may also set a general maximum precision (the static optional value).
                  * Preference is given: _maximum_precision > maximum_precision > DEFAULT_MAX_PRECISION
                  */
-                unsigned int max_precision() const {
+                size_t max_precision() const {
                     if((_maximum_precision == 0) && !(maximum_precision))
                         return DEFAULT_MAX_PRECISION;
                     else if (_maximum_precision == 0)
@@ -106,7 +105,7 @@ namespace boost {
                         return _maximum_precision;
                 }
 
-                void set_maximum_precision(unsigned int maximum_precision) {
+                void set_maximum_precision(size_t maximum_precision) {
                     this->_maximum_precision = maximum_precision;
                 }
 
@@ -145,7 +144,7 @@ namespace boost {
                             if (first_digit == 9) {
                                 this->_approximation_interval.upper_bound.digits.push_back(1);
                                 this->_approximation_interval.upper_bound.exponent++;
-                            } else if (this->_precision < (int)real.digits().size()) {
+                            } else if (this->_precision < real.digits().size()) {
                                 this->_approximation_interval.upper_bound.digits.push_back(first_digit + 1);
                             } else {
                                 this->_approximation_interval.upper_bound.digits.push_back(first_digit);
@@ -172,8 +171,9 @@ namespace boost {
                         },
 
                         [this] (real_operation& real) {
-                            // we don't need to init operands here - they *SHOULD* already be at cbegin or >
+                            // we shouldn't need to init operands here - they *SHOULD* already be at cbegin or >
                             update_operation_boundaries(real);
+                            // _maximum_precision = std::max(real.get_lhs_itr().max_precision(), real.get_rhs_itr().max_precision());
                             },
                         [] (auto& real) {
                             throw boost::real::bad_variant_access_exception();
@@ -198,8 +198,8 @@ namespace boost {
                                 *this = const_precision_iterator(a);
                                 this->iterate_n_times(this->max_precision() - 1);
                             },
-                            [this] (real_operation& real) {
-                                init_operation_itr(real, true);
+                            [this, cend] (real_operation& real) {
+                                init_operation_itr(real, cend);
                                 update_operation_boundaries(real);
                             },
                             [] (auto & real) {
@@ -262,7 +262,7 @@ namespace boost {
                 void iterate_n_times(int n) {
                     std::visit( overloaded { // perform operation on whatever is held in variant
                         [this, &n] (real_explicit& real) { 
-                            if (this->_precision >= (int)real.digits().size()) {
+                            if (this->_precision >= real.digits().size()) {
                                 return;
                             }
 
@@ -273,13 +273,12 @@ namespace boost {
 
                            // If the explicit number just reaches the full precision (the end)
                            // then set both boundaries are equals.
-                           if (this->_precision + n >= (int)real.digits().size()) {
+                           if (this->_precision + n >= real.digits().size()) {
 
                                for(int i = this->_precision; i < (int)real.digits().size(); i++) {
                                    this->_approximation_interval.lower_bound.push_back(real.digits()[i]);
                                }
                                this->_approximation_interval.upper_bound = this->_approximation_interval.lower_bound;
-
 
                            } else {
 
@@ -316,7 +315,7 @@ namespace boost {
                            this->_approximation_interval.upper_bound.normalize_left();
 
                            this->check_and_swap_boundaries();
-                           this->_precision = std::min(this->_precision + n, (int)real.digits().size());
+                           this->_precision = std::min(this->_precision + n, real.digits().size());
                         },
                         [this, &n] (real_algorithm& real) {
                            // If the number is negative, bounds are interpreted as mirrored:

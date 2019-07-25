@@ -2,7 +2,10 @@
 #define BOOST_REAL_TEST_HELPERS_HPP
 
 #include <real/real.hpp>
+#include <limits>
 #include <sstream>
+
+int BASE = (std::numeric_limits<int>::max() /4)*2;
 
 template<> std::optional<size_t> boost::real::const_precision_iterator<int>::maximum_precision = 10;
 
@@ -24,11 +27,11 @@ namespace Catch {
     };
 }
 
-int one_and_nines(unsigned int n) {
+int one_and_max(unsigned int n) {
     if (n == 0) {
         return 1;
     }
-    return 9;
+    return BASE - 1;
 }
 
 int ones(unsigned int n) {

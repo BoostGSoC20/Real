@@ -113,6 +113,7 @@ TEST_CASE("Operator / boost::real::const_precision_iterator") { // assumes max p
                 length = result_it.get_interval().upper_bound - result_it.get_interval().lower_bound;
             }
 
+        /*
         SECTION("-13251306276306304250236049144144144492977320/38409583409583490580394345345345346356456") {             
         boost::real::real a("-13251306276306304250236049144144144492977320"); // [-1, -2]
         boost::real::real b("38409583409583490580394345345345346356456");  // [1, 2]
@@ -150,6 +151,7 @@ TEST_CASE("Operator / boost::real::const_precision_iterator") { // assumes max p
             CHECK(result_it.get_interval().lower_bound == result_it.get_interval().upper_bound);
             CHECK(result_it.get_interval().lower_bound.as_string() == "-345");
         }
+        */
 
         SECTION("1/2") {
             boost::real::real a("1"); // [1, 1]

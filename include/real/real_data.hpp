@@ -276,6 +276,9 @@ namespace boost {
                             this->_approximation_interval.lower_bound.round_down(base);
                         }
 
+                        if(this->_approximation_interval.lower_bound > this->_approximation_interval.upper_bound)
+                            this->_approximation_interval.swap_bounds();
+
                     break;
                 }
                 

@@ -49,6 +49,14 @@ namespace boost{
             
             /// fwd decl'd, defined in real_data
             const_precision_iterator<T>& get_rhs_itr();
+
+            std::shared_ptr<real_data<T>> rhs() const {
+                return _rhs;
+            }
+
+            std::shared_ptr<real_data<T>> lhs() const {
+                return _lhs;
+            }
         };
     }
 }

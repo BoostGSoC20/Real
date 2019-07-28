@@ -267,12 +267,12 @@ namespace boost {
                 return explicit_number.digits;
             }
 
-            exact_number get_exact_number() const {
-                return explicit_number;
-            }
-
             const std::string as_string() const {
                 return explicit_number.as_string();
+            }
+
+            exact_number<T> get_exact_number() const {
+                return explicit_number;
             }
 
             /**

@@ -7,7 +7,7 @@
 
 int BASE = (std::numeric_limits<int>::max() /4)*2;
 
-template<> std::optional<size_t> boost::real::const_precision_iterator<int>::maximum_precision = 10;
+template<> std::optional<size_t> boost::real::const_precision_iterator<int>::global_maximum_precision = 10;
 
 namespace Catch {
     template<>

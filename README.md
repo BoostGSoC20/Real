@@ -164,7 +164,7 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
 #include <string>
 #include <real/real.hpp>
 
-unsigned int boost::real::real::maximum_precision = 10;
+unsigned int boost::real::real::global_maximum_precision = 10;
 unsigned int boost::real::real_algorithm::maximum_precision = 10;
 
 int main() {

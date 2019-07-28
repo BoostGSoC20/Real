@@ -1,5 +1,4 @@
 #include <catch2/catch.hpp>
-#include <iostream>
 
 #include <real/real_algorithm.hpp>
 #include <test_helpers.hpp>

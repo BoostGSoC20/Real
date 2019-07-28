@@ -2,146 +2,148 @@
 #include <real/real.hpp>
 #include <test_helpers.hpp>
 
+using real=boost::real::real<>;
+
 TEST_CASE("Operator >") {
 
     SECTION("a == b") {
 
         SECTION("without precision exception") {
             SECTION("Explicit > Explicit") {
-                boost::real::real a("1.5");
-                boost::real::real b("1.5");
+                real a("1.5");
+                real b("1.5");
 
                 CHECK_FALSE(a > b);
             }
 
             SECTION("Explicit > Addition") {
-                boost::real::real a("1");
-                boost::real::real b("0.5");
-                boost::real::real c("0.5");
-                boost::real::real d = b + c;
+                real a("1");
+                real b("0.5");
+                real c("0.5");
+                real d = b + c;
 
                 CHECK_FALSE(a > d);
             }
 
             SECTION("Explicit > Subtraction") {
-                boost::real::real a("1");
-                boost::real::real b("1.5");
-                boost::real::real c("0.5");
-                boost::real::real d = b - c;
+                real a("1");
+                real b("1.5");
+                real c("0.5");
+                real d = b - c;
 
                 CHECK_FALSE(a > d);
             }
 
             SECTION("Explicit > multiplication") {
-                boost::real::real a("4");
-                boost::real::real b("2");
-                boost::real::real c("2");
-                boost::real::real d = b * c;
+                real a("4");
+                real b("2");
+                real c("2");
+                real d = b * c;
 
                 CHECK_FALSE(a > d);
             }
 
             SECTION("Addition > Explicit") {
-                boost::real::real a("1.5");
-                boost::real::real b("1.5");
-                boost::real::real c = a + b;
-                boost::real::real d("3");
+                real a("1.5");
+                real b("1.5");
+                real c = a + b;
+                real d("3");
 
                 CHECK_FALSE(c > d);
             }
 
             SECTION("Addition > Addition") {
-                boost::real::real a("1.5");
-                boost::real::real b("1.5");
-                boost::real::real c = a + b;
-                boost::real::real d = a + b;
+                real a("1.5");
+                real b("1.5");
+                real c = a + b;
+                real d = a + b;
 
                 CHECK_FALSE(c > d);
             }
 
             SECTION("Addition > Subtraction") {
-                boost::real::real a("1.5");
-                boost::real::real b("1.5");
-                boost::real::real c = a + b;
-                boost::real::real d("3.5");
-                boost::real::real e("0.5");
-                boost::real::real f = d - e;
+                real a("1.5");
+                real b("1.5");
+                real c = a + b;
+                real d("3.5");
+                real e("0.5");
+                real f = d - e;
 
                 CHECK_FALSE(c > f);
             }
 
             SECTION("Addition > multiplication") {
-                boost::real::real a("1.5");
-                boost::real::real b("1.5");
-                boost::real::real c = a + b;
-                boost::real::real d("1.5");
-                boost::real::real e("2");
-                boost::real::real f = d * e;
+                real a("1.5");
+                real b("1.5");
+                real c = a + b;
+                real d("1.5");
+                real e("2");
+                real f = d * e;
 
                 CHECK_FALSE(c > f);
             }
 
             SECTION("Subtraction > Explicit") {
-                boost::real::real a("1.5");
-                boost::real::real b("1.5");
-                boost::real::real c = a - b;
-                boost::real::real d("0");
+                real a("1.5");
+                real b("1.5");
+                real c = a - b;
+                real d("0");
 
                 CHECK_FALSE(c > d);
             }
 
             SECTION("Subtraction > Subtraction") {
-                boost::real::real a("1.5");
-                boost::real::real b("1.5");
-                boost::real::real c = a - b;
-                boost::real::real d = a - b;
+                real a("1.5");
+                real b("1.5");
+                real c = a - b;
+                real d = a - b;
 
                 CHECK_FALSE(c > d);
             }
 
             SECTION("Subtraction > multiplication") {
-                boost::real::real a("1.5");
-                boost::real::real b("1.5");
-                boost::real::real c = a - b;
-                boost::real::real d("0");
-                boost::real::real e = a * d;
+                real a("1.5");
+                real b("1.5");
+                real c = a - b;
+                real d("0");
+                real e = a * d;
 
                 CHECK_FALSE(c > e);
             }
 
             SECTION("multiplication > Explicit") {
-                boost::real::real a("1.5");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d("3");
+                real a("1.5");
+                real b("2");
+                real c = a * b;
+                real d("3");
 
                 CHECK_FALSE(c > d);
             }
 
             SECTION("multiplication > Addition") {
-                boost::real::real a("1.5");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d = a + a;
+                real a("1.5");
+                real b("2");
+                real c = a * b;
+                real d = a + a;
 
                 CHECK_FALSE(c > d);
             }
 
             SECTION("multiplication > Subtraction") {
-                boost::real::real a("1.5");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d("-1");
-                boost::real::real e = b - d;
+                real a("1.5");
+                real b("2");
+                real c = a * b;
+                real d("-1");
+                real e = b - d;
 
                 CHECK_FALSE(c > e);
             }
 
             SECTION("multiplication > multiplication") {
-                boost::real::real a("1.5");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d = a * b;
+                real a("1.5");
+                real b("2");
+                real c = a * b;
+                real d = a * b;
 
                 CHECK_FALSE(c > d);
             }
@@ -152,151 +154,151 @@ TEST_CASE("Operator >") {
 
         SECTION("With precision exception") {
             SECTION("Explicit > Explicit") {
-                boost::real::real a("1.555555555555555555");
-                boost::real::real b("1.555555555555555555");
+                real a("1.555555555555555555");
+                real b("1.555555555555555555");
 
                 CHECK_THROWS_AS(a > b, boost::real::precision_exception);
             }
 
             SECTION("Explicit > Addition") {
-                boost::real::real a("22222222222220000000000");
-                boost::real::real b("11111111111110000000000");
-                boost::real::real c("11111111111110000000000");
-                boost::real::real d = b + c;
+                real a("22222222222220000000000");
+                real b("11111111111110000000000");
+                real c("11111111111110000000000");
+                real d = b + c;
 
                 CHECK_FALSE(a > d);
             }
 
             SECTION("Explicit > Subtraction") {
-                boost::real::real a("22222222222222222222");
-                boost::real::real b("22222222222222222223");
-                boost::real::real c("1");
-                boost::real::real d = b - c;
+                real a("22222222222222222222");
+                real b("22222222222222222223");
+                real c("1");
+                real d = b - c;
 
                 CHECK_FALSE(a > d);
             }
 
             SECTION("Explicit > multiplication") {
-                boost::real::real a("22222222222220000000000");
-                boost::real::real b("11111111111110000000000");
-                boost::real::real c("2");
-                boost::real::real d = b * c;
+                real a("22222222222220000000000");
+                real b("11111111111110000000000");
+                real c("2");
+                real d = b * c;
 
                 CHECK_FALSE(a > d);
             }
 
             SECTION("Addition > Explicit") {
-                boost::real::real a("1.1111111111111");
-                boost::real::real b("1.1111111111111");
-                boost::real::real c = a + b;
-                boost::real::real d("2.2222222222222");
+                real a("1.1111111111111");
+                real b("1.1111111111111");
+                real c = a + b;
+                real d("2.2222222222222");
 
                 CHECK_THROWS_AS(c > d, boost::real::precision_exception);
             }
 
             SECTION("Addition > Addition") {
-                boost::real::real a("1.1111111111111");
-                boost::real::real b("1.1111111111111");
-                boost::real::real c = a + b;
-                boost::real::real d = a + b;
+                real a("1.1111111111111");
+                real b("1.1111111111111");
+                real c = a + b;
+                real d = a + b;
 
                 CHECK_THROWS_AS(c > d, boost::real::precision_exception);
             }
 
             SECTION("Addition > Subtraction") {
-                boost::real::real a("1.1111111111111");
-                boost::real::real b("1.1111111111111");
-                boost::real::real c = a + b;
-                boost::real::real d("2.2222222222223");
-                boost::real::real e("0.0000000000001");
-                boost::real::real f = d - e;
+                real a("1.1111111111111");
+                real b("1.1111111111111");
+                real c = a + b;
+                real d("2.2222222222223");
+                real e("0.0000000000001");
+                real f = d - e;
 
                 CHECK_THROWS_AS(c > f, boost::real::precision_exception);
             }
 
             SECTION("Addition > multiplication") {
-                boost::real::real a("1.1111111111111");
-                boost::real::real b("1.1111111111111");
-                boost::real::real c = a + b;
-                boost::real::real d("2");
-                boost::real::real e = a * d;
+                real a("1.1111111111111");
+                real b("1.1111111111111");
+                real c = a + b;
+                real d("2");
+                real e = a * d;
 
                 CHECK_THROWS_AS(c > e, boost::real::precision_exception);
             }
 
             SECTION("Subtraction > Explicit") {
-                boost::real::real a("1.1111111111112");
-                boost::real::real b("0.0000000000001");
-                boost::real::real c = a - b;
-                boost::real::real d("1.1111111111111");
+                real a("1.1111111111112");
+                real b("0.0000000000001");
+                real c = a - b;
+                real d("1.1111111111111");
 
                 CHECK_THROWS_AS(c > d, boost::real::precision_exception);
             }
 
             SECTION("Subtraction > Addition") {
-                boost::real::real a("1.1111111111112");
-                boost::real::real b("0.0000000000001");
-                boost::real::real c = a - b;
-                boost::real::real d("-0.0000000000001");
-                boost::real::real e = a + d;
+                real a("1.1111111111112");
+                real b("0.0000000000001");
+                real c = a - b;
+                real d("-0.0000000000001");
+                real e = a + d;
 
                 CHECK_THROWS_AS(c > e, boost::real::precision_exception);
             }
 
             SECTION("Subtraction > Subtraction") {
-                boost::real::real a("1.1111111111112");
-                boost::real::real b("0.0000000000001");
-                boost::real::real c = a - b;
-                boost::real::real d = a - b;
+                real a("1.1111111111112");
+                real b("0.0000000000001");
+                real c = a - b;
+                real d = a - b;
 
                 CHECK_THROWS_AS(c > d, boost::real::precision_exception);
             }
 
             SECTION("Subtraction > multiplication") {
-                boost::real::real a("1.1111111111112");
-                boost::real::real b("0.0000000000001");
-                boost::real::real c = a - b;
-                boost::real::real d("1.1111111111111");
-                boost::real::real e("1");
-                boost::real::real f = d * e;
+                real a("1.1111111111112");
+                real b("0.0000000000001");
+                real c = a - b;
+                real d("1.1111111111111");
+                real e("1");
+                real f = d * e;
 
                 CHECK_THROWS_AS(c > f, boost::real::precision_exception);
             }
 
             SECTION("multiplication > Explicit") {
-                boost::real::real a("1.1111111111111");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d("2.2222222222222");
+                real a("1.1111111111111");
+                real b("2");
+                real c = a * b;
+                real d("2.2222222222222");
 
                 CHECK_THROWS_AS(c > d, boost::real::precision_exception);
             }
 
             SECTION("multiplication > Addition") {
-                boost::real::real a("1.1111111111111");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d = a + a;
+                real a("1.1111111111111");
+                real b("2");
+                real c = a * b;
+                real d = a + a;
 
                 CHECK_THROWS_AS(c > d, boost::real::precision_exception);
             }
 
             SECTION("multiplication > Subtraction") {
-                boost::real::real a("1.1111111111111");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d("2.2222222222223");
-                boost::real::real e("0.0000000000001");
-                boost::real::real f = d - e;
+                real a("1.1111111111111");
+                real b("2");
+                real c = a * b;
+                real d("2.2222222222223");
+                real e("0.0000000000001");
+                real f = d - e;
 
                 CHECK_THROWS_AS(c > f, boost::real::precision_exception);
             }
 
             SECTION("multiplication > multiplication") {
-                boost::real::real a("1.1111111111111");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d = a * b;
+                real a("1.1111111111111");
+                real b("2");
+                real c = a * b;
+                real d = a * b;
 
                 CHECK_THROWS_AS(c > d, boost::real::precision_exception);
             }
@@ -309,149 +311,149 @@ TEST_CASE("Operator >") {
 
         SECTION("without precision exception") {
             SECTION("Explicit > Explicit") {
-                boost::real::real a("1");
-                boost::real::real b("1.5");
+                real a("1");
+                real b("1.5");
 
                 CHECK_FALSE(a > b);
             }
 
             SECTION("Explicit > Addition") {
-                boost::real::real a("1");
-                boost::real::real b("0.5");
-                boost::real::real c("1");
-                boost::real::real d = b + c;
+                real a("1");
+                real b("0.5");
+                real c("1");
+                real d = b + c;
 
                 CHECK_FALSE(a > d);
             }
 
             SECTION("Explicit > Subtraction") {
-                boost::real::real a("1");
-                boost::real::real b("1.5");
-                boost::real::real c("0.2");
-                boost::real::real d = b - c;
+                real a("1");
+                real b("1.5");
+                real c("0.2");
+                real d = b - c;
 
                 CHECK_FALSE(a > d);
             }
 
             SECTION("Explicit > multiplication") {
-                boost::real::real a("3");
-                boost::real::real b("2");
-                boost::real::real c("2");
-                boost::real::real d = b * c;
+                real a("3");
+                real b("2");
+                real c("2");
+                real d = b * c;
 
                 CHECK_FALSE(a > d);
             }
 
             SECTION("Addition > Explicit") {
-                boost::real::real a("1.5");
-                boost::real::real b("1.5");
-                boost::real::real c = a + b;
-                boost::real::real d("4");
+                real a("1.5");
+                real b("1.5");
+                real c = a + b;
+                real d("4");
 
                 CHECK_FALSE(c > d);
             }
 
             SECTION("Addition > Addition") {
-                boost::real::real a("1.5");
-                boost::real::real b("1");
-                boost::real::real c = a + b;
-                boost::real::real d = a + a;
+                real a("1.5");
+                real b("1");
+                real c = a + b;
+                real d = a + a;
 
                 CHECK_FALSE(c > d);
             }
 
             SECTION("Addition > Subtraction") {
-                boost::real::real a("1.5");
-                boost::real::real b("1");
-                boost::real::real c = a + b;
-                boost::real::real d("3.5");
-                boost::real::real e("0.5");
-                boost::real::real f = d - e;
+                real a("1.5");
+                real b("1");
+                real c = a + b;
+                real d("3.5");
+                real e("0.5");
+                real f = d - e;
 
                 CHECK_FALSE(c > f);
             }
 
             SECTION("Addition > multiplication") {
-                boost::real::real a("1.5");
-                boost::real::real b("1.5");
-                boost::real::real c = a + b;
-                boost::real::real d("2");
-                boost::real::real e("2");
-                boost::real::real f = d * e;
+                real a("1.5");
+                real b("1.5");
+                real c = a + b;
+                real d("2");
+                real e("2");
+                real f = d * e;
 
                 CHECK_FALSE(c > f);
             }
 
             SECTION("Subtraction > Explicit") {
-                boost::real::real a("1.5");
-                boost::real::real b("1.5");
-                boost::real::real c = a - b;
-                boost::real::real d("1");
+                real a("1.5");
+                real b("1.5");
+                real c = a - b;
+                real d("1");
 
                 CHECK_FALSE(c > d);
             }
 
             SECTION("Subtraction > Addition") {
-                boost::real::real a("1.5");
-                boost::real::real b("1.5");
-                boost::real::real c = a - b;
-                boost::real::real d("1.5");
-                boost::real::real e = a + d;
+                real a("1.5");
+                real b("1.5");
+                real c = a - b;
+                real d("1.5");
+                real e = a + d;
 
                 CHECK_FALSE(c > e);
             }
 
             SECTION("Subtraction > Subtraction") {
-                boost::real::real a("1.5");
-                boost::real::real b("1");
-                boost::real::real c = a - a;
-                boost::real::real d = a - b;
+                real a("1.5");
+                real b("1");
+                real c = a - a;
+                real d = a - b;
 
                 CHECK_FALSE(c > d);
             }
 
             SECTION("Subtraction > multiplication") {
-                boost::real::real a("1.5");
-                boost::real::real b("1.5");
-                boost::real::real c = a - b;
-                boost::real::real d = a * b;
+                real a("1.5");
+                real b("1.5");
+                real c = a - b;
+                real d = a * b;
 
                 CHECK_FALSE(c > d);
             }
 
             SECTION("multiplication > Explicit") {
-                boost::real::real a("1.5");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d("4");
+                real a("1.5");
+                real b("2");
+                real c = a * b;
+                real d("4");
 
                 CHECK_FALSE(c > d);
             }
 
             SECTION("multiplication > Addition") {
-                boost::real::real a("1.5");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d = a + b;
+                real a("1.5");
+                real b("2");
+                real c = a * b;
+                real d = a + b;
 
                 CHECK_FALSE(c > d);
             }
 
             SECTION("multiplication > Subtraction") {
-                boost::real::real a("1.5");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d("5");
-                boost::real::real e = d - a;
+                real a("1.5");
+                real b("2");
+                real c = a * b;
+                real d("5");
+                real e = d - a;
 
                 CHECK_FALSE(c > e);
             }
 
             SECTION("multiplication > multiplication") {
-                boost::real::real a("1.5");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d = b * b;
+                real a("1.5");
+                real b("2");
+                real c = a * b;
+                real d = b * b;
 
                 CHECK_FALSE(c > d);
             }
@@ -462,151 +464,151 @@ TEST_CASE("Operator >") {
         SECTION("With precision exception") {
 
             SECTION("Explicit > Explicit") {
-                boost::real::real a("1.555555555555555550");
-                boost::real::real b("1.555555555555555555");
+                real a("1.555555555555555550");
+                real b("1.555555555555555555");
 
                 CHECK_FALSE(a > b);
             }
 
             SECTION("Explicit > Addition") {
-                boost::real::real a("22222222222200000000000");
-                boost::real::real b("11111111111110000000000");
-                boost::real::real c("11111111111110000000000");
-                boost::real::real d = b + c;
+                real a("22222222222200000000000");
+                real b("11111111111110000000000");
+                real c("11111111111110000000000");
+                real d = b + c;
 
                 CHECK_FALSE(a > d);
             }
 
             SECTION("Explicit > Subtraction") {
-                boost::real::real a("22222222222222222222");
-                boost::real::real b("22222222222222222224");
-                boost::real::real c("1");
-                boost::real::real d = b - c;
+                real a("22222222222222222222");
+                real b("22222222222222222224");
+                real c("1");
+                real d = b - c;
 
                 CHECK(d > a);
             }
 
             SECTION("Explicit > multiplication") {
-                boost::real::real a("22222222222210000000000");
-                boost::real::real b("11111111111110000000000");
-                boost::real::real c("2");
-                boost::real::real d = b * c;
+                real a("22222222222210000000000");
+                real b("11111111111110000000000");
+                real c("2");
+                real d = b * c;
 
                 CHECK_FALSE(a > d);
             }
 
             SECTION("Addition > Explicit") {
-                boost::real::real a("1.1111111111110");
-                boost::real::real b("1.1111111111111");
-                boost::real::real c = a + b;
-                boost::real::real d("2.2222222222222");
+                real a("1.1111111111110");
+                real b("1.1111111111111");
+                real c = a + b;
+                real d("2.2222222222222");
 
                 CHECK_FALSE(c > d);
             }
 
             SECTION("Addition > Addition") {
-                boost::real::real a("1.1111111111110");
-                boost::real::real b("1.1111111111111");
-                boost::real::real c = a + b;
-                boost::real::real d = a + b;
+                real a("1.1111111111110");
+                real b("1.1111111111111");
+                real c = a + b;
+                real d = a + b;
 
                 CHECK_THROWS_AS(c > d, boost::real::precision_exception);
             }
 
             SECTION("Addition > Subtraction") {
-                boost::real::real a("1.1111111111110");
-                boost::real::real b("1.1111111111111");
-                boost::real::real c = a + b;
-                boost::real::real d("2.2222222222223");
-                boost::real::real e("0.0000000000001");
-                boost::real::real f = d - e;
+                real a("1.1111111111110");
+                real b("1.1111111111111");
+                real c = a + b;
+                real d("2.2222222222223");
+                real e("0.0000000000001");
+                real f = d - e;
 
                 CHECK_FALSE(c > f);
             }
 
             SECTION("Addition > multiplication") {
-                boost::real::real a("1.1111111111110");
-                boost::real::real b("1.1111111111111");
-                boost::real::real c = a + b;
-                boost::real::real d("2");
-                boost::real::real e = a * d;
+                real a("1.1111111111110");
+                real b("1.1111111111111");
+                real c = a + b;
+                real d("2");
+                real e = a * d;
 
                 CHECK(c > e);
             }
 
             SECTION("Subtraction > Explicit") {
-                boost::real::real a("1.1111111111111");
-                boost::real::real b("0.0000000000001");
-                boost::real::real c = a - b;
-                boost::real::real d("1.1111111111111");
+                real a("1.1111111111111");
+                real b("0.0000000000001");
+                real c = a - b;
+                real d("1.1111111111111");
 
                 CHECK_FALSE(c > d);
             }
 
             SECTION("Subtraction > Addition") {
-                boost::real::real a("1.1111111111111");
-                boost::real::real b("0.0000000000001");
-                boost::real::real c = a - b;
-                boost::real::real d("-0.0000000000001");
-                boost::real::real e = a + d;
+                real a("1.1111111111111");
+                real b("0.0000000000001");
+                real c = a - b;
+                real d("-0.0000000000001");
+                real e = a + d;
 
                 CHECK_THROWS_AS(c > e, boost::real::precision_exception);
             }
 
             SECTION("Subtraction > Subtraction") {
-                boost::real::real a("1.1111111111111");
-                boost::real::real b("0.0000000000001");
-                boost::real::real c = a - b;
-                boost::real::real d = a - b;
+                real a("1.1111111111111");
+                real b("0.0000000000001");
+                real c = a - b;
+                real d = a - b;
 
                 CHECK_THROWS_AS(c > d, boost::real::precision_exception);
             }
 
             SECTION("Subtraction > multiplication") {
-                boost::real::real a("1.1111111111111");
-                boost::real::real b("0.0000000000001");
-                boost::real::real c = a + b;
-                boost::real::real d("1.1111111111111");
-                boost::real::real e("1");
-                boost::real::real f = d * e;
+                real a("1.1111111111111");
+                real b("0.0000000000001");
+                real c = a + b;
+                real d("1.1111111111111");
+                real e("1");
+                real f = d * e;
 
                 CHECK(c > f);
             }
 
             SECTION("multiplication > Explicit") {
-                boost::real::real a("1.111111111111");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d("2.2222222222222");
+                real a("1.111111111111");
+                real b("2");
+                real c = a * b;
+                real d("2.2222222222222");
 
                 CHECK_FALSE(c > d);
             }
 
             SECTION("multiplication > Addition") {
-                boost::real::real a("1.111111111111");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d = a + a;
+                real a("1.111111111111");
+                real b("2");
+                real c = a * b;
+                real d = a + a;
 
                 CHECK_THROWS_AS(c > d, boost::real::precision_exception);
             }
 
             SECTION("multiplication > Subtraction") {
-                boost::real::real a("1.111111111111");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d("2.2222222222223");
-                boost::real::real e("0.0000000000001");
-                boost::real::real f = d - e;
+                real a("1.111111111111");
+                real b("2");
+                real c = a * b;
+                real d("2.2222222222223");
+                real e("0.0000000000001");
+                real f = d - e;
 
                 CHECK_FALSE(c > f);
             }
 
             SECTION("multiplication > multiplication") {
-                boost::real::real a("1.111111111111");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d = a * b;
+                real a("1.111111111111");
+                real b("2");
+                real c = a * b;
+                real d = a * b;
 
                 CHECK_THROWS_AS(c > d, boost::real::precision_exception);
             }
@@ -618,150 +620,150 @@ TEST_CASE("Operator >") {
 
         SECTION("without precision exception") {
             SECTION("Explicit > Explicit") {
-                boost::real::real a("2");
-                boost::real::real b("1.5");
+                real a("2");
+                real b("1.5");
 
                 CHECK(a > b);
             }
 
             SECTION("Explicit > Addition") {
-                boost::real::real a("1.5");
-                boost::real::real b("0.5");
-                boost::real::real c("0.5");
-                boost::real::real d = b + c;
+                real a("1.5");
+                real b("0.5");
+                real c("0.5");
+                real d = b + c;
 
                 CHECK(a > d);
             }
 
             SECTION("Explicit > Subtraction") {
-                boost::real::real a("1.5");
-                boost::real::real b("1.5");
-                boost::real::real c("0.5");
-                boost::real::real d = b - c;
+                real a("1.5");
+                real b("1.5");
+                real c("0.5");
+                real d = b - c;
 
                 CHECK(a > d);
             }
 
             SECTION("Explicit > multiplication") {
-                boost::real::real a("5");
-                boost::real::real b("2");
-                boost::real::real c("2");
-                boost::real::real d = b * c;
+                real a("5");
+                real b("2");
+                real c("2");
+                real d = b * c;
 
                 CHECK(a > d);
             }
 
             SECTION("Addition > Explicit") {
-                boost::real::real a("2");
-                boost::real::real b("1.5");
-                boost::real::real c = a + b;
-                boost::real::real d("3");
+                real a("2");
+                real b("1.5");
+                real c = a + b;
+                real d("3");
 
                 CHECK(c > d);
             }
 
             SECTION("Addition > Addition") {
-                boost::real::real a("1.5");
-                boost::real::real b("2");
-                boost::real::real c = a + b;
-                boost::real::real d = a + a;
+                real a("1.5");
+                real b("2");
+                real c = a + b;
+                real d = a + a;
 
                 CHECK(c > d);
             }
 
             SECTION("Addition > Subtraction") {
-                boost::real::real a("1.5");
-                boost::real::real b("1.5");
-                boost::real::real c = a + b;
-                boost::real::real d("3.5");
-                boost::real::real e("1");
-                boost::real::real f = d - e;
+                real a("1.5");
+                real b("1.5");
+                real c = a + b;
+                real d("3.5");
+                real e("1");
+                real f = d - e;
 
                 CHECK(c > f);
             }
 
             SECTION("Addition > multiplication") {
-                boost::real::real a("1.5");
-                boost::real::real b("2");
-                boost::real::real c = a + b;
-                boost::real::real d("1.5");
-                boost::real::real e("2");
-                boost::real::real f = d * e;
+                real a("1.5");
+                real b("2");
+                real c = a + b;
+                real d("1.5");
+                real e("2");
+                real f = d * e;
 
                 CHECK(c > f);
             }
 
             SECTION("Subtraction > Explicit") {
-                boost::real::real a("1.5");
-                boost::real::real b("1");
-                boost::real::real c = a - b;
-                boost::real::real d("0");
+                real a("1.5");
+                real b("1");
+                real c = a - b;
+                real d("0");
 
                 CHECK(c > d);
             }
 
             SECTION("Subtraction > Addition") {
-                boost::real::real a("1.5");
-                boost::real::real b("1");
-                boost::real::real c = a - b;
-                boost::real::real d("-1.5");
-                boost::real::real e = a + d;
+                real a("1.5");
+                real b("1");
+                real c = a - b;
+                real d("-1.5");
+                real e = a + d;
 
                 CHECK(c > e);
             }
 
             SECTION("Subtraction > Subtraction") {
-                boost::real::real a("1.5");
-                boost::real::real b("1");
-                boost::real::real c = a - b;
-                boost::real::real d = a - a;
+                real a("1.5");
+                real b("1");
+                real c = a - b;
+                real d = a - a;
 
                 CHECK(c > d);
             }
 
             SECTION("Subtraction > multiplication") {
-                boost::real::real a("1.5");
-                boost::real::real b("1");
-                boost::real::real c = a - b;
-                boost::real::real d("0");
-                boost::real::real e = a * d;
+                real a("1.5");
+                real b("1");
+                real c = a - b;
+                real d("0");
+                real e = a * d;
 
                 CHECK(c > e);
             }
 
             SECTION("multiplication > Explicit") {
-                boost::real::real a("2");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d("3");
+                real a("2");
+                real b("2");
+                real c = a * b;
+                real d("3");
 
                 CHECK(c > d);
             }
 
             SECTION("multiplication > Addition") {
-                boost::real::real a("3");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d = a + b;
+                real a("3");
+                real b("2");
+                real c = a * b;
+                real d = a + b;
 
                 CHECK(c > d);
             }
 
             SECTION("multiplication > Subtraction") {
-                boost::real::real a("1.5");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d("0.5");
-                boost::real::real e = b - d;
+                real a("1.5");
+                real b("2");
+                real c = a * b;
+                real d("0.5");
+                real e = b - d;
 
                 CHECK(c > e);
             }
 
             SECTION("multiplication > multiplication") {
-                boost::real::real a("1.5");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d = a * a;
+                real a("1.5");
+                real b("2");
+                real c = a * b;
+                real d = a * a;
 
                 CHECK(c > d);
             }
@@ -771,154 +773,154 @@ TEST_CASE("Operator >") {
 
         SECTION("With precision exception") {
             SECTION("Explicit > Explicit") {
-                boost::real::real a("1.555555555555555555");
-                boost::real::real b("1.5555555555555555");
+                real a("1.555555555555555555");
+                real b("1.5555555555555555");
 
                 CHECK(a > b);
             }
 
             SECTION("Explicit > Addition") {
-                boost::real::real a("22222222222222220000000");
-                boost::real::real b("11111111111110000000000");
-                boost::real::real c("11111111111110000000000");
-                boost::real::real d = b + c;
+                real a("22222222222222220000000");
+                real b("11111111111110000000000");
+                real c("11111111111110000000000");
+                real d = b + c;
 
                 CHECK(a > d);
             }
 
             SECTION("Explicit > Subtraction") {
-                boost::real::real a("22222222222222222222");
-                boost::real::real b("22222222222222222222");
-                boost::real::real c("1");
-                boost::real::real d = b - c;
+                real a("22222222222222222222");
+                real b("22222222222222222222");
+                real c("1");
+                real d = b - c;
 
                 CHECK(a > d);
             }
 
             SECTION("Explicit > multiplication") {
-                boost::real::real a("22222222222222220000000");
-                boost::real::real b("11111111111110000000000");
-                boost::real::real c("2");
-                boost::real::real d = b * c;
+                real a("22222222222222220000000");
+                real b("11111111111110000000000");
+                real c("2");
+                real d = b * c;
 
                 CHECK(a > d);
             }
 
             SECTION("Addition > Explicit") {
-                boost::real::real a("1.1111111111111222");
-                boost::real::real b("1.1111111111111222");
-                boost::real::real c = a + b;
-                boost::real::real d("2.2222222222222");
+                real a("1.1111111111111222");
+                real b("1.1111111111111222");
+                real c = a + b;
+                real d("2.2222222222222");
 
                 CHECK(c > d);
             }
 
             SECTION("Addition > Addition") {
-                boost::real::real a("1.1111111111111222");
-                boost::real::real b("1.1111111111111");
-                boost::real::real c = a + a;
-                boost::real::real d = b + b;
+                real a("1.1111111111111222");
+                real b("1.1111111111111");
+                real c = a + a;
+                real d = b + b;
 
                 CHECK(c > d);
             }
 
             SECTION("Addition > Subtraction") {
-                boost::real::real a("1.1111111111111111");
-                boost::real::real b("1.1111111111111222");
-                boost::real::real c = a + b;
-                boost::real::real d("2.2222222222223");
-                boost::real::real e("0.0000000000001");
-                boost::real::real f = d - e;
+                real a("1.1111111111111111");
+                real b("1.1111111111111222");
+                real c = a + b;
+                real d("2.2222222222223");
+                real e("0.0000000000001");
+                real f = d - e;
 
                 CHECK(c > f);
             }
 
             SECTION("Addition > multiplication") {
-                boost::real::real a("1.1111111111111");
-                boost::real::real b("1.1111111111111222");
-                boost::real::real c = a + b;
-                boost::real::real d("2");
-                boost::real::real e = a * d;
+                real a("1.1111111111111");
+                real b("1.1111111111111222");
+                real c = a + b;
+                real d("2");
+                real e = a * d;
 
                 CHECK(c > e);
             }
 
             SECTION("Subtraction > Explicit") {
-                boost::real::real a("1.111111111111222");
-                boost::real::real b("0.000000000000001");
-                boost::real::real c = a - b;
-                boost::real::real d("1.1111111111111");
+                real a("1.111111111111222");
+                real b("0.000000000000001");
+                real c = a - b;
+                real d("1.1111111111111");
 
                 CHECK(c > d);
             }
 
             SECTION("Subtraction > Addition") {
-                boost::real::real a("1.1111111111115");
-                boost::real::real b("0.0000000000001");
-                boost::real::real c = a - b;
-                boost::real::real d("-0.0000000000003");
-                boost::real::real e = a + d;
+                real a("1.1111111111115");
+                real b("0.0000000000001");
+                real c = a - b;
+                real d("-0.0000000000003");
+                real e = a + d;
 
                 CHECK(c > e);
             }
 
             SECTION("Subtraction > Subtraction") {
-                boost::real::real a("1.1111111111114");
-                boost::real::real b("0.0000000000001");
-                boost::real::real c = a - b;
-                boost::real::real d("0.0000000000003");
-                boost::real::real e = a - d;
+                real a("1.1111111111114");
+                real b("0.0000000000001");
+                real c = a - b;
+                real d("0.0000000000003");
+                real e = a - d;
 
                 CHECK(c > e);
             }
 
             SECTION("Subtraction > multiplication") {
-                boost::real::real a("1.1111111111112222");
-                boost::real::real b("0.0000000000001");
-                boost::real::real c = a - b;
-                boost::real::real d("1.1111111111111");
-                boost::real::real e("1");
-                boost::real::real f = d * e;
+                real a("1.1111111111112222");
+                real b("0.0000000000001");
+                real c = a - b;
+                real d("1.1111111111111");
+                real e("1");
+                real f = d * e;
 
                 CHECK(c > f);
             }
 
             SECTION("multiplication > Explicit") {
-                boost::real::real a("1.1111111111111222");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d("2.2222222222222");
+                real a("1.1111111111111222");
+                real b("2");
+                real c = a * b;
+                real d("2.2222222222222");
 
                 CHECK(c > d);
             }
 
             SECTION("multiplication > Addition") {
-                boost::real::real a("1.1111111111111");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d("1.1111111111100");
-                boost::real::real e = a + d;
+                real a("1.1111111111111");
+                real b("2");
+                real c = a * b;
+                real d("1.1111111111100");
+                real e = a + d;
 
                 CHECK(c > e);
             }
 
             SECTION("multiplication > Subtraction") {
-                boost::real::real a("1.1111111111111");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d("2.2222222222221");
-                boost::real::real e("0.0000000000001");
-                boost::real::real f = d - e;
+                real a("1.1111111111111");
+                real b("2");
+                real c = a * b;
+                real d("2.2222222222221");
+                real e("0.0000000000001");
+                real f = d - e;
 
                 CHECK(c > f);
             }
 
             SECTION("multiplication > multiplication") {
-                boost::real::real a("1.11111111111112");
-                boost::real::real b("2");
-                boost::real::real c = a * b;
-                boost::real::real d("1.1111111111111");
-                boost::real::real e = d * b;
+                real a("1.11111111111112");
+                real b("2");
+                real c = a * b;
+                real d("1.1111111111111");
+                real e = d * b;
                 CHECK(c > e);
             }
         }

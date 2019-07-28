@@ -374,7 +374,7 @@ namespace boost {
             ///  @brief a binary-search type method for dividing exact_numbers.
             ///  @param is_upper true: returns result with an error of +epsilon, while
             ///                  false: returns result with an error of -epsilon
-            void divide_vector(exact_number<T> divisor, unsigned int max_precision) {
+            void divide_vector(exact_number<T> divisor, unsigned int maximum_precision) {
                 /// @TODO: replace this with something more efficient, like newton-raphson method
                 // it also completely recalculates on each precision increase
                 // instead, could use previous information to make better "guesses"
@@ -396,11 +396,11 @@ namespace boost {
 
                 min_boundary_n.digits = {1};
                 ///@TODO ensure exponent doesn't overflow
-                min_boundary_n.exponent = -1 * (max_precision);
+                min_boundary_n.exponent = -1 * (maximum_precision);
                 min_boundary_n.positive = false;
 
                 min_boundary_p.digits = {1};
-                min_boundary_p.exponent = -1 * (max_precision);
+                min_boundary_p.exponent = -1 * (maximum_precision);
 
                 T base = (std::numeric_limits<T>::max() /4)*2 - 1;
                 T H = base/2 + 1;
@@ -479,7 +479,7 @@ namespace boost {
                     distance.normalize();
 
                     // truncate insignificant digits of distance
-                    while (distance.size() > max_precision + 1) {
+                    while (distance.size() > maximum_precision + 1) {
                         distance.digits.pop_back();
                     }
 
@@ -487,7 +487,7 @@ namespace boost {
                     (*this) = left + distance;
 
                     // truncate insignificant digits of (*this)
-                    while ((*this).size() > max_precision + 1) {
+                    while ((*this).size() > maximum_precision + 1) {
                         (*this).digits.pop_back();
                     }
 
@@ -500,7 +500,7 @@ namespace boost {
                 // truncate (*this)
                 this->normalize();
 
-                while ((*this).size() > max_precision)
+                while ((*this).size() > maximum_precision)
                     (*this).digits.pop_back();
 
 
@@ -586,7 +586,7 @@ namespace boost {
             }
 
             void round_up(T base) {
-e                if (positive)
+                if (positive)
                     this->round_up_abs(base);
                 else
                     this->round_down_abs(base);

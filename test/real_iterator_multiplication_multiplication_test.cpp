@@ -2,17 +2,18 @@
 #include <map>
 
 #include <real/real.hpp>
-#include <test_helpers.hpp>
+
+using real=boost::real::real<>;
 
 TEST_CASE("Operators * *  boost::real::const_precision_iterator") {
     
     // Explicit numbers
-    boost::real::real a("999999999999999999");
-    boost::real::real b("999999999999999999");
-    boost::real::real c("999999999999999999");
+    real a("999999999999999999");
+    real b("999999999999999999");
+    real c("999999999999999999");
 
     SECTION("(a * b) * c") {
-        boost::real::real result = (a * b) * c;
+        real result = (a * b) * c;
         auto end_it = result.get_real_itr().cend();
 
         auto result_it = result.get_real_itr().cbegin();
@@ -38,7 +39,7 @@ TEST_CASE("Operators * *  boost::real::const_precision_iterator") {
     }
 
     SECTION("a * (b * c)") {
-        boost::real::real result = a * (b * c);
+        real result = a * (b * c);
         auto end_it = result.get_real_itr().cend();
 
         auto result_it = result.get_real_itr().cbegin();

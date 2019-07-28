@@ -2,6 +2,8 @@
 #include <real/real_explicit.hpp>
 #include <test_helpers.hpp>
 
+using real=boost::real::real<>;
+
 TEST_CASE("Iterate boost::real_explicit::const_precision_iterator until full precision is reached") {
 
     SECTION("Positive numbers") {
@@ -13,7 +15,7 @@ TEST_CASE("Iterate boost::real_explicit::const_precision_iterator until full pre
         for (auto number : numbers) {
             SECTION("Testing for number " + number) {
 
-                boost::real::real a(number);
+                real a(number);
                 boost::real::const_precision_iterator approximation_it = a.get_real_itr().cbegin();
                 boost::real::exact_number length = approximation_it.get_interval().upper_bound - approximation_it.get_interval().lower_bound;
 
@@ -37,7 +39,7 @@ TEST_CASE("Iterate boost::real_explicit::const_precision_iterator until full pre
         for (auto number : numbers) {
             SECTION("Testing for number " + number) {
 
-                boost::real::real a(number);
+                real a(number);
                 boost::real::const_precision_iterator approximation_it = a.get_real_itr().cbegin();
                 boost::real::exact_number length = approximation_it.get_interval().upper_bound - approximation_it.get_interval().lower_bound;
 
@@ -54,8 +56,8 @@ TEST_CASE("Iterate boost::real_explicit::const_precision_iterator until full pre
 
 TEST_CASE("Iterator cend") {
 
-    boost::real::real a("39472346726348276482342342442323");
-    boost::real::real b("39472346726348276482342342442323");
+    real a("39472346726348276482342342442323");
+    real b("39472346726348276482342342442323");
     boost::real::const_precision_iterator approximation_it = a.get_real_itr().cbegin();
     boost::real::const_precision_iterator end_it = b.get_real_itr().cend();
 

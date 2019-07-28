@@ -35,7 +35,7 @@ namespace boost {
         using real_number = std::variant<std::monostate, real_explicit<T>, real_algorithm<T>, real_operation<T>>;
 
         /// the default max precision to use if the user hasn't provided one.
-        const size_t DEFAULT_MAX_PRECISION = 10;
+        const size_t DEFAULT_MAXIMUM_PRECISION = 10;
 
         template <typename T>
         class const_precision_iterator {
@@ -44,7 +44,7 @@ namespace boost {
              * @brief Optional user-provided maximum precision for all const_precision_iterators. 
              */
 
-            static std::optional<size_t> maximum_precision;
+            inline static std::optional<size_t> global_maximum_precision;
             /// @TODO look into STL-style iterators
             // typedef std::forward_iterator_tag iterator_category;
             // typedef void difference_type (?);
@@ -96,16 +96,16 @@ namespace boost {
                  *
                  * @return an unsigned integer with the maximum allowed precision, which was either
                  * given by the user, or some default value.
-                 * 
+                 *
                  * @details The user may set the maximum precision for any specific precision iterator.
                  * They may also set a general maximum precision (the static optional value).
-                 * Preference is given: _maximum_precision > maximum_precision > DEFAULT_MAX_PRECISION
+                 * Preference is given: _maximum_precision > maximum_precision > DEFAULT_MAXIMUM_PRECISION
                  */
-                size_t max_precision() const {
-                    if((_maximum_precision == 0) && !(maximum_precision))
-                        return DEFAULT_MAX_PRECISION;
+                size_t maximum_precision() const {
+                    if((_maximum_precision == 0) && !(global_maximum_precision))
+                        return DEFAULT_MAXIMUM_PRECISION;
                     else if (_maximum_precision == 0)
-                        return maximum_precision.value();
+                        return global_maximum_precision.value();
                     else
                         return _maximum_precision;
                 }
@@ -180,7 +180,7 @@ namespace boost {
                         [this] (real_operation<T>& real) {
                             // we don't need to init operands here - they *SHOULD* already be at cbegin or >
                             update_operation_boundaries(real);
-                            // _maximum_precision = std::max(real.get_lhs_itr().max_precision(), real.get_rhs_itr().max_precision());
+                            // _maximum_precision = std::max(real.get_lhs_itr().maximum_precision(), real.get_rhs_itr().maximum_precision());
                             },
                         [] (auto& real) {
                             throw boost::real::bad_variant_access_exception();
@@ -192,7 +192,7 @@ namespace boost {
                 void init_operation_itr(real_operation<T> &ro, bool cend);
 
                 /**
-                 * @brief Constructor for max_precision precision iterator, from real_number
+                 * @brief Constructor for maximum_precision precision iterator, from real_number
                  */
                 explicit const_precision_iterator(real_number<T> * a, bool cend) : _real_ptr(a) {
                     if (cend) {
@@ -203,7 +203,7 @@ namespace boost {
                             },
                             [this, &a] (real_algorithm<T>& real) {
                                 *this = const_precision_iterator(a);
-                                this->iterate_n_times(this->max_precision() - 1);
+                                this->iterate_n_times(this->maximum_precision() - 1);
                             },
                             [this] (real_operation<T>& real) {
                                 init_operation_itr(real, true);
@@ -231,7 +231,7 @@ namespace boost {
                  * @return a boost::real::const_precision_iterator of the number.
                  */
                 const_precision_iterator cend() {
-                    this->iterate_n_times(this->max_precision() - _precision);
+                    this->iterate_n_times(this->maximum_precision() - _precision);
                     return *this;
                 }
 

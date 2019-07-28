@@ -62,6 +62,8 @@ namespace boost {
         class real {
         private:
             std::shared_ptr<real_data<T>> _real_p;
+            // ctor from shared_ptr to (already init) real_data. used in check_and_distribute.
+            real(std::shared_ptr<real_data<T>> x) : _real_p(x){};
 
         public:
 
@@ -265,8 +267,8 @@ namespace boost {
              *
              * @return and integer with the maximum allowed precision.
              */
-            unsigned int max_precision() const {
-                return get_real_itr().max_precision();
+            unsigned int maximum_precision() const {
+                return get_real_itr().maximum_precision();
             }
 
             /// set max precision for the underlying iterator
@@ -314,18 +316,18 @@ namespace boost {
             // (i.e., root on the left, nodes on the next leftmost level)
             void print_tree(int space = PRINT_SPACE) {
                 std::visit(overloaded {
-                    [space] (const real_explicit& real)  { 
+                    [space] (const real_explicit<T>& real)  {
                         for (int i = PRINT_SPACE; i < space; i++)
                             std::cout << ' ';
                         std::cout << real.get_exact_number().as_string() << '\n';
                     },
-                    [space] (const real_algorithm& real) {
+                    [space] (const real_algorithm<T>& real) {
                         for (int i = PRINT_SPACE; i < space; i++)
                             std::cout << ' ';
                         std::cout << "alg\n";
                     },
-                    [&space] (const real_operation& real) {
-                        ((boost::real::real) real.rhs()).print_tree(space + PRINT_SPACE);
+                    [&space] (const real_operation<T>& real) {
+                        ((boost::real::real<T>) real.rhs()).print_tree(space + PRINT_SPACE);
                         std::cout << '\n';
 
                         for (int i = PRINT_SPACE; i < space; i++)
@@ -347,7 +349,7 @@ namespace boost {
                         }
                         std::cout << '\n';
 
-                        ((boost::real::real) real.lhs()).print_tree(space + PRINT_SPACE);
+                        ((boost::real::real<T>) real.lhs()).print_tree(space + PRINT_SPACE);
                     },
                     [] (auto& real) {
                         throw boost::real::bad_variant_access_exception();
@@ -358,17 +360,18 @@ namespace boost {
             // a helper function for distributing when performing addition/subtraction 
             // the returned bool tells us whether we distributed or not, which is mostly useful when assign_and_return_void is true
             // since std::optional<real> would = std::null_opt if assign_and_return_void is false.
+
             std::pair<bool, std::optional<real>> check_and_distribute(real & other, bool assign_and_return_void, OPERATION op) {
                 // The following simplifies using the distributive property, when numbers have the same pointers.
                 // We could do comparison by value, but this may force more computation than is necessary for the user,
                 // since it's difficult to determine whether values are the same
 
-                std::shared_ptr<real_data> a;
-                std::shared_ptr<real_data> b;
-                std::shared_ptr<real_data> x;
+                std::shared_ptr<real_data<T>> a;
+                std::shared_ptr<real_data<T>> b;
+                std::shared_ptr<real_data<T>> x;
 
-                if(auto op_ptr = std::get_if<real_operation>(this->_real_p->get_real_ptr())) {
-                    if (auto op_ptr2 = std::get_if<real_operation>(other._real_p->get_real_ptr())) { // both of real_operation
+                if(auto op_ptr = std::get_if<real_operation<T>>(this->_real_p->get_real_ptr())) {
+                    if (auto op_ptr2 = std::get_if<real_operation<T>>(other._real_p->get_real_ptr())) { // both of real_operation
                         if ((op_ptr->get_operation() == OPERATION::MULTIPLICATION) && op_ptr2->get_operation() == OPERATION::MULTIPLICATION) {
                             if (op_ptr->lhs() == op_ptr2->lhs()) { // x * a + x * b = (a + b) * x
                                 a = op_ptr->rhs();
@@ -393,7 +396,8 @@ namespace boost {
                                 return std::make_pair(false, std::nullopt);
                             }
 
-                            real a_op_b;
+                            real<T> a_op_b;
+
                             if(op == OPERATION::ADDITION) {
                                 a_op_b = real(a) + real(b);
                             }
@@ -404,7 +408,7 @@ namespace boost {
                             }
 
                             if(assign_and_return_void) {
-                                this->_real_p = std::make_shared<real_data>(real_operation(a_op_b._real_p, x, OPERATION::MULTIPLICATION));
+                                this->_real_p = std::make_shared<real_data<T>>(real_operation(a_op_b._real_p, x, OPERATION::MULTIPLICATION));
                                 return std::make_pair(true, std::nullopt);
                             } else {
                                 return std::make_pair(true, real(real_operation(a_op_b._real_p, x, OPERATION::MULTIPLICATION)));
@@ -423,8 +427,8 @@ namespace boost {
                                 return std::make_pair(false, std::nullopt);
                             }
 
-                            real one ("1");
-                            real x_op_1;
+                            real<T> one ("1");
+                            real<T> x_op_1;
                             if(op == OPERATION::ADDITION) {
                                 x_op_1 = real(x) + one; 
                             }
@@ -435,14 +439,14 @@ namespace boost {
                             }
                             
                             if(assign_and_return_void) {
-                                this->_real_p = std::make_shared<real_data>(real_operation(x_op_1._real_p, a, OPERATION::MULTIPLICATION));
+                                this->_real_p = std::make_shared<real_data<T>>(real_operation(x_op_1._real_p, a, OPERATION::MULTIPLICATION));
                                 return std::make_pair(true, std::nullopt);
                             } else {
                                 return std::make_pair(true, real(real_operation(x_op_1._real_p, a, OPERATION::MULTIPLICATION)));
                             }
                         } 
                     }
-                } else if(auto op_ptr = std::get_if<real_operation>(&other._real_p->get_real_number())) { // lhs is not an operation, but rhs is
+                } else if(auto op_ptr = std::get_if<real_operation<T>>(&other._real_p->get_real_number())) { // lhs is not an operation, but rhs is
                     if (op_ptr->get_operation() == OPERATION::MULTIPLICATION) {
                         if (this->_real_p == op_ptr->lhs()) { // a + (a * x) -> (x + 1) * a
                             a = this->_real_p;
@@ -455,8 +459,9 @@ namespace boost {
                             return std::make_pair(false, std::nullopt);
                         }
 
-                        real x_op_1;
-                        real one ("1");
+                        real<T> x_op_1;
+                        real<T> one ("1");
+
                         if(op == OPERATION::ADDITION) {
                             x_op_1 = real(x) + one;
                         }
@@ -467,7 +472,7 @@ namespace boost {
                         }
 
                         if(assign_and_return_void) {
-                            this->_real_p = std::make_shared<real_data>(real_operation(x_op_1._real_p, a, OPERATION::MULTIPLICATION));
+                            this->_real_p = std::make_shared<real_data<T>>(real_operation(x_op_1._real_p, a, OPERATION::MULTIPLICATION));
                             return std::make_pair(true, std::nullopt);
                         } else {
                             return std::make_pair(true, real(real_operation(x_op_1._real_p, a, OPERATION::MULTIPLICATION)));
@@ -475,10 +480,10 @@ namespace boost {
                     }
                 } else { // neither is an operation
                     if ((this->_real_p == other._real_p) && (op == OPERATION::ADDITION)) { // a + a = 2 * a
-                        std::shared_ptr<real_data> two = std::make_shared<real_data>(real_explicit("2"));
+                        std::shared_ptr<real_data<T>> two = std::make_shared<real_data<T>>(real_explicit("2"));
 
                         if(assign_and_return_void) {
-                            this->_real_p = std::make_shared<real_data>(real_operation(two, this->_real_p, OPERATION::MULTIPLICATION));
+                            this->_real_p = std::make_shared<real_data<T>>(real_operation(two, this->_real_p, OPERATION::MULTIPLICATION));
                             return std::make_pair(true, std::nullopt);
                         } else {
                             return std::make_pair(true, real(real_operation(two, this->_real_p, OPERATION::MULTIPLICATION)));
@@ -498,6 +503,7 @@ namespace boost {
              *
              * @param other - the right side operand boost::real::real number.
              */
+
             void operator+=(real other) {
                 auto [is_simplified, result] = check_and_distribute(other, true, OPERATION::ADDITION);
                 
@@ -633,7 +639,7 @@ namespace boost {
                 if (this_it == other_it)
                     return false;
 
-                unsigned int current_precision = std::max(this->max_precision(), other.max_precision());
+                unsigned int current_precision = std::max(this->maximum_precision(), other.maximum_precision());
                 for (unsigned int p = 0; p < current_precision; ++p) {
                     // Get more precision
                     ++this_it;
@@ -677,7 +683,7 @@ namespace boost {
                 if (this_it == other_it)
                     return false;
 
-                unsigned int current_precision = std::max(this->max_precision(), other.max_precision());
+                unsigned int current_precision = std::max(this->maximum_precision(), other.maximum_precision());
                 for (unsigned int p = 0; p < current_precision; ++p) {
                     // Get more precision
                     ++this_it;
@@ -720,7 +726,7 @@ namespace boost {
                 auto this_it = _real_p->get_precision_itr().cbegin();
                 auto other_it = other._real_p->get_precision_itr().cbegin();
 
-                unsigned int current_precision = std::max(this->max_precision(), other.max_precision());
+                unsigned int current_precision = std::max(this->maximum_precision(), other.maximum_precision());
                 for (unsigned int p = 0; p < current_precision; ++p) {
                     // Get more precision
                     ++this_it;

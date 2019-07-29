@@ -58,4 +58,4 @@ matrix:
           - os: osx
 
 script:
-  - cmake -DCMAKE_BUILD_TYPE=Debug -DREAL_BENCH=OFF -G "Unix Makefiles" . && make -j`nproc` && make -j`nproc` test  
+  - cmake -DCMAKE_BUILD_TYPE=Debug -DREAL_BENCH=OFF && cmake --build . && ctest -C Debug --output-on-failure

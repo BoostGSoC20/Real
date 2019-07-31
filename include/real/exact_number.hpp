@@ -16,9 +16,9 @@ namespace boost {
         struct exact_number {
             using exponent_t = int;
 
+            static const int BASE = 10;
             std::vector<T> digits = {};
             exponent_t exponent = 0;
-            static const int BASE = 10;
             bool positive = true;
 
             static bool aligned_vectors_is_lower(const std::vector<T> &lhs, const std::vector<T> &rhs, bool equal = false) {

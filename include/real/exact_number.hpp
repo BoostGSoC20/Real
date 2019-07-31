@@ -356,9 +356,9 @@ namespace boost {
                         ++idx;
                     residual.erase(residual.begin(), residual.begin() + idx);
                     current_dividend = residual;
-                    current_dividend.push_back(*next_digit);
                     if (flg)
                         break;
+                    current_dividend.push_back(*next_digit);
                     ++next_digit;
                 }
                 // TODO: once the stop criteria is improved, the integer part is not the whole number

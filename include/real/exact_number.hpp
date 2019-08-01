@@ -197,9 +197,7 @@ namespace boost {
                 if (this->exponent < 0) new_size -= this->exponent; // <--- Less the exponent
                 if (other.exponent < 0) new_size -= other.exponent; // <--- Less the exponent
 
-                for (int i = 0; i < (int)new_size; i++) temp.push_back(0);
-                // TODO: Check why the assign method crashes.
-                //result.assign(new_size, 0);
+                temp.assign(new_size, 0);
 
                 // Below two indexes are used to find positions
                 // in result.
@@ -293,14 +291,10 @@ namespace boost {
                 auto next_digit = aligned_dividend.begin() + aligned_divisor.size();
                 std::vector<T> residual = aligned_dividend;
 
-                // TODO: This loop end criteria generate a whole division, a precision stop criteria
-                // TODO: must be implemented for numbers like 1/3 that are periodic numbers to allow
-                // TODO: calculate floating point result with some desired precision
                 while (true) {
                     // Obtain the smaller part of the dividend that is greater than the divisor
 
                     // Obtaining the greater digit by which the divisor can be multiplied and still be lower than the dividend
-                    // TODO: when using a higher base, this search could be done using binary search to improve performance
                     bool flg = false;
                     if (next_digit == aligned_dividend.end())
                         flg = true;
@@ -352,7 +346,7 @@ namespace boost {
                         tmp.exponent--;
                     }
                     size_t idx = 0;
-                    while(idx < residual.size() && residual[idx]==0) 
+                    while(idx < residual.size() && residual[idx]==0)
                         ++idx;
                     residual.erase(residual.begin(), residual.begin() + idx);
                     current_dividend = residual;
@@ -361,7 +355,6 @@ namespace boost {
                     current_dividend.push_back(*next_digit);
                     ++next_digit;
                 }
-                // TODO: once the stop criteria is improved, the integer part is not the whole number
                 idx = 0;
                 while(idx < quotient.size() && quotient[idx] == 0)
                     idx++;
@@ -417,6 +410,8 @@ namespace boost {
                 tmp.digits = {1};
                 tmp.exponent = 1;
 
+                exact_number<T> zero = exact_number<T>(); 
+
                 if (divisor == tmp) {
                     this->exponent = exponent_dif + 1;
                     this->positive = positive;
@@ -429,9 +424,8 @@ namespace boost {
                     return;
                 }
 
-                ///@TODO: remember signs at the end of this function
-
-                exact_number<T> zero = exact_number<T>(); 
+                if ((*this) == zero)
+                    return;
 
                 if (divisor == zero)
                     throw(boost::real::divide_by_zero());
@@ -444,11 +438,6 @@ namespace boost {
                         left = tmp; // 1
                         right = numerator;
                     }
-
-                /// @TODO: the following
-                // if (*this) == 0, return 0 
-                // if divisor == 1, return (*this)
-                // if divisor == 0, throw error
 
                 // distance = (right - left) / 2
                 distance = (right - left) * half;
@@ -939,7 +928,6 @@ namespace boost {
                 }
                 */
 
-                //@TODO remember the negative
                 if (this->exponent <= 0) {
                     result += ".";
 
@@ -1090,7 +1078,6 @@ namespace boost {
                         tmp.exponent--;
                     }
                 }
-                //@TODO The decimal part. And dont forget negative. Also, add exponent notation later.
                 std::stringstream sslast;
                 while (!fraction.empty() && fraction.back() == 0) {
                     fraction.pop_back();

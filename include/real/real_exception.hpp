@@ -41,12 +41,6 @@ namespace boost {
             }
         };
 
-        struct invalid_denominator : public std::exception {
-            const char * what () const throw () override {
-                return "Divison with denominators 0 < d < 1 is currently undefined.";
-            }
-        };
-
         struct divergent_division_result_exception : public std::exception {
             const char * what () const throw () override {
                 return "The divisor approximation interval contains 0, so the quotient is unbounded";

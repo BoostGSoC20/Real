@@ -30,12 +30,12 @@ namespace boost {
         template <typename T>
         class real;
 
-        // same typedef is also found in real_data.hpp
         template <typename T>
         using real_number = std::variant<std::monostate, real_explicit<T>, real_algorithm<T>, real_operation<T>>;
+        using precision_t = size_t;
 
         /// the default max precision to use if the user hasn't provided one.
-        const size_t DEFAULT_MAXIMUM_PRECISION = 10;
+        const precision_t DEFAULT_MAXIMUM_PRECISION = 10;
 
         template <typename T>
         class const_precision_iterator {
@@ -44,7 +44,7 @@ namespace boost {
              * @brief Optional user-provided maximum precision for all const_precision_iterators. 
              */
 
-            inline static std::optional<size_t> global_maximum_precision;
+            inline static std::optional<precision_t> global_maximum_precision;
             /// @TODO look into STL-style iterators
             // typedef std::forward_iterator_tag iterator_category;
             // typedef void difference_type (?);
@@ -61,10 +61,10 @@ namespace boost {
                 real_number<T> * _real_ptr;
 
                 /// current iterator precision
-                size_t _precision;
+                precision_t _precision;
 
                 /// local max precision, is used if set to > 0 by user
-                size_t _maximum_precision = 0;
+                precision_t _maximum_precision = 0;
 
                 interval<T> _approximation_interval;
 
@@ -101,7 +101,7 @@ namespace boost {
                  * They may also set a general maximum precision (the static optional value).
                  * Preference is given: _maximum_precision > maximum_precision > DEFAULT_MAXIMUM_PRECISION
                  */
-                size_t maximum_precision() const {
+                precision_t maximum_precision() const {
                     if((_maximum_precision == 0) && !(global_maximum_precision))
                         return DEFAULT_MAXIMUM_PRECISION;
                     else if (_maximum_precision == 0)
@@ -110,7 +110,7 @@ namespace boost {
                         return _maximum_precision;
                 }
 
-                void set_maximum_precision(size_t maximum_precision) {
+                void set_maximum_precision(precision_t maximum_precision) {
                     this->_maximum_precision = maximum_precision;
                 }
 
@@ -289,7 +289,7 @@ namespace boost {
                                // If the explicit number didn't reaches the full precision (the end)
                                // then the number interval is defined by truncation.
 
-                               for(size_t i = _precision; i < _precision + n; i++) {
+                               for(precision_t i = _precision; i < _precision + n; i++) {
                                    this->_approximation_interval.lower_bound.push_back(real.digits()[i]);
                                }
 

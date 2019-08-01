@@ -394,8 +394,13 @@ namespace boost {
                 numerator = (*this).abs();
                 divisor = divisor.abs();
 
+                // ensuring that assignment from -1 * (maximum_precision) to exponent will not
+                // overflow
+                if (maximum_precision > std::abs(std::numeric_limits<exponent_t>::min())) {
+                    throw exponent_overflow_exception();
+                }
+
                 min_boundary_n.digits = {1};
-                ///@TODO ensure exponent doesn't overflow
                 min_boundary_n.exponent = -1 * (maximum_precision);
                 min_boundary_n.positive = false;
 
@@ -429,8 +434,6 @@ namespace boost {
                     return;
                 }
 
-                ///@TODO: remember signs at the end of this function
-
                 exact_number<T> zero = exact_number<T>(); 
 
                 if (divisor == zero)
@@ -445,11 +448,6 @@ namespace boost {
                         right = numerator;
                     }
 
-                /// @TODO: the following
-                // if (*this) == 0, return 0 
-                // if divisor == 1, return (*this)
-                // if divisor == 0, throw error
-
                 // distance = (right - left) / 2
                 distance = (right - left) * half;
                 (*this) = left + distance;
@@ -463,11 +461,6 @@ namespace boost {
 
                 // calculate the result
                 // continue the loop while we are still inaccurate (up to max precision)
-
-                // we would prefer to use || than &&, but we get problems because ||
-                // statement may never evaluate to false. Again, we must look more closely at precision
-                // if we use && (to always terminate in n steps), then we must 
-                // verify our answers are within +- epsilon of the solution.
                 while ((residual.abs() > min_boundary_p) && 
                        (distance.exponent >= min_boundary_p.exponent)) {
                     // result too small, try halfway between left and (*this) 
@@ -495,7 +488,6 @@ namespace boost {
                     residual = ((*this) * divisor) - numerator;
                     residual.normalize();
                 }
-                /// @TODO Is this still true?: at this point, we may have exited early. we should be within +- min_boundary_p of the solution.
                 
                 // truncate (*this)
                 this->normalize();
@@ -1222,8 +1214,8 @@ namespace boost {
                 if (exponent < 0) {
                     return false;
                 } else {
-                    /// @TODO: ensure it doesn't overflow
-                    return (exponent_t) digits.size() <= exponent;
+                    // note, at this point, exponent >= 0.
+                    return digits.size() <= (size_t) exponent;
                 }
             }
         };

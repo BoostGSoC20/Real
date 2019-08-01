@@ -65,6 +65,13 @@ namespace boost {
                 return "Distribution does not work for this operation.";
             }
         };
+
+        struct exponent_overflow_exception : public std::exception {
+
+            const char * what () const throw () override {
+                return "The current precision exceeds the bounds of the exponent type";
+            }
+        };
     }
 }
 

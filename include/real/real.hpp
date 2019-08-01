@@ -57,7 +57,7 @@ namespace boost {
          * operator "==" but for those cases where the class is not able to decide the value of the
          * result before reaching the maximum precision, a precision_exception is thrown.
          */
-        
+        /// @TODO: replace T with something more descriptive 
         template <typename T = int>
         class real {
         private:
@@ -84,6 +84,7 @@ namespace boost {
              */
              real(const real& other)  : _real_p(other._real_p) {};
 
+
             /**
              * @brief String constructor 
              *
@@ -91,72 +92,23 @@ namespace boost {
              *
              * @throws boost::real::invalid_string_number exception if string doesn't represent a valid number
              */
-
             real(const std::string& number) {
-                bool positive = true;
-                std::regex decimal("((\\+|-)?[[:digit:]]*)(\\.(([[:digit:]]+)?))?((e|E)(((\\+|-)?)[[:digit:]]+))?");
-                if (!std::regex_match (number, decimal))
-                    throw boost::real::invalid_string_number_exception();
-                //Know at this point that representation is valid
-                std::string decimal_part = regex_replace(number, decimal, "$5");
-                std::string integer_part = regex_replace(number, decimal, "$1");
-                std::string exp = regex_replace(number, decimal, "$8");
-                int add_exponent = exp.length() == 0 ? 0 : std::stoi(exp);
-                if (integer_part[0] == '+') {
-                    positive = true;
-                    integer_part = integer_part.substr(1);
-                }
-                else if (integer_part[0] == '-') {
-                    positive = false;
-                    integer_part = integer_part.substr(1);
-                }
-                integer_part = regex_replace(integer_part, std::regex("(0?+)([[:digit:]]?+)"), "$2");
-                size_t i = decimal_part.length() - 1;
-                while (decimal_part[i] == '0' && i >= 0) {
-                    --i;
-                }
-                decimal_part = decimal_part.substr(0, i + 1);
-                //decimal and integer parts are stripped of zeroes
-                int exponent = integer_part.length() + add_exponent;
-                if (decimal_part.empty()) {
-                    i = integer_part.length() - 1;
-                    while (integer_part[i] == '0' && i >= 0)
-                        --i;
-                    integer_part = integer_part.substr(0, i + 1);
-                }
-                if (integer_part.empty()) {
-                    i = 0;
-                    while (decimal_part[i] == '0' && i < decimal_part.length()) {
-                        ++i;
-                        --exponent;
-                    }
-                    decimal_part = decimal_part.substr(i);
-                }
-                if (integer_part.empty() && decimal_part.empty())
-                    exponent = 0;
+                auto [integer_part, decimal_part, exponent, positive] = exact_number<>::number_from_string(number);
+
                 if ((int)(decimal_part.length() + integer_part.length()) <= exponent) {
                     this->_real_p = std::make_shared<real_data<T>>(real_explicit<T>(integer_part, decimal_part, exponent, positive));
-                }
-                else {
-                    //this->_real_p  = std::make_shared<real_data>(real_operation(this->_real_p, other._real_p, OPERATION::DIVISION));
+                } else {
                     int zeroes = decimal_part.length() + integer_part.length() - exponent;
                     std::string denominator = "1";
                     for (int i = 0; i<zeroes; ++i)
                         denominator = denominator + "0";
-                    std::string numerator = integer_part + decimal_part;
+                    // source of inefficiency. copying, casting.
+                    std::string numerator = (std::string) std::string(integer_part).c_str() + (std::string) std::string(decimal_part);
                     if (!positive)
                         numerator = "-" + numerator;
                     std::shared_ptr<real_data<T>> lhs = std::make_shared<real_data<T>>(real_explicit<T>(numerator));
                     std::shared_ptr<real_data<T>> rhs = std::make_shared<real_data<T>>(real_explicit<T>(denominator));
-                    
-                    /*
-                    if(this->_real_p.use_count() > 1) {
-                    this->_real_p = std::make_shared<real_data>(real_data(*this->_real_p));
-                    }
-                    this->_real_p = 
-                        std::make_shared<real_data>(real_operation(this->_real_p, other._real_p, OPERATION::DIVISION));
-                    */
-                    //this->_real_p = std::make_shared<real_data<T>>(real_explicit<T>(integer_part, decimal_part, exponent, positive));
+    
                     this->_real_p  = std::make_shared<real_data<T>>(real_operation(lhs, rhs, OPERATION::DIVISION));
                 }
             }
@@ -764,15 +716,15 @@ namespace boost {
     }
 }
 
-inline boost::real::real<int> operator "" _r(long double x) {
+inline auto operator "" _r(long double x) {
     return boost::real::real<int>(std::to_string(x));
 }
 
-inline boost::real::real<int> operator "" _r(unsigned long long x) {
+inline auto operator "" _r(unsigned long long x) {
     return boost::real::real<int>(std::to_string(x));
 }
 
-inline boost::real::real<int> operator "" _r(const char* x, size_t len) {
+inline auto operator "" _r(const char* x, size_t len) {
     return boost::real::real<int>(x);
 }
 

@@ -72,6 +72,16 @@ namespace boost {
                 return "The current precision exceeds the bounds of the exponent type";
             }
         };
+
+        struct octal_input_not_supported_exception : public std::exception {
+
+            const char * what () const throw () override {
+                return "The string input began with 0 - octal input is not supported at this time";
+                        
+            }
+        };
+
+
     }
 }
 

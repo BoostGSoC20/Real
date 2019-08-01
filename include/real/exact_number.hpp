@@ -9,6 +9,7 @@
 #include <type_traits>
 #include <limits>
 #include <iterator>
+#include <cctype>
 
 namespace boost {
     namespace real {
@@ -621,8 +622,6 @@ namespace boost {
             /// ctor from any integral type
             template<typename I, typename std::enable_if_t<std::is_integral<I>::value>>
             exact_number(I x) {
-                static_assert(std::numeric_limits<I>::is_integer);
-
                 if (x < 0)
                     positive = false;
                 else
@@ -635,46 +634,148 @@ namespace boost {
                     x /= BASE;
                 }
             }
+        
+            // returns {integer_part, decimal_part, exponent, is_positive}
+            constexpr static std::tuple<std::string_view, std::string_view, exponent_t, bool> number_from_string(std::string_view number) {
+                std::string_view integer_part;
+                std::string_view decimal_part;
 
-            explicit exact_number (const std::string& number) {
-                std::regex decimal("((\\+|-)?[[:digit:]]*)(\\.(([[:digit:]]+)?))?((e|E)(((\\+|-)?)[[:digit:]]+))?");
-                if (!std::regex_match (number, decimal))
-                    throw boost::real::invalid_string_number_exception();
-                //Know at this point that representation is valid
-                std::string decimal_part = regex_replace(number, decimal, "$5");
-                std::string integer_part = regex_replace(number, decimal, "$1");
-                std::string exp = regex_replace(number, decimal, "$8");
-                int add_exponent = exp.length() == 0 ? 0 : std::stoi(exp);
-                if (integer_part[0] == '+') {
-                    positive = true;
-                    integer_part = integer_part.substr(1);
-                }
-                else if (integer_part[0] == '-') {
+                int exponent = 0;
+                bool exp_positive = true;
+                bool positive = true;
+
+                bool on_integer = false;
+                bool has_exponent = false;
+                bool has_decimal = false;
+                bool has_sign = false;
+
+                size_t index = 0;
+
+                size_t integer_count = 0;
+
+                size_t decimal_start_index = 0; // pos of first number past '.'
+                size_t decimal_count = 0;
+
+                size_t integer_rhs_zeros = 0;
+                size_t integer_lhs_zeros = 0;
+                size_t decimal_lhs_zeros = 0;
+                size_t decimal_rhs_zeros = 0;
+
+                if (number[index] == '-') {
                     positive = false;
-                    integer_part = integer_part.substr(1);
+                    has_sign = true;
+                    index++;
+                } else if (number[index] == '+') {
+                    // is already positive
+                    has_sign = true;
+                    index++;
                 }
-                integer_part = regex_replace(integer_part, std::regex("(0?+)([[:digit:]]?+)"), "$2");
-                size_t i = decimal_part.length() - 1;
-                while (decimal_part[i] == '0' && i > 0) {
-                    --i;
-                }
-                decimal_part = decimal_part.substr(0, i + 1);
-                //decimal and integer parts are stripped of zeroes
-                exponent = integer_part.length() + add_exponent;
-                if (decimal_part.empty()) {
-                    i = integer_part.length() - 1;
-                    while (integer_part[i] == '0' && i > 0)
-                        --i;
-                    integer_part = integer_part.substr(0, i + 1);
-                }
-                if (integer_part.empty()) {
-                    i = 0;
-                    while (decimal_part[i] == '0' && i < decimal_part.length()) {
-                        ++i;
-                        --exponent;
+
+                // first digit must be nonzero.
+
+                for (; index < number.size(); index++) {
+                    // we should not have any characters in the input except 'e' and '.', and
+                    // '.' can only come before e, and these characters can only occur once
+
+                    // handle '.' and 'e'
+                    if (!has_exponent) {
+                        if(number[index] == 'e') {
+                            has_exponent = true;
+
+                            if (number[index+1] == '-') {
+                                exp_positive = false;
+                                index++;
+                            } else if (number[index+1] == '+') {
+                                index++;
+                            }
+                            continue;
+
+                        } else if (!has_decimal) {
+                            if(number[index] == '.') {
+                                has_decimal = true;
+                                decimal_start_index = index + 1;
+                                continue;
+                            }
+                        } 
                     }
-                    decimal_part = decimal_part.substr(i);
+
+                    // handle other characters, and numbers
+                    if (!std::isdigit(number[index])) {
+                        // if the first number was 0, it may have been octal
+                        if(number[has_sign] == '0') {
+                            throw octal_input_not_supported_exception();
+                        } else {
+                            throw invalid_string_number_exception();
+                        }
+                    } else { // number[index] is a digit
+                        if (has_exponent) {
+                            exponent *= 10;
+                            exponent += number[index] - '0';
+                            if (exponent < 0) {
+                                throw exponent_overflow_exception();
+                            }
+                            continue;
+
+                        } else if (has_decimal) {
+                            if (number[index] == '0') {
+                                if (decimal_count == 0) {
+                                    decimal_lhs_zeros++;
+                                    continue;
+                                } else {
+                                    decimal_rhs_zeros++;
+                                    continue;
+                                }
+                            } else {
+                                decimal_count++;
+                                decimal_count += decimal_rhs_zeros; 
+                                decimal_rhs_zeros = 0;
+                                continue;
+                            }
+                        } else { // we're on the integral part
+                            if (number[index] == '0') {
+                                if (integer_count == 0) {
+                                    integer_lhs_zeros++;
+                                    continue;
+                                } else {
+                                    integer_rhs_zeros++;
+                                    continue;
+                                }
+                            } else {
+                                integer_count++;
+                                integer_count += integer_rhs_zeros;
+                                integer_rhs_zeros = 0;
+                                continue;
+                            }
+                        }
+                    }
                 }
+
+                if (!exp_positive) {
+                    exponent *= -1;
+                }
+
+                exponent += integer_count;
+
+                if (integer_count == 0) {
+                    decimal_start_index += decimal_lhs_zeros;
+                    exponent -= decimal_lhs_zeros;
+                } else {
+                    exponent += integer_rhs_zeros;
+                }
+
+                integer_part = number.substr(has_sign + integer_lhs_zeros, integer_count);
+                decimal_part = number.substr(decimal_start_index, decimal_count);
+
+                return {integer_part, decimal_part, exponent, positive};
+            }
+
+            /**
+             * Takes a number of the form sign AeB, or A, where A is the desired number in base 10 and 
+             * B is the integral exponent, and sign is + or -, and constructs an exact_number
+             */
+            constexpr explicit exact_number (const std::string& number) {
+                auto [integer_part, decimal_part, exponent, positive] = number_from_string((std::string_view)number);
+
                 if (integer_part.empty() && decimal_part.empty()) {
                     digits = {0};
                     exponent = 0;
@@ -686,7 +787,8 @@ namespace boost {
                 for (const auto& c : decimal_part ) {
                     digits.push_back(c - '0');
                 }
-            }           
+            }
+            
 
             /**
              * @brief *Copy constructor:* It constructs a new boost::real::exact_number that is a copy of the

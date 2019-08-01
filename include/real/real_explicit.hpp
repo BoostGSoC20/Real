@@ -43,17 +43,7 @@ namespace boost {
              */
             real_explicit(const real_explicit& other)  = default;
 
-            /**
-             * @brief *String constructor:* Creates a boost::real::real_explicit instance by
-             * parsing the string. The string must have a valid number, otherwise, the
-             * constructor will throw an boost::real::invalid_string_number exception.
-             *
-             * @param number - a valid string representing a number.
-             *
-             * @throws boost::real::invalid_string_number exception
-             */
-
-            explicit real_explicit(const std::string& integer_part, const std::string& decimal_part, int exponent, bool positive) {
+            constexpr explicit real_explicit(const std::string_view integer_part, const std::string_view decimal_part, int exponent, bool positive) {
                 exact_number<T> op;
                 explicit_number.positive = positive;
                 if (integer_part.empty() && decimal_part.empty()) {
@@ -116,46 +106,9 @@ namespace boost {
                 explicit_number.exponent = exponent;
             }
             
-            explicit real_explicit(const std::string& number) {
-                bool positive = true;
-                std::regex decimal("((\\+|-)?[[:digit:]]*)(\\.(([[:digit:]]+)?))?((e|E)(((\\+|-)?)[[:digit:]]+))?");
-                if (!std::regex_match (number, decimal))
-                    throw boost::real::invalid_string_number_exception();
-                //Know at this point that representation is valid
-                std::string decimal_part = regex_replace(number, decimal, "$5");
-                std::string integer_part = regex_replace(number, decimal, "$1");
-                std::string exp = regex_replace(number, decimal, "$8");
-                int add_exponent = exp.length() == 0 ? 0 : std::stoi(exp);
-                if (integer_part[0] == '+') {
-                    positive = true;
-                    integer_part = integer_part.substr(1);
-                }
-                else if (integer_part[0] == '-') {
-                    positive = false;
-                    integer_part = integer_part.substr(1);
-                }
-                integer_part = regex_replace(integer_part, std::regex("(0?+)([[:digit:]]?+)"), "$2");
-                size_t i = decimal_part.length() - 1;
-                while (decimal_part[i] == '0' && i >= 0) {
-                    --i;
-                }
-                decimal_part = decimal_part.substr(0, i + 1);
-                //decimal and integer parts are stripped of zeroes
-                int exponent = integer_part.length() + add_exponent;
-                if (decimal_part.empty()) {
-                    i = integer_part.length() - 1;
-                    while (integer_part[i] == '0' && i >= 0)
-                        --i;
-                    integer_part = integer_part.substr(0, i + 1);
-                }
-                if (integer_part.empty()) {
-                    i = 0;
-                    while (decimal_part[i] == '0' && i < decimal_part.length()) {
-                        ++i;
-                        --exponent;
-                    }
-                    decimal_part = decimal_part.substr(i);
-                }
+            constexpr explicit real_explicit(std::string_view number) {
+                auto [integer_part, decimal_part, exponent, positive] = exact_number<>::number_from_string((std::string_view)number);
+                
                 if (integer_part.empty() && decimal_part.empty()) {
                     explicit_number.digits = {0};
                     explicit_number.exponent = 0;

@@ -66,9 +66,8 @@ namespace boost {
             real(std::shared_ptr<real_data<T>> x) : _real_p(x){};
 
         public:
-
             /// @TODO: Move constructors to move directly from the ctors in real_explicit to the values in real_data
-            /// @TODO add ctors for integral / numeric types. Template with enable_if, perhaps?
+            /// @TODO: do we need different ctors to be more efficient? rvalue AND lvalue ref?
 
             /**
              * @brief *Default constructor:* Construct a boost::real::real with undefined representation
@@ -307,7 +306,6 @@ namespace boost {
                 return ret;
             }
 
-            /// @TODO: do we need different ctors to be more efficient? rvalue AND lvalue ref?
 
             // a constant used in the print tree helper function
             static const int PRINT_SPACE = 5;
@@ -692,7 +690,6 @@ namespace boost {
                     bool this_full_precision = this_it.get_interval().is_a_number();
                     bool other_full_precision = other_it.get_interval().is_a_number();
 
-                    /// TODO: get rid of recursive calls, use while loop instead                    
                     if (this_full_precision && other_full_precision) {
                         return this_it.get_interval() > other_it.get_interval();
                     }

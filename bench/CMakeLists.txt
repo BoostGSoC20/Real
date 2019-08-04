@@ -30,5 +30,3 @@ target_link_libraries(main-bench
     PUBLIC Boost.Real
     PUBLIC benchmark
     )
-
-# TODO: add a target to run all benches and create reports

@@ -432,8 +432,6 @@ namespace boost {
                 if ((*this) == zero)
                     return;
                     
-                exact_number<T> zero = exact_number<T>(); 
-
                 if (divisor == zero)
                     throw(boost::real::divide_by_zero());
 

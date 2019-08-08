@@ -17,7 +17,9 @@ namespace boost {
         struct exact_number {
             using exponent_t = int;
 
-            static const int BASE = 10;
+            // TODO: replace all redundant declarations of base with this
+            // static const T BASE = ;
+
             std::vector<T> digits = {};
             exponent_t exponent = 0;
             bool positive = true;
@@ -389,7 +391,7 @@ namespace boost {
 
                 // ensuring that assignment from -1 * (maximum_precision) to exponent will not
                 // overflow
-                if (maximum_precision > std::abs(std::numeric_limits<exponent_t>::min())) {
+                if (maximum_precision > (unsigned int) std::abs(std::numeric_limits<exponent_t>::min())) {
                     throw exponent_overflow_exception();
                 }
 
@@ -615,20 +617,21 @@ namespace boost {
             exact_number<T>(std::vector<T> vec, bool pos = true) : digits(vec), exponent(vec.size()), positive(pos) {};
 
             /// ctor from any integral type
-            template<typename I, typename std::enable_if_t<std::is_integral<I>::value>>
-            exact_number(I x) {
-                if (x < 0)
-                    positive = false;
-                else
-                    positive = true;
+            /// @TODO: use whichever base.
+            // template<typename I, typename std::enable_if_t<std::is_integral<I>::value>>
+            // exact_number(I x) {
+                // if (x < 0)
+                    // positive = false;
+                // else
+                    // positive = true;
                 
-                exponent = 0;
-                while (((x % BASE) != 0) || (x != 0)) {
-                    exponent++;
-                    push_front(std::abs(x%BASE));
-                    x /= BASE;
-                }
-            }
+                // exponent = 0;
+                // while (((x % BASE) != 0) || (x != 0)) {
+                    // exponent++;
+                    // push_front(std::abs(x%BASE));
+                    // x /= BASE;
+                // }
+            // }
         
             // returns {integer_part, decimal_part, exponent, is_positive}
             constexpr static std::tuple<std::string_view, std::string_view, exponent_t, bool> number_from_string(std::string_view number) {
@@ -639,7 +642,6 @@ namespace boost {
                 bool exp_positive = true;
                 bool positive = true;
 
-                bool on_integer = false;
                 bool has_exponent = false;
                 bool has_decimal = false;
                 bool has_sign = false;

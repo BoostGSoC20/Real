@@ -102,6 +102,7 @@ namespace boost {
                     std::string denominator = "1";
                     for (int i = 0; i<zeroes; ++i)
                         denominator = denominator + "0";
+
                     // source of inefficiency. copying, casting.
                     std::string numerator = (std::string) std::string(integer_part).c_str() + (std::string) std::string(decimal_part);
                     if (!positive)
@@ -307,11 +308,18 @@ namespace boost {
                 }, _real_p->get_real_number());
             }
 
+            // this is used to control the amount of recursion that goes on in the distribution. Essentially, when we do a + b, we may 
+            // look at one level below them (if applicable, i.e., they're operations pointing to operands of their own). 
+
+            // we at most need to look at two levels.
+            // this is because in the case we have, say, x*a+x*b -> (a+b)*x, we may want to look at a and b's operands, if applicable, to see if
+            // they may be distributed as well. 
+            enum class RECURSION_LEVEL{ZERO, ONE, TWO};
+
             // a helper function for distributing when performing addition/subtraction 
             // the returned bool tells us whether we distributed or not, which is mostly useful when assign_and_return_void is true
             // since std::optional<real> would = std::null_opt if assign_and_return_void is false.
-
-            std::pair<bool, std::optional<real<T>>> check_and_distribute(real<T>& other, bool assign_and_return_void, OPERATION op) {
+            std::pair<bool, std::optional<real>> check_and_distribute(const real & other, const bool assign_and_return_void, const OPERATION op, const RECURSION_LEVEL rc_lvl) {
                 // The following simplifies using the distributive property, when numbers have the same pointers.
                 // We could do comparison by value, but this may force more computation than is necessary for the user,
                 // since it's difficult to determine whether values are the same
@@ -320,8 +328,8 @@ namespace boost {
                 std::shared_ptr<real_data<T>> b;
                 std::shared_ptr<real_data<T>> x;
 
-                if(auto op_ptr = std::get_if<real_operation<T>>(this->_real_p->get_real_ptr())) {
-                    if (auto op_ptr2 = std::get_if<real_operation<T>>(other._real_p->get_real_ptr())) { // both of real_operation
+                if(auto op_ptr = std::get_if<real_operation<T>>(this->_real_p->get_real_ptr())) { // lhs real_operation
+                    if (auto op_ptr2 = std::get_if<real_operation<T>>(other._real_p->get_real_ptr())) { // lhs, rhs real_operation
                         if ((op_ptr->get_operation() == OPERATION::MULTIPLICATION) && op_ptr2->get_operation() == OPERATION::MULTIPLICATION) {
                             if (op_ptr->lhs() == op_ptr2->lhs()) { // x * a + x * b = (a + b) * x
                                 a = op_ptr->rhs();
@@ -349,10 +357,27 @@ namespace boost {
                             real<T> a_op_b;
 
                             if(op == OPERATION::ADDITION) {
-                                a_op_b = real(a) + real(b);
-                            }
-                            else if (op == OPERATION::SUBTRACTION) {
-                                a_op_b = real(a) + real(b);
+                                switch(rc_lvl) {
+                                    case (RECURSION_LEVEL::TWO):
+                                        a_op_b = real(a).add(real(b), RECURSION_LEVEL::ONE);
+                                        break;
+                                    case (RECURSION_LEVEL::ONE):
+                                        a_op_b = real(a).add(real(b), RECURSION_LEVEL::ZERO);
+                                        break;
+                                    default:
+                                        throw invalid_recursion_level_exception();
+                                }
+                            } else if (op == OPERATION::SUBTRACTION) {
+                                switch(rc_lvl) {
+                                    case (RECURSION_LEVEL::TWO):
+                                        a_op_b = real(a).subtract(real(b), RECURSION_LEVEL::ONE);
+                                        break;
+                                    case (RECURSION_LEVEL::ONE):
+                                        a_op_b = real(a).subtract(real(b), RECURSION_LEVEL::ZERO);
+                                        break;
+                                    default:
+                                        throw invalid_recursion_level_exception();
+                                }
                             } else {
                                 throw invalid_distribution_operation_exception();
                             }
@@ -364,7 +389,7 @@ namespace boost {
                                 return std::make_pair(true, real(real_operation<T>(a_op_b._real_p, x, OPERATION::MULTIPLICATION)));
                             }
                         }
-                    } else { // rhs is not an operation
+                    } else { // lhs is an operation, but rhs is not an operation
                         if (op_ptr->get_operation() == OPERATION::MULTIPLICATION) { 
                             if (other._real_p == op_ptr->lhs()) { // (a * x) + a -> (x + 1) * a
                                 a = op_ptr->lhs();
@@ -379,15 +404,34 @@ namespace boost {
 
                             real<T> one ("1");
                             real<T> x_op_1;
+
                             if(op == OPERATION::ADDITION) {
-                                x_op_1 = real(x) + one; 
+                                switch(rc_lvl) {
+                                    case (RECURSION_LEVEL::TWO):
+                                        x_op_1 = real(x).add(real(one), RECURSION_LEVEL::ONE);
+                                        break;
+                                    case (RECURSION_LEVEL::ONE):
+                                        x_op_1 = real(a).add(real(one), RECURSION_LEVEL::ZERO);
+                                        break;
+                                    default:
+                                        throw invalid_recursion_level_exception();
+                                }
                             }
                             else if (op == OPERATION::SUBTRACTION) {
-                                x_op_1 = real(x) + one;
+                                switch(rc_lvl) {
+                                    case (RECURSION_LEVEL::TWO):
+                                        x_op_1 = real(a).subtract(real(b), RECURSION_LEVEL::ONE);
+                                        break;
+                                    case (RECURSION_LEVEL::ONE):
+                                        x_op_1 = real(a).subtract(real(b), RECURSION_LEVEL::ZERO);
+                                        break;
+                                    default:
+                                        throw invalid_recursion_level_exception();
+                                }
                             } else {
                                 throw invalid_distribution_operation_exception();
                             }
-                            
+
                             if(assign_and_return_void) {
                                 this->_real_p = std::make_shared<real_data<T>>(real_operation<T>(x_op_1._real_p, a, OPERATION::MULTIPLICATION));
                                 return std::make_pair(true, std::nullopt);
@@ -413,10 +457,28 @@ namespace boost {
                         real<T> one ("1");
 
                         if(op == OPERATION::ADDITION) {
-                            x_op_1 = real(x) + one;
+                            switch(rc_lvl) {
+                                case (RECURSION_LEVEL::TWO):
+                                    x_op_1 = real(x).add(real(one), RECURSION_LEVEL::ONE);
+                                    break;
+                                case (RECURSION_LEVEL::ONE):
+                                    x_op_1 = real(x).add(real(one), RECURSION_LEVEL::ZERO);
+                                    break;
+                                default:
+                                    throw invalid_recursion_level_exception();
+                            }
                         }
                         else if (op == OPERATION::SUBTRACTION) {
-                            x_op_1 = real(x) + one;
+                            switch(rc_lvl) {
+                                case (RECURSION_LEVEL::TWO):
+                                    x_op_1 = real(a).subtract(real(b), RECURSION_LEVEL::ONE);
+                                    break;
+                                case (RECURSION_LEVEL::ONE):
+                                    x_op_1 = real(a).subtract(real(b), RECURSION_LEVEL::ZERO);
+                                    break;
+                                default:
+                                    throw invalid_recursion_level_exception();
+                            }
                         } else {
                             throw invalid_distribution_operation_exception();
                         }
@@ -444,6 +506,46 @@ namespace boost {
                 // at this point, we cannot distribute.
                 return std::make_pair(false, std::nullopt);
             }
+            
+
+            // helper function used in check_and_distribute to limit recursion
+            real recurse_op(real& other, RECURSION_LEVEL rc_lvl, OPERATION op) {
+                switch (rc_lvl) {
+                    case RECURSION_LEVEL::ONE: {
+                        auto [is_simplified, result] = check_and_distribute(other, false, op, RECURSION_LEVEL::ONE);
+
+                        if (!is_simplified) {
+                            real ret = (*this);
+                            ret._real_p = 
+                                std::make_shared<real_data<T>>(real_operation(this->_real_p, other._real_p, op));
+                            return ret;
+                        } else {
+                            return result.value();
+                        }
+                        return *this;
+                        break;
+                    }
+                    case RECURSION_LEVEL::ZERO: {
+                        real ret = (*this);
+                        ret._real_p = 
+                            std::make_shared<real_data<T>>(real_operation(this->_real_p, other._real_p, op));
+                        return ret;
+                        break;
+                    }
+                    default:
+                        throw invalid_recursion_level_exception();
+                }
+            }
+
+            /// obtains the result of *this += other, and returns it.
+            real add(real other, RECURSION_LEVEL rc_lvl) {
+                return recurse_op(other, rc_lvl, OPERATION::ADDITION);
+            }
+
+            /// performs *this -= other, and returns *this
+            real subtract(real other, RECURSION_LEVEL rc_lvl) {
+                return recurse_op(other, rc_lvl, OPERATION::SUBTRACTION);
+            }
 
             /**
              * @brief Sets this real_data to that of the operation between this previous
@@ -454,12 +556,12 @@ namespace boost {
              * @param other - the right side operand boost::real::real number.
              */
 
-            void operator+=(real<T> other) {
-                auto [is_simplified, result] = check_and_distribute(other, true, OPERATION::ADDITION);
+            void operator+=(real other) {
+                auto [is_simplified,result] = check_and_distribute(other, true, OPERATION::ADDITION, RECURSION_LEVEL::TWO);
                 
                 if (!is_simplified) {
                     this->_real_p = 
-                        std::make_shared<real_data<T>>(real_operation<T>(this->_real_p, other._real_p, OPERATION::ADDITION));
+                        std::make_shared<real_data<T>>(real_operation(this->_real_p, other._real_p, OPERATION::ADDITION));
                 }
             }
 
@@ -470,8 +572,8 @@ namespace boost {
              * @param other - the right side operand boost::real::real number.
              * @return A copy of the new boost::real::real number representation.
              */
-            real<T> operator+(real<T> other) {
-                auto [is_simplified, result] = check_and_distribute(other, false, OPERATION::ADDITION);
+            real operator+(real<T> other) {
+                auto [is_simplified, result] = check_and_distribute(other, false, OPERATION::ADDITION, RECURSION_LEVEL::TWO);
                 if (is_simplified)  {
                     return result.value();
                 } else {
@@ -486,11 +588,11 @@ namespace boost {
              * @param other - the right side operand boost::real::real number.
              */
             void operator-=(real<T> other) {
-                auto [is_simplified, result] = check_and_distribute(other, true, OPERATION::SUBTRACTION);
+                auto [is_simplified, result] = check_and_distribute(other, true, OPERATION::SUBTRACTION, RECURSION_LEVEL::TWO);
 
                 if(!is_simplified) {
                     this->_real_p = 
-                        std::make_shared<real_data<T>>(real_operation<T>(this->_real_p, other._real_p, OPERATION::SUBTRACTION));
+                        std::make_shared<real_data<T>>(real_operation(this->_real_p, other._real_p, OPERATION::SUBTRACTION));
                 }
             }
 
@@ -501,8 +603,8 @@ namespace boost {
              * @param other - the right side operand boost::real::real number.
              * @return A copy of the new boost::real::real number representation.
              */
-            real<T> operator-(real<T> other) {
-                auto [is_simplified, result] = check_and_distribute(other, false, OPERATION::SUBTRACTION);
+            real operator-(real<T> other) {
+                auto [is_simplified, result] = check_and_distribute(other, false, OPERATION::SUBTRACTION, RECURSION_LEVEL::TWO);
                 if (is_simplified)  {
                     return result.value();
                 } else {

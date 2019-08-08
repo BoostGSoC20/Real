@@ -75,6 +75,13 @@ namespace boost {
             }
         };
 
+        struct invalid_recursion_level_exception : public std::exception {
+
+            const char * what () const throw () override {
+                return "Distributing with this recursion level is undefined.";
+                        
+            }
+        };
 
     }
 }

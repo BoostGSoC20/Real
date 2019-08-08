@@ -2,6 +2,8 @@
 .vscode/
 doc/html
 *.cbp
+test.cpp
+a.out
 
 #cmake products
 cmake-build-debug/

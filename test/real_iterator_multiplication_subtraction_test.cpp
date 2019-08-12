@@ -4,10 +4,10 @@
 #include <real/real.hpp>
 #include <test_helpers.hpp>
 
-using real=boost::real::real<>;
-
-TEST_CASE("Operators * -  boost::real::const_precision_iterator") {
+TEMPLATE_TEST_CASE("Operators * -  boost::real::const_precision_iterator", "[template]", int, long, long long) {
     
+    using real=boost::real::real<TestType>;
+
     // Explicit numbers
     real a("9999999999999999999999999999999");
     real b("9999999999999999999999999999999");

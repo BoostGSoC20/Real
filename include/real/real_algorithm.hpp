@@ -49,7 +49,7 @@ namespace boost {
              * int "n" as parameter, returns the number n-th digit.
              * @param exponent - an integer representing the number exponent.
              */
-            explicit real_algorithm(int (*get_nth_digit)(unsigned int), int exponent)
+            explicit real_algorithm(T (*get_nth_digit)(unsigned int), int exponent)
                     : _get_nth_digit(get_nth_digit), _exponent(exponent), _positive(true) {}
 
             /**

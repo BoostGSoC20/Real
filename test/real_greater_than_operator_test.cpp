@@ -2,10 +2,10 @@
 #include <real/real.hpp>
 #include <test_helpers.hpp>
 
-using real=boost::real::real<>;
+TEMPLATE_TEST_CASE("Operator >", "[template]", int, long, long long) {
 
-TEST_CASE("Operator >") {
-
+    using real=boost::real::real<TestType>;
+    
     SECTION("a == b") {
 
         SECTION("without precision exception") {

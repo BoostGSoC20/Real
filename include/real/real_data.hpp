@@ -27,7 +27,7 @@ namespace boost {
             real_data() = default;
             
             /// copy ctor - constructs real_data from other real_data
-            real_data(const real_data &other) : _real(other._real), _precision_itr(other._precision_itr) {};
+            real_data(const real_data<T> &other) : _real(other._real), _precision_itr(other._precision_itr) {};
 
             // construct from the three different reals 
             real_data(real_explicit<T> x) :_real(x), _precision_itr(&_real) {};

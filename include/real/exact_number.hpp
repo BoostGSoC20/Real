@@ -143,6 +143,7 @@ namespace boost {
                 this->normalize();
             }
 
+            //Returns (a*b)%mod
             T mulmod(T a, T b, T mod) 
             { 
                 T res = 0; // Initialize result 
@@ -160,10 +161,10 @@ namespace boost {
                     b /= 2; 
                 } 
             
-                // Return result 
                 return res % mod; 
             }
 
+            //Returns (a*b)/mod
             T mult_div(T a, T b, T c) {
                 T rem = 0;
                 T res = (a / c) * b;
@@ -260,6 +261,7 @@ namespace boost {
                 this->normalize();
             }
 
+            //Performs long division on dividend by divisor and returns result in quotient
             std::vector<T> long_divide_vectors(
                     const std::vector<T>& dividend,
                     const std::vector<T>& divisor,
@@ -304,7 +306,6 @@ namespace boost {
                     do {
                         digit++;
                         std::vector<T> multiplier = {digit};
-                        //multiply_vectors(aligned_divisor, (int)aligned_divisor.size(), multiplier, 1, closest, (T)10);
                         tmp = (exact_number<T>(aligned_divisor).base10_mult(exact_number<T>(multiplier)));
                         closest = tmp.digits;
                         while (tmp.exponent - (int)tmp.digits.size() > 0) {
@@ -331,7 +332,6 @@ namespace boost {
 
                     // Update the residual for the next iteration where more digits of the dividend will be considered
                     std::vector<T> multiplier = {digit-1};
-                    //multiply_vectors(aligned_divisor, (int)aligned_divisor.size(), multiplier, 1, closest, (T)10);
                     tmp = (exact_number<T>(aligned_divisor).base10_mult(exact_number<T>(multiplier)));
                     closest = tmp.digits;
                     while (tmp.exponent - (int)tmp.digits.size() > 0) {
@@ -339,7 +339,6 @@ namespace boost {
                         tmp.exponent--;
                     }
                     residual.clear();
-                    //subtract_vectors(current_dividend, (int)current_dividend.size(), closest, (int)closest.size(), residual, (T)9);
                     tmp = (exact_number<T>(current_dividend).base10_subtract(exact_number<T>(closest)));
                     residual = tmp.digits;
                     while (tmp.exponent - (int)tmp.digits.size() > 0) {
@@ -811,7 +810,7 @@ namespace boost {
              * @return a bool that is true if and only if *this is lower than other.
              */
             bool operator<(const exact_number& other) const {
-                std::vector<int> zero = {0};
+                std::vector<T> zero = {0};
                 if (this->digits == zero || this->digits.empty()) {
                     return !(other.digits == zero || !other.positive || other.digits.empty());
                 } else {
@@ -922,6 +921,7 @@ namespace boost {
                 *this = *this + other;
             }
 
+            //Add exact numbers assuming base 10
             exact_number<T> base10_add (exact_number<T> other) {
                 exact_number<T> result;
 
@@ -967,6 +967,7 @@ namespace boost {
                 *this = *this - other;
             }
 
+            //Subtract exact numbers assuming base 10
             exact_number<T> base10_subtract(exact_number<T> other) {
                 exact_number<T> result;
 
@@ -1000,6 +1001,7 @@ namespace boost {
                 *this = *this * other;
             }
 
+            //Multiply exact numbers assuming base 10
             exact_number<T> base10_mult(exact_number<T> other) {
                 exact_number<T> result = *this;
                 result.multiply_vector(other, 10);
@@ -1064,7 +1066,7 @@ namespace boost {
                     }
                 }
 
-                //return result;
+                //Use "return result" here for actual internal representation output for debugging
 
                 //Form new string below in base 10.
                 std::vector<T> new_result = {0};
@@ -1103,7 +1105,6 @@ namespace boost {
                     for (auto j : num) {
                         temp.push_back(j - '0');
                     }
-                    //boost::real::helper::add_vectors(new_result, new_result.size(), temp, temp.size(), new_result, (T)9);
                     tmp = (exact_number<T>(new_result).base10_add(exact_number<T>(temp)));
                     new_result = tmp.digits;
                     while (tmp.exponent - (int)tmp.digits.size() > 0) {
@@ -1116,7 +1117,6 @@ namespace boost {
                         for (size_t j = 0; j < tempstr.length(); ++j) {
                             temp.push_back(tempstr[j] - '0'); 
                         }
-                        //boost::real::helper::multiply_vectors(temp, temp.size(), base, base.size(), temp, (T)10);
                         tmp = (exact_number<T>(temp).base10_mult(exact_number<T>(base)));
                         temp = tmp.digits;
                         while (tmp.exponent - (int)tmp.digits.size() > 0) {
@@ -1140,7 +1140,6 @@ namespace boost {
                 std::vector<T> new_base = base;
                 std::vector<std::vector<T>> powers = {base};
                 for (size_t i = 0; i<decimal.size(); ++i) {
-                    //boost::real::helper::multiply_vectors(new_base, new_base.size(), base, base.size(), new_base, (T)10);
                     tmp = (exact_number<T>(new_base).base10_mult(exact_number<T>(base)));
                     new_base = tmp.digits;
                     while (tmp.exponent - (int)tmp.digits.size() > 0) {
@@ -1169,9 +1168,7 @@ namespace boost {
                     }
                     std::vector<T> k = *pwr++;
                     std::vector<T> q;
-                    //boost::real::helper::divide_vectors(temp, k, q);
                     tmp.long_divide_vectors(temp, k, q);
-                    //boost::real::helper::add_vectors(fraction, fraction.size(), q, q.size(), fraction, (T)9);
                     tmp = (exact_number<T>(fraction).base10_add(exact_number<T>(q)));
                     fraction = tmp.digits;
                     while (tmp.exponent - (int)tmp.digits.size() > 0) {

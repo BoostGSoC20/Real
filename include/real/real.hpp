@@ -82,11 +82,11 @@ namespace boost {
              *
              * @param other - the boost::real::real instance to copy.
              */
-             real(const real& other)  : _real_p(other._real_p) {};
+             real(const real<T>& other)  : _real_p(other._real_p) {};
 
 
             /**
-             * @brief String constructor 
+             * @brief String constructor. Returns an exact number if possible to be represented in internal base. Else division number is returned.
              *
              * @param number - a valid string representing a number.
              *
@@ -116,7 +116,7 @@ namespace boost {
             /**
              * @brief Initializer list constructor
              *
-             * @param digits - a initializer_list<int> that represents the number digits.
+             * @param digits - a initializer_list<T> that represents the number digits.
              */
             real(std::initializer_list<T> digits)
                     : _real_p(std::make_shared<real_data<T>>(real_explicit<T>(digits, digits.size())))
@@ -128,7 +128,7 @@ namespace boost {
              * number sign and the elements of the digits parameter list are the number digits in
              * the same order.
              *
-             * @param digits - an initializer_list<int> that represent the number digits.
+             * @param digits - an initializer_list<T> that represent the number digits.
              * @param positive - a bool that represents the number sign. If positive is set to true,
              * the number is positive, otherwise is negative.
              */
@@ -142,7 +142,7 @@ namespace boost {
              * integer part and the elements of the digits list are the digits the number in the same order.
              * The number is set as positive.
              *
-             * @param digits - an initializer_list<int> that represent the number digits.
+             * @param digits - an initializer_list<T> that represent the number digits.
              * @param exponent - an integer representing the number exponent.
              */
             real(std::initializer_list<T> digits, int exponent)
@@ -155,7 +155,7 @@ namespace boost {
              * and the elements of the digit list are the digits the number in the same order.
              * This constructor uses the sign to determine if the number is positive or negative.
              *
-             * @param digits - an initializer_list<int> that represent the number digits.
+             * @param digits - an initializer_list<T> that represent the number digits.
              * @param exponent - an integer representing the number exponent.
              * @param positive - a bool that represent the number sign. If positive is set to true,
              * the number is positive, otherwise is negative.
@@ -311,7 +311,7 @@ namespace boost {
             // the returned bool tells us whether we distributed or not, which is mostly useful when assign_and_return_void is true
             // since std::optional<real> would = std::null_opt if assign_and_return_void is false.
 
-            std::pair<bool, std::optional<real>> check_and_distribute(real & other, bool assign_and_return_void, OPERATION op) {
+            std::pair<bool, std::optional<real<T>>> check_and_distribute(real<T>& other, bool assign_and_return_void, OPERATION op) {
                 // The following simplifies using the distributive property, when numbers have the same pointers.
                 // We could do comparison by value, but this may force more computation than is necessary for the user,
                 // since it's difficult to determine whether values are the same
@@ -358,10 +358,10 @@ namespace boost {
                             }
 
                             if(assign_and_return_void) {
-                                this->_real_p = std::make_shared<real_data<T>>(real_operation(a_op_b._real_p, x, OPERATION::MULTIPLICATION));
+                                this->_real_p = std::make_shared<real_data<T>>(real_operation<T>(a_op_b._real_p, x, OPERATION::MULTIPLICATION));
                                 return std::make_pair(true, std::nullopt);
                             } else {
-                                return std::make_pair(true, real(real_operation(a_op_b._real_p, x, OPERATION::MULTIPLICATION)));
+                                return std::make_pair(true, real(real_operation<T>(a_op_b._real_p, x, OPERATION::MULTIPLICATION)));
                             }
                         }
                     } else { // rhs is not an operation
@@ -389,10 +389,10 @@ namespace boost {
                             }
                             
                             if(assign_and_return_void) {
-                                this->_real_p = std::make_shared<real_data<T>>(real_operation(x_op_1._real_p, a, OPERATION::MULTIPLICATION));
+                                this->_real_p = std::make_shared<real_data<T>>(real_operation<T>(x_op_1._real_p, a, OPERATION::MULTIPLICATION));
                                 return std::make_pair(true, std::nullopt);
                             } else {
-                                return std::make_pair(true, real(real_operation(x_op_1._real_p, a, OPERATION::MULTIPLICATION)));
+                                return std::make_pair(true, real(real_operation<T>(x_op_1._real_p, a, OPERATION::MULTIPLICATION)));
                             }
                         } 
                     }
@@ -430,7 +430,7 @@ namespace boost {
                     }
                 } else { // neither is an operation
                     if ((this->_real_p == other._real_p) && (op == OPERATION::ADDITION)) { // a + a = 2 * a
-                        std::shared_ptr<real_data<T>> two = std::make_shared<real_data<T>>(real_explicit("2"));
+                        std::shared_ptr<real_data<T>> two = std::make_shared<real_data<T>>(real_explicit<T>("2"));
 
                         if(assign_and_return_void) {
                             this->_real_p = std::make_shared<real_data<T>>(real_operation(two, this->_real_p, OPERATION::MULTIPLICATION));
@@ -454,12 +454,12 @@ namespace boost {
              * @param other - the right side operand boost::real::real number.
              */
 
-            void operator+=(real other) {
+            void operator+=(real<T> other) {
                 auto [is_simplified, result] = check_and_distribute(other, true, OPERATION::ADDITION);
                 
                 if (!is_simplified) {
                     this->_real_p = 
-                        std::make_shared<real_data>(real_operation(this->_real_p, other._real_p, OPERATION::ADDITION));
+                        std::make_shared<real_data<T>>(real_operation<T>(this->_real_p, other._real_p, OPERATION::ADDITION));
                 }
             }
 
@@ -470,12 +470,12 @@ namespace boost {
              * @param other - the right side operand boost::real::real number.
              * @return A copy of the new boost::real::real number representation.
              */
-            real operator+(real other) {
+            real<T> operator+(real<T> other) {
                 auto [is_simplified, result] = check_and_distribute(other, false, OPERATION::ADDITION);
                 if (is_simplified)  {
                     return result.value();
                 } else {
-                    return real(real_operation(this->_real_p, other._real_p, OPERATION::ADDITION));
+                    return real<T>(real_operation<T>(this->_real_p, other._real_p, OPERATION::ADDITION));
                 }
             }
 
@@ -485,12 +485,12 @@ namespace boost {
              *
              * @param other - the right side operand boost::real::real number.
              */
-            void operator-=(real other) {
+            void operator-=(real<T> other) {
                 auto [is_simplified, result] = check_and_distribute(other, true, OPERATION::SUBTRACTION);
 
                 if(!is_simplified) {
                     this->_real_p = 
-                        std::make_shared<real_data>(real_operation(this->_real_p, other._real_p, OPERATION::SUBTRACTION));
+                        std::make_shared<real_data<T>>(real_operation<T>(this->_real_p, other._real_p, OPERATION::SUBTRACTION));
                 }
             }
 
@@ -501,12 +501,12 @@ namespace boost {
              * @param other - the right side operand boost::real::real number.
              * @return A copy of the new boost::real::real number representation.
              */
-            real operator-(real other) {
+            real<T> operator-(real<T> other) {
                 auto [is_simplified, result] = check_and_distribute(other, false, OPERATION::SUBTRACTION);
                 if (is_simplified)  {
                     return result.value();
                 } else {
-                    return real(real_operation(this->_real_p, other._real_p, OPERATION::SUBTRACTION));
+                    return real(real_operation<T>(this->_real_p, other._real_p, OPERATION::SUBTRACTION));
                 }
             }
 
@@ -516,9 +516,9 @@ namespace boost {
              *
              * @param other - the right side operand boost::real::real number.
              */
-            void operator*=(real other) {
+            void operator*=(real<T> other) {
                 this->_real_p =
-                    std::make_shared<real_data>(real_operation(this->_real_p, other._real_p, OPERATION::MULTIPLICATION));
+                    std::make_shared<real_data<T>>(real_operation<T>(this->_real_p, other._real_p, OPERATION::MULTIPLICATION));
             }
 
             /**
@@ -528,7 +528,7 @@ namespace boost {
              * @param other - the right side operand boost::real::real number.
              * @return A copy of the new boost::real::real number representation.
              */
-            real operator*(real other) {
+            real<T> operator*(real<T> other) {
                 return real(real_operation<T>(this->_real_p, other._real_p, OPERATION::MULTIPLICATION));
             }
 
@@ -539,8 +539,8 @@ namespace boost {
              * @param other - the right side operand boost::real::real number.
              * @return A copy of the new boost::real::real number representation.
              */
-            real operator/(real other) {
-                return real(real_operation(this->_real_p, other._real_p, OPERATION::DIVISION));
+            real<T> operator/(real<T> other) {
+                return real(real_operation<T>(this->_real_p, other._real_p, OPERATION::DIVISION));
             }
 
             /**
@@ -549,16 +549,16 @@ namespace boost {
              *
              * @param other - the right side operand boost::real::real number.
              */
-            void operator/=(real other) {
+            void operator/=(real<T> other) {
                 this->_real_p =
-                    std::make_shared<real_data>(real_operation(this->_real_p, other._real_p, OPERATION::DIVISION));
+                    std::make_shared<real_data<T>>(real_operation<T>(this->_real_p, other._real_p, OPERATION::DIVISION));
             }
 
             /**
              * @brief Assigns *this to other
              * @param other - the boost::real::real number to copy.
              */
-            void operator=(real other) {
+            void operator=(real<T> other) {
                 this->_real_p = other._real_p;
             }
 
@@ -582,7 +582,7 @@ namespace boost {
              *
              * @throws boost::real::precision_exception
              */
-            bool operator<(const real& other) const {
+            bool operator<(const real<T>& other) const {
                 auto this_it = this->_real_p->get_precision_itr().cbegin();
                 auto other_it = other._real_p->get_precision_itr().cbegin();
 
@@ -626,7 +626,7 @@ namespace boost {
              *
              * @throws boost::real::precision_exception
              */
-            bool operator>(const real& other) const {
+            bool operator>(const real<T>& other) const {
                 auto this_it = this->_real_p->get_precision_itr().cbegin();
                 auto other_it = other._real_p->get_precision_itr().cbegin();
 
@@ -671,7 +671,7 @@ namespace boost {
              *
              * @throws boost::real::precision_exception
              */
-            bool operator==(const real& other) const {
+            bool operator==(const real<T>& other) const {
                 auto this_it = _real_p->get_precision_itr().cbegin();
                 auto other_it = other._real_p->get_precision_itr().cbegin();
 
@@ -715,6 +715,8 @@ namespace boost {
         }; // end real class
     }
 }
+
+//User Defined Literals
 
 inline auto operator "" _r(long double x) {
     return boost::real::real<int>(std::to_string(x));

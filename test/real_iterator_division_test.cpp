@@ -3,11 +3,11 @@
 #include <real/real.hpp>
 #include <test_helpers.hpp>
 
-using real=boost::real::real<>;
+TEMPLATE_TEST_CASE("Operator / boost::real::const_precision_iterator", "[template]", int, long, long long) { // assumes max precision is 10.
 
-TEST_CASE("Operator / boost::real::const_precision_iterator") { // assumes max precision is 10.
+        using real=boost::real::real<TestType>;
 
-        boost::real::exact_number length;
+        boost::real::exact_number<TestType> length;
         
         SECTION("13251306276306304250236049144144144492977320/38409583409583490580394345345345346356456") {             
         real a("13251306276306304250236049144144144492977320");

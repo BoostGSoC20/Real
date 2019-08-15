@@ -13,12 +13,12 @@ const int MULTIPLIER_TC = 10;  // for range evaluation of tree construction benc
 /// MULTIPLIER_TC between MIN_TREE_NODES and MAX_TREE_NODES
 void BM_RealOperationTreeConstruction(benchmark::State& state, boost::real::OPERATION op) {
     for (auto i : state) {
-        boost::real::real a ("1234567891");
-        boost::real::real b ("9876532198");
+        boost::real::real<> a ("1234567891");
+        boost::real::real<> b ("9876532198");
 
         // We keep the precision constant here because in constructing the *= tree, we would get way more digits
         // than in +=, -= trees. This should make the benchmarks more meaningful
-        a.set_maximum_precision(10);
+        a.set_maximum_precision(2);
 
         for (int i = 0; i < state.range(0); i++) {
             realOperationEq(a,b,op);
@@ -29,7 +29,6 @@ void BM_RealOperationTreeConstruction(benchmark::State& state, boost::real::OPER
 }
 
 // these benchmark the operation tree constructors for each operation type.
-/// @TODO: add division bench
 BENCHMARK_CAPTURE(BM_RealOperationTreeConstruction, addition, boost::real::OPERATION(boost::real::OPERATION::ADDITION))
     ->RangeMultiplier(MULTIPLIER_TC)->Range(MIN_TREE_NODES ,MAX_TREE_NODES)->Unit(benchmark::kMillisecond)
     ->Complexity();
@@ -39,6 +38,10 @@ BENCHMARK_CAPTURE(BM_RealOperationTreeConstruction, subtraction, boost::real::OP
     ->Complexity();
 
 BENCHMARK_CAPTURE(BM_RealOperationTreeConstruction, multiplication, boost::real::OPERATION(boost::real::OPERATION::MULTIPLICATION))
+    ->RangeMultiplier(MULTIPLIER_TC)->Range(MIN_TREE_NODES ,MAX_TREE_NODES)->Unit(benchmark::kMillisecond)
+    ->Complexity();
+
+BENCHMARK_CAPTURE(BM_RealOperationTreeConstruction, division, boost::real::OPERATION(boost::real::OPERATION::DIVISION))
     ->RangeMultiplier(MULTIPLIER_TC)->Range(MIN_TREE_NODES ,MAX_TREE_NODES)->Unit(benchmark::kMillisecond)
     ->Complexity();
 
@@ -57,7 +60,7 @@ void BM_RealExplicitConstruction_String(benchmark::State& state) {
         }
         state.ResumeTiming();
 
-        boost::real::real a(number);
+        boost::real::real<> a(number);
         state.SetComplexityN(state.range(0));
     }
 }

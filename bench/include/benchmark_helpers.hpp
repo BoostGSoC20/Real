@@ -10,7 +10,7 @@ struct bench_invalid_operation_exception : public std::exception {
     }
 };
 
-constexpr void realOperationEq(boost::real::real& lhs, boost::real::real& rhs, 
+constexpr void realOperationEq(boost::real::real<>& lhs, boost::real::real<>& rhs, 
                                boost::real::OPERATION op) {
     switch (op) {
         case boost::real::OPERATION::ADDITION:
@@ -22,13 +22,17 @@ constexpr void realOperationEq(boost::real::real& lhs, boost::real::real& rhs,
         case boost::real::OPERATION::MULTIPLICATION:
             lhs *= rhs;
             break;
+        case boost::real::OPERATION::DIVISION:
+            lhs /= rhs;
+            break;
         default:
             throw bench_invalid_operation_exception();
+
     }
 }
 
 enum class Comparison {GREATER_THAN, LESS_THAN, EQUALS};
-constexpr bool realComp(boost::real::real& lhs,boost::real::real& rhs, Comparison comp) {
+constexpr bool realComp(boost::real::real<>& lhs, boost::real::real<>& rhs, Comparison comp) {
     switch (comp) {
         case (Comparison::GREATER_THAN):
             return lhs > rhs;

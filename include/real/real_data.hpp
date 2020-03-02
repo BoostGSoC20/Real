@@ -180,7 +180,7 @@ namespace boost {
 
                     // if the interval contains zero, iterate until it doesn't, or until maximum_precision.
                     while (!ro.get_rhs_itr().get_interval().positive() &&
-                           !ro.get_rhs_itr().get_interval().positive() &&
+                           !ro.get_rhs_itr().get_interval().negative() &&
                            _precision <= this->maximum_precision())
                         ++(*this);
 

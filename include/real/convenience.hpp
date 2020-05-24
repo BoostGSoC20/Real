@@ -35,28 +35,31 @@ void add_digits(std::vector<T1> &number, T1 num_base, T2 digit, T2 digit_base)
     	    // tmp_digit_base is a even number, multiply it by 2 and divide tmp_digit_base by 2
     	    if(tmp_digit_base%2==1)
     	    {
-    		result = result + number[i];
-    		// if result becomes greater than num_base
-    		if(result >= num_base)
-    		{
-    		    ++tmp_carry;
-    		    result -= num_base;
-    		}
-    		tmp_digit_base-=1;
+        		result = result + number[i];
+        		// if result becomes greater than num_base
+        		if(result >= num_base)
+        		{
+        		    ++tmp_carry;
+        		    result -= num_base;
+        		}
+        		tmp_digit_base-=1;
     	    }
     	    // else multiply number[i] with 2
     	    else
     	    {
-    	    number[i] = number[i]*2;
-    	    if(number[i] >= num_base) 
-    	    {
-    		++tmp_carry;
-    		result -= num_base;
+                
+        	    number[i] = number[i]*2;
+                tmp_digit_base = tmp_digit_base/2;
+        	    if(number[i] >= num_base) 
+        	    {
+            		tmp_carry += tmp_digit_base;
+            		number[i] -= num_base;
+        	    }
+        	    
+        	    // divide by 2
+        	    
     	    }
-    	    
-    	    // divide by 2
-    	    tmp_digit_base = tmp_digit_base/2;
-    	    }
+
     	}
 
     	result += carry;

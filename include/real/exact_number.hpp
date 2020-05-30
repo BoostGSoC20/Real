@@ -146,7 +146,7 @@ namespace boost {
             }
 
             //Returns (a*b)%mod
-            T mulmod(T a, T b, T mod) 
+            inline T mulmod(T a, T b, T mod) 
             { 
                 T res = 0; // Initialize result 
                 a = a % mod; 
@@ -167,7 +167,7 @@ namespace boost {
             }
 
             //Returns (a*b)/mod
-            T mult_div(T a, T b, T c) {
+            inline T mult_div(T a, T b, T c) {
                 T rem = 0;
                 T res = (a / c) * b;
                 a = a % c;
@@ -1316,6 +1316,16 @@ namespace boost {
                 }
             }
         };
+
+        template<> inline int exact_number<int>::mulmod (int a, int b, int c)
+        {
+            return ((long long)a * (long long)b )%c;
+        }
+
+        template<> inline int exact_number<int>::mult_div(int a, int b, int c)
+        {
+            return ((long long)a * (long long)b)/c;
+        }
     }
 }
 

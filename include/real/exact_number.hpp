@@ -758,6 +758,8 @@ namespace boost {
                     exponent -= decimal_lhs_zeros;
                 } else {
                     exponent += integer_rhs_zeros;
+                    integer_count += integer_rhs_zeros;
+                    decimal_count += decimal_lhs_zeros;
                 }
 
                 integer_part = number.substr(has_sign + integer_lhs_zeros, integer_count);

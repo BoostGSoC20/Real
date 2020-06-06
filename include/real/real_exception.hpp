@@ -83,6 +83,12 @@ namespace boost {
             }
         };
 
+        struct integer_contructor_for_non_integer_type : public std::exception {
+            const char * what () const throw () override {
+                return "Constructor of Integer type number is called for a non Integer type number";
+            }
+        };
+
     }
 }
 

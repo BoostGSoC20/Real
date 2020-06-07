@@ -1,5 +1,13 @@
+#ifndef BOOST_REAL_CONVENIENCE_HPP
+#define BOOST_REAL_CONVENIENCE_HPP
+
 #include<vector>
 #include<iostream>
+#include <real/real_exception.hpp>
+#include <real/interval.hpp>
+#include <real/exact_number.hpp> //for some methods, that are declared in this file
+#include <real/real_exception.hpp>
+//#include <real/integer_number.hpp>
 
 
 
@@ -191,3 +199,84 @@ void add_digits(std::vector<T1> &number, T1 num_base, std::vector<T2> &digits, T
     }
     return ;
 }
+
+
+// Algorithm to multiply two vectors.
+template<typename T>
+std::vector<T> multiply(std::vector<T> &a, std::vector<T> &b, T base = (std::numeric_limits<T>::max()/4)*2 +1)
+{
+    std::vector<T> temp;
+    size_t new_size = a.size() + b.size();
+    temp.assign(new_size, 0);
+    boost::real::exact_number<T> op;
+
+    // Below two indexes are used to find positions
+    // in result.
+    size_t i_n1 = (int) temp.size() - 1;
+    // Go from right to left in lhs
+    for (size_t i = a.size()-1; true; --i) {
+        T carry = 0;
+        // To shift position to left after every
+        // multiplication of a digit in rhs
+        size_t i_n2 = 0;
+
+        // Go from right to left in rhs
+        //checking is done at the end of loop, size_t can not be zero, so we can not check for negative values of size_t
+        for (size_t j = b.size()-1; true; --j) {
+
+            // Multiply current digit of second number with current digit of first number
+            // and add result to previously stored result at current position.
+            T rem = op.mulmod(a[i], b[j], base);
+            T rem_s;
+            T q = op.mult_div(a[i], b[j], base);
+            if ( temp[i_n1 - i_n2] >= base - carry ) {
+                rem_s = carry - (base - temp[i_n1 - i_n2]);
+                ++q;
+            }
+            else
+                rem_s = temp[i_n1 - i_n2] + carry;
+            if ( rem >= base - rem_s ) {
+                rem -= (base - rem_s);
+                ++q;
+            }
+            else
+                rem += rem_s;
+
+            // Carry for next iteration
+            carry = q;
+
+            // Store result
+            temp[i_n1 - i_n2] = rem;
+
+            i_n2++;
+
+            if(j==0) break;
+        }
+
+        // store carry in next cell
+        if (carry > 0) {
+            temp[i_n1 - i_n2] += carry;
+        }
+
+        // To shift position to left after every
+        // multiplication of a digit in lhs.
+        i_n1--;
+
+        if(i==0) break;
+    }
+
+    typename std::vector<T> :: iterator itr = temp.begin();
+    while((*itr)==0) itr++;
+    // if initial element was zero, then we need to delete all initial zeroes
+    if(temp[0]==0)
+    {
+        //itr--;
+        temp.erase(temp.begin(), itr);
+    }
+    if(temp.size()==0) temp.push_back(0);
+
+                
+    return temp;
+}       
+    
+#endif //BOOST_REAL_CONVENIENCE_HPP

@@ -353,12 +353,50 @@ namespace boost{
                 return this->digits[n];
             }
 
+            // return integer divided by divider
+			// Note: result will return a integer. 
+			integer<T> divide(integer<T> &divider){
+				exact_number<T> op;
+				std::vector<T> result_vec;
+				std::vector<T> remainder;
+				// need to change this line after new long divide algo.
+				// this will produce wrong result, because this algo will do calculations in decimal base.
+				remainder = op.long_divide_vectors((*this).digits, divider.digits, result_vec);
+				integer<T> result(result_vec, !((*this).positive^divider.positive));
+				return result;
+			}
+
 		};
 
+		// to find Greatest Common Divisor(GCD) of two integers
 		template<typename T>
-		integer<T> gcd(integer<T> a, integer<T> b){
-	    	return integer<T>("0");
+		integer<T> gcd(integer<T> a, integer<T> b) {
+			static integer zero = integer<T>("0"); // to avoid initialization of zero integer for every copy of this function 
+    		if (b == zero) 
+        		return a; 
+    		return gcd(b, a % b);    
 		}
+
+		// HCF is same as GCD, only if someone choose to call HCF in place of GCD
+		template<typename T>
+		inline integer<T> hcf(integer<T> a, integer<T> b){
+			return gcd(a,b);
+		}
+
+		/* to find Least Common Multiple (LCM) of two numbers
+		 * a x b = LCM(a,b) * GCD(a,b)
+		 * LCM(a,b) = (a x b)/GCD(a,b)
+		 */
+		template <typename T>
+		integer<T> lcm(integer<T> a, integer<T> b){
+			integer<T> mult = a*b;
+			integer<T> result;
+			integer<T> gcd_value = gcd(a,b);
+			result = mult.divide(gcd_value);
+			return result;
+		}
+
+
 
 	}
 }

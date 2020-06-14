@@ -1088,7 +1088,8 @@ namespace boost {
                 } else {
                     exponent += integer_rhs_zeros;
                     integer_count += integer_rhs_zeros;
-                    decimal_count += decimal_lhs_zeros;
+                    if(decimal_count)
+                        decimal_count += decimal_lhs_zeros;
                 }
 
                 integer_part = number.substr(has_sign + integer_lhs_zeros, integer_count);
@@ -1115,6 +1116,9 @@ namespace boost {
                 for (const auto& c : decimal_part ) {
                     digits.push_back(c - '0');
                 }
+                this->exponent=exponent;
+                this->digits = digits;
+                this->positive=positive;
             }
             
 

@@ -238,13 +238,13 @@ namespace boost{
 				else{
 					if(other.positive==false)
 					{
-						result = (*this).add_integer_number((*this));
+						result = (*this).add_integer_number(other);
 						result.positive = true;
 						return result;
 					}
 					else
 					{
-						result = (*this).add_integer_number((*this));
+						result = (*this).add_integer_number(other);
 						result.positive = false;
 						return result;
 					}

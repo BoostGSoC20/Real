@@ -1,17 +1,106 @@
 #include <catch2/catch.hpp>
 
-#include <real/integer_number.hpp>
+#include <real/real.hpp>
 #include <test_helpers.hpp>
 
 TEST_CASE("CONSTRUCTOR UNIT TEST"){
 	boost::real::integer a("1000000");
-	boost::real::integer b("1.0e6");
+	boost::real::integer b("1e6");
 	CHECK(a==b);
 
 	a = boost::real::integer("1");
 	b = boost::real::integer("-1");
 	CHECK_FALSE(a==b);
 
+}
+
+TEMPLATE_TEST_CASE("INTEGRATION WITH REAL.HPP", "[template]", int, unsigned int, long, unsigned long, long long, unsigned long long){
+	using real = boost::real::real<TestType>;
+	SECTION("CONSTRUCTORS"){
+		boost::real::real<int> a("10", "integer");
+		auto b = 10_integer;
+		auto c = "10"_integer;
+		CHECK(a==b);
+		CHECK(a==c);
+	}
+
+	SECTION("COMPARISION OPERATORS"){
+		real a("10", "integer");
+		real b("15", "integer");
+		CHECK(a<b);
+		CHECK_FALSE(a==b);
+		CHECK_FALSE(a>b);
+
+		b = real("10", "integer");
+		CHECK(a==b);
+		CHECK_FALSE(a>b);
+		CHECK_FALSE(a<b);
+	}
+
+	SECTION("CALCULATION OPERATIONS"){
+		SECTION("ADDITION"){
+			real a("10", "integer");
+			real b("20", "integer");
+			real c = a+b;
+			real d("30", "integer");
+			CHECK(c==d);
+
+			b = real("0", "integer");
+			c = a+b;
+			CHECK(a==c);
+
+			b = real("-10", "integer");
+			c = a+b;
+			d = real("0", "integer");
+			CHECK(c==d);
+
+			b = real("-20", "integer");
+			c = a+b;
+			d = real("-10", "integer");
+			CHECK(c==d);
+		}
+
+		SECTION("SUBTRACTION"){
+			real a("30", "integer");
+			real b("20", "integer");
+			real c = a-b;
+			real d("10", "integer");
+			CHECK(c==d);
+
+			b = real("-20", "integer");
+			c = a-b;
+			d = real("50", "integer");
+			CHECK(c==d);
+
+			c = b-a;
+			d = real("-50", "integer");
+			CHECK(c==d);
+		}
+
+		SECTION("MULTIPLICATION"){
+			real a("20", "integer");
+			real b("30", "integer");
+			real c = a*b;
+			real d("600", "integer");
+			CHECK(c==d);
+
+			a = real("0", "integer");
+			c = a*b;
+			CHECK(a==c);
+
+			a = real("-2", "integer");
+			c = a*b;
+			d = real("-60", "integer");
+			CHECK(c==d);
+
+			b = real("-20", "integer");
+			c = a*b;
+			d = real("40", "integer");
+			CHECK(c==d);
+		}
+
+		// Division is checked in rational number test.
+	}
 }
 
 TEMPLATE_TEST_CASE("Addition Test", "[template]", int, unsigned int, long , unsigned long, long long, unsigned long long){
@@ -175,6 +264,21 @@ TEMPLATE_TEST_CASE("COMPARISION OPERATOR TESTS", "[template]", int, unsigned int
 		CHECK_FALSE(a<=b);
 		CHECK_FALSE(a<b);
 
+		a = integer("-1");
+		b = integer("-2");
+		CHECK_FALSE(b>a);
+		CHECK(a>b);
+		CHECK_FALSE(a==b);
+
+		a = integer("1");
+		b = integer("-1");
+		CHECK_FALSE(a==b);
+		CHECK(a>b);
+
+		a = integer("0");
+		b = integer("-1");
+		CHECK(a>b);
+
 	}
 }
 
@@ -201,10 +305,26 @@ TEMPLATE_TEST_CASE("REMAINDER OPERATOR TEST","[template]", int, unsigned int, lo
 		d = integer("3");
 		CHECK(c==d);
 
-		/*a = integer("1000000000000000000000000000000005");
+		a = integer("1000000000000000000000000000000005");
 		b = integer("1000000000000000000000000000000000");
 		c = a%b;
 		d = integer("5");
-		CHECK(c==d);*/
+		CHECK(c==d);
+	}
+
+	SECTION("ONE NUMBER IS NEGATIVE AND OTHER IS POSITIVE"){
+		integer a,b,c,d;
+		a = integer("-7");
+		b = integer("5");
+		c = a%b;
+		d = integer("3");
+		CHECK(c==d);
+
+		a = integer("7");
+		b = integer("-5");
+		c = a%b;
+		d = integer("2");
+		CHECK(c==d);		
+
 	}
 }

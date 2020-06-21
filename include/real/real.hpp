@@ -92,25 +92,33 @@ namespace boost {
              *
              * @throws boost::real::invalid_string_number exception if string doesn't represent a valid number
              */
-            real(const std::string& number) {
-                auto [integer_part, decimal_part, exponent, positive] = exact_number<>::number_from_string(number);
+            real(const std::string& number, std::string type = "explicit") {
+                if(type=="explicit"){
+                    auto [integer_part, decimal_part, exponent, positive] = exact_number<>::number_from_string(number);
 
-                if ((int)(decimal_part.length() + integer_part.length()) <= exponent) {
-                    this->_real_p = std::make_shared<real_data<T>>(real_explicit<T>(integer_part, decimal_part, exponent, positive));
-                } else {
-                    int zeroes = decimal_part.length() + integer_part.length() - exponent;
-                    std::string denominator = "1";
-                    for (int i = 0; i<zeroes; ++i)
-                        denominator = denominator + "0";
+                    if ((int)(decimal_part.length() + integer_part.length()) <= exponent) {
+                        this->_real_p = std::make_shared<real_data<T>>(real_explicit<T>(integer_part, decimal_part, exponent, positive));
+                    } else {
+                        int zeroes = decimal_part.length() + integer_part.length() - exponent;
+                        std::string denominator = "1";
+                        for (int i = 0; i<zeroes; ++i)
+                            denominator = denominator + "0";
 
-                    // source of inefficiency. copying, casting.
-                    std::string numerator = (std::string) std::string(integer_part).c_str() + (std::string) std::string(decimal_part);
-                    if (!positive)
-                        numerator = "-" + numerator;
-                    std::shared_ptr<real_data<T>> lhs = std::make_shared<real_data<T>>(real_explicit<T>(numerator));
-                    std::shared_ptr<real_data<T>> rhs = std::make_shared<real_data<T>>(real_explicit<T>(denominator));
-    
-                    this->_real_p  = std::make_shared<real_data<T>>(real_operation(lhs, rhs, OPERATION::DIVISION));
+                        // source of inefficiency. copying, casting.
+                        std::string numerator = (std::string) std::string(integer_part).c_str() + (std::string) std::string(decimal_part);
+                        if (!positive)
+                            numerator = "-" + numerator;
+                        std::shared_ptr<real_data<T>> lhs = std::make_shared<real_data<T>>(real_explicit<T>(numerator));
+                        std::shared_ptr<real_data<T>> rhs = std::make_shared<real_data<T>>(real_explicit<T>(denominator));
+        
+                        this->_real_p  = std::make_shared<real_data<T>>(real_operation(lhs, rhs, OPERATION::DIVISION));
+                    }
+                }
+                if(type=="integer"){
+                    this->_real_p = std::make_shared<real_data<T>>(integer<T>(number));
+                }
+                if(type=="rational"){
+                    this->_real_p = std::make_shared<real_data<T>>(rational_number<T>(number));
                 }
             }
 
@@ -161,7 +169,7 @@ namespace boost {
              * @param positive - a bool that represent the number sign. If positive is set to true,
              * the number is positive, otherwise is negative.
              */
-            real(::std::initializer_list<T> digits, int exponent, bool positive)
+            real(std::initializer_list<T> digits, int exponent, bool positive)
                     : _real_p(std::make_shared<real_data<T>>(real_explicit<T>(digits, exponent, positive)))
                     {};
 
@@ -556,13 +564,33 @@ namespace boost {
              * @param other - the right side operand boost::real::real number.
              */
 
-            void operator+=(real other) {
-                auto [is_simplified,result] = check_and_distribute(other, true, OPERATION::ADDITION, RECURSION_LEVEL::TWO);
-                
-                if (!is_simplified) {
-                    this->_real_p = 
-                        std::make_shared<real_data<T>>(real_operation(this->_real_p, other._real_p, OPERATION::ADDITION));
-                }
+            void operator+=(real<T> other) {
+                std::visit( overloaded{
+                    [this] (integer<T> a, integer<T> b){
+                            this->_real_p = 
+                                std::make_shared<real_data<T>>(integer<T>(a+b));
+                        }, 
+                    [this] (rational_number<T> a, rational_number<T> b){
+                        this-> _real_p = 
+                            std::make_shared<real_data<T>>(rational_number<T>(a+b));
+                    },
+                    [this] (rational_number<T> a, integer<T> b){
+                        this-> _real_p = 
+                            std::make_shared<real_data<T>>(rational_number<T>(a+b));
+                    },
+                    [this] (integer<T> a, rational_number<T> b){
+                        this->_real_p = 
+                            std::make_shared<real_data<T>>(rational_number<T>(a+b));
+                    },
+                    [this, &other] (auto a, auto b){    
+                        auto [is_simplified,result] = check_and_distribute(other, true, OPERATION::ADDITION, RECURSION_LEVEL::TWO);
+                        
+                        if (!is_simplified) {
+                            this->_real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(this->_real_p, other._real_p, OPERATION::ADDITION));
+                        }
+                    }
+                }, _real_p->get_real_number(), other._real_p->get_real_number());
             }
 
             /**
@@ -572,13 +600,36 @@ namespace boost {
              * @param other - the right side operand boost::real::real number.
              * @return A copy of the new boost::real::real number representation.
              */
-            real operator+(real<T> other) {
-                auto [is_simplified, result] = check_and_distribute(other, false, OPERATION::ADDITION, RECURSION_LEVEL::TWO);
-                if (is_simplified)  {
-                    return result.value();
-                } else {
-                    return real<T>(real_operation<T>(this->_real_p, other._real_p, OPERATION::ADDITION));
-                }
+            real<T> operator+(real<T> other) {
+                real<T> result;
+                std::visit( overloaded{
+                    [&result] (integer<T> a, integer<T> b){
+                        result._real_p = 
+                            std::make_shared<real_data<T>>(integer<T>(a+b));
+                    },
+                    [&result] (rational_number<T> a, rational_number<T> b){
+                        result._real_p = 
+                            std::make_shared<real_data<T>>(rational_number<T>(a+b));
+                    },
+                    [&result] (rational_number<T> a, integer<T> b){
+                        result._real_p = 
+                            std::make_shared<real_data<T>>(rational_number<T>(a+b));
+                    },
+                    [&result] (integer<T> a, rational_number<T> b){
+                        result._real_p = 
+                            std::make_shared<real_data<T>>(rational_number<T>(a+b));
+                    },
+                    [this, &other, &result] (auto a, auto b){
+                        auto [is_simplified, result1] = check_and_distribute(other, false, OPERATION::ADDITION, RECURSION_LEVEL::TWO);
+                        if (is_simplified)  {
+                            result = result1.value();
+                        } else {
+                            result = real<T>(real_operation<T>(this->_real_p, other._real_p, OPERATION::ADDITION));
+                        }
+                    }
+                }, _real_p->get_real_number(), other._real_p->get_real_number());
+                return result;
+                
             }
 
             /**
@@ -588,12 +639,33 @@ namespace boost {
              * @param other - the right side operand boost::real::real number.
              */
             void operator-=(real<T> other) {
-                auto [is_simplified, result] = check_and_distribute(other, true, OPERATION::SUBTRACTION, RECURSION_LEVEL::TWO);
+                std::visit(overloaded{
+                    [this] (integer<T> a, integer<T> b){
+                        this->_real_p = 
+                            std::make_shared<real_data<T>>(integer<T>(a-b));
+                    },
+                    [this] (rational_number<T> a, rational_number<T> b){
+                        this->_real_p = 
+                            std::make_shared<real_data<T>>(rational_number<T>(a-b));
+                    },
+                    [this] (rational_number<T> a, integer<T> b){
+                        this->_real_p = 
+                            std::make_shared<real_data<T>>(rational_number<T>(a-b));
+                    },
+                    [this] (integer<T> a, rational_number<T> b){
+                        this->_real_p = 
+                            std::make_shared<real_data<T>>(rational_number<T>(a-b));
+                    },
+                    [this, &other] (auto a, auto b){
+                        auto [is_simplified, result] = check_and_distribute(other, true, OPERATION::SUBTRACTION, RECURSION_LEVEL::TWO);
 
-                if(!is_simplified) {
-                    this->_real_p = 
-                        std::make_shared<real_data<T>>(real_operation(this->_real_p, other._real_p, OPERATION::SUBTRACTION));
-                }
+                        if(!is_simplified) {
+                            this->_real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(this->_real_p, other._real_p, OPERATION::SUBTRACTION));
+                        }
+                    }
+                }, _real_p->get_real_number(), other._real_p->get_real_number());
+                
             }
 
             /**
@@ -603,13 +675,35 @@ namespace boost {
              * @param other - the right side operand boost::real::real number.
              * @return A copy of the new boost::real::real number representation.
              */
-            real operator-(real<T> other) {
-                auto [is_simplified, result] = check_and_distribute(other, false, OPERATION::SUBTRACTION, RECURSION_LEVEL::TWO);
-                if (is_simplified)  {
-                    return result.value();
-                } else {
-                    return real(real_operation<T>(this->_real_p, other._real_p, OPERATION::SUBTRACTION));
-                }
+            real<T> operator-(real<T> other) {
+                real<T> result;
+                std::visit( overloaded{
+                    [&result] (integer<T> a, integer<T> b){
+                        result._real_p = 
+                            std::make_shared<real_data<T>>(integer<T>(a-b));
+                    },
+                    [&result] (rational_number<T> a, rational_number<T> b){
+                        result._real_p = 
+                            std::make_shared<real_data<T>>(rational_number<T>(a-b));
+                    },
+                    [&result] (rational_number<T> a, integer<T> b){
+                        result._real_p = 
+                            std::make_shared<real_data<T>>(rational_number<T>(a-b));
+                    },
+                    [&result] (integer<T> a, rational_number<T> b){
+                        result._real_p = 
+                            std::make_shared<real_data<T>>(rational_number<T>(a-b));
+                    },
+                    [this, &other, &result] (auto a, auto b){
+                        auto [is_simplified, result1] = check_and_distribute(other, false, OPERATION::SUBTRACTION, RECURSION_LEVEL::TWO);
+                        if (is_simplified)  {
+                            result = result1.value();
+                        } else {
+                            result = real(real_operation<T>(this->_real_p, other._real_p, OPERATION::SUBTRACTION));
+                        }
+                    }
+                }, _real_p->get_real_number(), other._real_p->get_real_number());
+                return result;
             }
 
             /**
@@ -619,8 +713,29 @@ namespace boost {
              * @param other - the right side operand boost::real::real number.
              */
             void operator*=(real<T> other) {
-                this->_real_p =
-                    std::make_shared<real_data<T>>(real_operation<T>(this->_real_p, other._real_p, OPERATION::MULTIPLICATION));
+                std::visit(overloaded{
+                    [this] (integer<T> a, integer<T> b){
+                        this->_real_p =
+                            std::make_shared<real_data<T>>(integer<T>(a*b));
+                    },
+                    [this] (rational_number<T> a, integer<T> b){
+                        this->_real_p = 
+                            std::make_shared<real_data<T>>(rational_number<T>(a*b));
+                    },
+                    [this] (rational_number<T> a, rational_number<T> b){
+                        this->_real_p = 
+                            std::make_shared<real_data<T>>(rational_number<T>(a*b));
+                    },
+                    [this] (integer<T> a, rational_number<T> b){
+                        this->_real_p = 
+                            std::make_shared<real_data<T>>(rational_number<T>(a*b));
+                    },
+                    [this, &other] (auto a, auto b){
+                        this->_real_p =
+                        std::make_shared<real_data<T>>(real_operation<T>(this->_real_p, other._real_p, OPERATION::MULTIPLICATION));
+                    }
+                }, _real_p->get_real_number(), other._real_p->get_real_number());
+                
             }
 
             /**
@@ -631,7 +746,30 @@ namespace boost {
              * @return A copy of the new boost::real::real number representation.
              */
             real<T> operator*(real<T> other) {
-                return real(real_operation<T>(this->_real_p, other._real_p, OPERATION::MULTIPLICATION));
+                real<T> result;
+                std::visit(overloaded{
+                    [&result] (integer<T> a, integer<T> b){
+                        result._real_p = 
+                            std::make_shared<real_data<T>>(integer<T>(a*b));
+                    },
+                    [&result] (integer<T> a, rational_number<T> b){
+                        result._real_p = 
+                            std::make_shared<real_data<T>>(rational_number<T>(a*b));
+                    },
+                    [&result] (rational_number<T> a, integer<T> b)
+                    {
+                        result._real_p = 
+                            std::make_shared<real_data<T>>(rational_number<T>(a*b));
+                    },
+                    [&result] (rational_number<T> a, rational_number<T> b){
+                        result._real_p = 
+                            std::make_shared<real_data<T>>(rational_number<T>(a*b));
+                    },
+                    [this, &other, &result] (auto a, auto b){
+                        result = real(real_operation<T>(this->_real_p, other._real_p, OPERATION::MULTIPLICATION));
+                    }
+                }, _real_p->get_real_number(), other.get_real_number());
+                return result;
             }
 
             /**
@@ -642,7 +780,32 @@ namespace boost {
              * @return A copy of the new boost::real::real number representation.
              */
             real<T> operator/(real<T> other) {
-                return real(real_operation<T>(this->_real_p, other._real_p, OPERATION::DIVISION));
+                real<T> result;
+                std::visit(overloaded{
+                    [&result] (integer<T> a, integer<T> b){
+                        result._real_p = 
+                            std::make_shared<real_data<T>>(rational_number(a,b));
+                    },
+                    [&result] (integer<T> a, rational_number<T> b){
+                        rational_number<T> result1 = a/b;
+                        result._real_p = 
+                            std::make_shared<real_data<T>>(rational_number(result1));
+                    },
+                    [&result] (rational_number<T> a, integer<T> b){
+                        rational_number<T> result1 = a/b;
+                        result._real_p = 
+                            std::make_shared<real_data<T>>(rational_number(result1));
+                    },
+                    [&result] (rational_number<T> a, rational_number<T> b){
+                        rational_number<T> result1 = a/b;
+                        result._real_p = 
+                            std::make_shared<real_data<T>>(rational_number(result1));
+                    },
+                    [this, &other, &result] (auto a, auto b){
+                        result = real(real_operation<T>(this->_real_p, other._real_p, OPERATION::DIVISION));
+                    }
+                }, _real_p->get_real_number(), other._real_p->get_real_number());
+                return result;
             }
 
             /**
@@ -652,8 +815,30 @@ namespace boost {
              * @param other - the right side operand boost::real::real number.
              */
             void operator/=(real<T> other) {
-                this->_real_p =
-                    std::make_shared<real_data<T>>(real_operation<T>(this->_real_p, other._real_p, OPERATION::DIVISION));
+                std::visit(overloaded{
+                    [this] (integer<T> a, integer<T> b){
+                        this->_real_p = 
+                            std::make_shared<real_data<T>>(rational_number<T>(a,b));
+                    },
+                    [this] (integer<T> a, rational_number<T> b){
+                        rational_number result1 = a/b;
+                        this->_real_p = 
+                            std::make_shared<real_data<T>>(rational_number<T>(result1));
+                    },
+                    [this] (rational_number<T> a, rational_number<T> b){
+                        this->_real_p = 
+                            std::make_shared<real_data<T>>(rational_number<T>(a/b));
+                    },
+                    [this] (rational_number<T> a, integer<T> b){
+                        this->_real_p = 
+                            std::make_shared<real_data<T>>(rational_number<T>(a/b));
+                    },
+                    [this, &other] (auto a, auto b){
+                        this->_real_p =
+                            std::make_shared<real_data<T>>(real_operation<T>(this->_real_p, other._real_p, OPERATION::DIVISION));
+                    }
+                }, _real_p->get_real_number(), other._real_p->get_real_number());
+                
             }
 
             /**
@@ -685,36 +870,63 @@ namespace boost {
              * @throws boost::real::precision_exception
              */
             bool operator<(const real<T>& other) const {
-                auto this_it = this->_real_p->get_precision_itr().cbegin();
-                auto other_it = other._real_p->get_precision_itr().cbegin();
+                bool ret;
+                std::visit(overloaded{
+                    [&ret] (integer<T> a, integer<T> b){
+                        ret =  (a<b);
+                    },
+                    [&ret] (integer<T> a, rational_number<T> b){
+                        ret = (a<b);
+                    },
+                    [&ret] (rational_number<T> a, integer<T> b){
+                        ret = (a<b);
+                    },
+                    [&ret] (rational_number<T> a, rational_number<T> b){
+                        ret = (a<b);
+                    },
+                    [this, &other, &ret] (auto a, auto b){
+                        auto this_it = this->_real_p->get_precision_itr().cbegin();
+                        auto other_it = other._real_p->get_precision_itr().cbegin();
 
-                if (this_it == other_it)
-                    return false;
+                        if (this_it == other_it)
+                        {
+                            ret = false;
+                            return;
+                        }
 
-                unsigned int current_precision = std::max(this->maximum_precision(), other.maximum_precision());
-                for (unsigned int p = 0; p < current_precision; ++p) {
-                    // Get more precision
-                    ++this_it;
-                    ++other_it;
+                        unsigned int current_precision = std::max(this->maximum_precision(), other.maximum_precision());
+                        unsigned int p;
+                        for (p = 0; p < current_precision; ++p) {
+                            // Get more precision
+                            ++this_it;
+                            ++other_it;
 
-                    bool this_full_precision = this_it.get_interval().is_a_number();
-                    bool other_full_precision = other_it.get_interval().is_a_number();
-                    if (this_full_precision && other_full_precision) {
-                        return this_it.get_interval() < other_it.get_interval();
+                            bool this_full_precision = this_it.get_interval().is_a_number();
+                            bool other_full_precision = other_it.get_interval().is_a_number();
+                            if (this_full_precision && other_full_precision) {
+                                ret = this_it.get_interval() < other_it.get_interval();
+                                break;
+                            }
+
+                            if (this_it.get_interval()< other_it.get_interval()) {
+                                ret = true;
+                                break;
+                            }
+
+                            if (other_it.get_interval()< this_it.get_interval()) {
+                                ret = false;
+                                break;
+                            }
+                        }
+
+                        // If the precision is reached and the number ranges still overlap, then we cannot
+                        // know if they are equals or other is less than this and we throw an error.
+                        if(p==current_precision)
+                            throw boost::real::precision_exception();
                     }
-
-                    if (this_it.get_interval()< other_it.get_interval()) {
-                        return true;
-                    }
-
-                    if (other_it.get_interval()< this_it.get_interval()) {
-                        return false;
-                    }
-                }
-
-                // If the precision is reached and the number ranges still overlap, then we cannot
-                // know if they are equals or other is less than this and we throw an error.
-                throw boost::real::precision_exception();
+                }, _real_p->get_real_number(), other._real_p->get_real_number());
+                return ret;
+                
             }
 
             /**
@@ -729,37 +941,57 @@ namespace boost {
              * @throws boost::real::precision_exception
              */
             bool operator>(const real<T>& other) const {
-                auto this_it = this->_real_p->get_precision_itr().cbegin();
-                auto other_it = other._real_p->get_precision_itr().cbegin();
+                bool ret;
+                std::visit(overloaded{
+                    [&ret] (integer<T> a, integer<T> b){
+                        ret = (a>b);
+                    },
+                    [&ret] (rational_number<T> a, rational_number<T> b){
+                        ret = (a>b);
+                    },
+                    [&ret] (rational_number<T> a, integer<T> b){
+                        ret = (a>b);
+                    },
+                    [&ret] (integer<T> a, rational_number<T> b){
+                        ret = (a>b);
+                    },
+                    [this, &other, &ret] (auto a, auto b){
+                        auto this_it = this->_real_p->get_precision_itr().cbegin();
+                        auto other_it = other._real_p->get_precision_itr().cbegin();
 
-                if (this_it == other_it)
-                    return false;
+                        if (this_it == other_it){
+                            ret = false;
+                            return;
+                        }
 
-                unsigned int current_precision = std::max(this->maximum_precision(), other.maximum_precision());
-                for (unsigned int p = 0; p < current_precision; ++p) {
-                    // Get more precision
-                    ++this_it;
-                    ++other_it;
-
-                    bool this_full_precision = this_it.get_interval().is_a_number();
-                    bool other_full_precision = other_it.get_interval().is_a_number();
-
-                    if (this_full_precision && other_full_precision) {
-                        return this_it.get_interval() > other_it.get_interval();
+                        unsigned int current_precision = std::max(this->maximum_precision(), other.maximum_precision());
+                        unsigned int p;
+                        for (p=0; p < current_precision; ++p) {
+                            // Get more precision
+                            ++this_it;
+                            ++other_it;
+                            bool this_full_precision = this_it.get_interval().is_a_number();
+                            bool other_full_precision = other_it.get_interval().is_a_number();
+                            if (this_full_precision && other_full_precision) {
+                                ret = this_it.get_interval() > other_it.get_interval();
+                                break;
+                            }
+                            if (this_it.get_interval()> other_it.get_interval()) {
+                                ret = true;
+                                break;
+                            }
+                            if (other_it.get_interval()> this_it.get_interval()) {
+                                ret = false;
+                                break;
+                            }
+                        }
+                        // If the precision is reached and the number ranges still overlap, then we cannot
+                        // know if they are equals or other is less than this and we throw an error.
+                        if(p==current_precision)
+                            throw boost::real::precision_exception();
                     }
-
-                    if (this_it.get_interval()> other_it.get_interval()) {
-                        return true;
-                    }
-
-                    if (other_it.get_interval()> this_it.get_interval()) {
-                        return false;
-                    }
-                }
-
-                // If the precision is reached and the number ranges still overlap, then we cannot
-                // know if they are equals or other is less than this and we throw an error.
-                throw boost::real::precision_exception();
+                }, _real_p->get_real_number(), other._real_p->get_real_number());
+                return ret;
             }
 
             /**
@@ -774,31 +1006,60 @@ namespace boost {
              * @throws boost::real::precision_exception
              */
             bool operator==(const real<T>& other) const {
-                auto this_it = _real_p->get_precision_itr().cbegin();
-                auto other_it = other._real_p->get_precision_itr().cbegin();
+                bool ret;
+                std::visit(overloaded{
+                    [&ret] (integer<T> a, integer<T> b){
+                        ret = (a==b);
+                    },
 
-                unsigned int current_precision = std::max(this->maximum_precision(), other.maximum_precision());
-                for (unsigned int p = 0; p < current_precision; ++p) {
-                    // Get more precision
-                    ++this_it;
-                    ++other_it;
+                    [&ret] (integer<T> a, rational_number<T> b){
+                        ret = (a==b);
+                    },
 
-                    bool this_full_precision = this_it.get_interval().is_a_number();
-                    bool other_full_precision = other_it.get_interval().is_a_number();
-                    if (this_full_precision && other_full_precision) {
-                        return this_it.get_interval()== other_it.get_interval();
-                    }
+                    [&ret] (rational_number<T> a, integer<T> b){
+                        ret = (a==b);
+                    },
 
-                    bool this_is_lower = this_it.get_interval()< other_it.get_interval();
-                    bool other_is_lower = other_it.get_interval()< this_it.get_interval();
-                    if (this_is_lower || other_is_lower) {
-                        return false;
-                    }
-                }
+                    [&ret] (rational_number<T> a, rational_number<T> b){
+                        ret = (a==b);
+                    },
 
-                // If the precision is reached and the numbers full precision is not reached, then
-                // we cannot know if they are equals or not.
-                throw boost::real::precision_exception();
+                    [this, &other, &ret] (auto a, auto b){
+                        auto this_it = _real_p->get_precision_itr().cbegin();
+                        auto other_it = other._real_p->get_precision_itr().cbegin();
+
+                        unsigned int current_precision = std::max(this->maximum_precision(), other.maximum_precision());
+                        unsigned int p;
+                        for (p = 0; p < current_precision; ++p) {
+                            // Get more precision
+                            ++this_it;
+                            ++other_it;
+
+                            bool this_full_precision = this_it.get_interval().is_a_number();
+                            bool other_full_precision = other_it.get_interval().is_a_number();
+                            if (this_full_precision && other_full_precision) {
+                                ret = this_it.get_interval()== other_it.get_interval();
+                                break;
+                            }
+
+                            bool this_is_lower = this_it.get_interval()< other_it.get_interval();
+                            bool other_is_lower = other_it.get_interval()< this_it.get_interval();
+                            if (this_is_lower || other_is_lower) {
+                                ret = false;
+                                break;
+                            }
+                        }
+
+                        // If the precision is reached and the numbers full precision is not reached, then
+                        // we cannot know if they are equals or not.
+                        if(p==current_precision)
+                            throw boost::real::precision_exception();
+
+                    } 
+
+                }, _real_p->get_real_number(), other._real_p->get_real_number());
+
+                return ret;
             }
             /********* END OPERATORS *********/
 
@@ -818,7 +1079,7 @@ namespace boost {
     }
 }
 
-//User Defined Literals
+//User Defined Literals for Explicit Number
 
 inline auto operator "" _r(long double x) {
     return boost::real::real<int>(std::to_string(x));
@@ -830,6 +1091,30 @@ inline auto operator "" _r(unsigned long long x) {
 
 inline auto operator "" _r(const char* x, size_t len) {
     return boost::real::real<int>(x);
+}
+
+// User Defined Literals for Rational Number
+
+inline auto operator ""_rational(const char* x, size_t len){
+    return boost::real::real<int>(x, "rational");
+}
+
+inline auto operator ""_rational(long double x){
+    return boost::real::real<int>(std::to_string(x), "rational");
+}
+
+inline auto operator ""_rational(unsigned long long x){
+    return boost::real::real<int>(std::to_string(x), "rational");
+}
+
+// User Defined Literal for Integer Number
+
+inline auto operator ""_integer(const char* x, size_t len){
+    return boost::real::real<int>(x, "integer");
+}
+
+inline auto operator ""_integer(unsigned long long x){
+    return boost::real::real<int>(std::to_string(x), "integer");
 }
 
 #endif //BOOST_REAL_HPP

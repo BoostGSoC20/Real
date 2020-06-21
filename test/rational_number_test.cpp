@@ -1,7 +1,8 @@
 #include <catch2/catch.hpp>
 
 #include <real/rational_number.hpp>
-#include<real/real_exception.hpp>
+#include <real/real_exception.hpp>
+#include <real/real.hpp>
 #include <test_helpers.hpp>
 
 TEMPLATE_TEST_CASE("CONSTRUCTOR UNIT TEST","[template]", int, unsigned int, long, unsigned long, long long, unsigned long long){
@@ -56,6 +57,140 @@ TEMPLATE_TEST_CASE("CONSTRUCTOR UNIT TEST","[template]", int, unsigned int, long
 		a = rational("6/28");
 		CHECK(a.a == integer("3"));
 		CHECK(a.b == integer("14"));
+	}
+}
+
+TEMPLATE_TEST_CASE("INTEGRATION WITH REAL HPP", "[template]", int, unsigned int, long, unsigned long, long long, unsigned long long){
+	using real = boost::real::real<TestType>;
+	SECTION("CONSTRUCTOR TEST"){
+		boost::real::real<int> a("10/11", "rational");
+		boost::real::real<int> b = "10/11"_rational;
+		CHECK(a==b);
+	}
+
+	SECTION("COMPARISON OPERATOR TESTS"){
+		SECTION("RATIONAL - RATIONAL"){
+			real a("10/11", "rational");
+			real b("9/11", "rational");
+			CHECK(a>b);
+			CHECK_FALSE(a<b);
+			CHECK_FALSE(a==b);
+
+			b = real("10/11","rational");
+			CHECK(a==b);
+			CHECK_FALSE(a>b);
+			CHECK_FALSE(a<b);
+			b = real("20/22", "rational");
+			CHECK(a==b);
+		}
+
+		SECTION("INTEGER - RATIONAL"){
+			real a("10/11", "rational");
+			real b("1", "integer");
+			CHECK_FALSE(a==b);
+			CHECK(a<b);
+			CHECK_FALSE(a>b);
+			CHECK(b>a);
+			CHECK_FALSE(b<a);
+
+			a = real("10", "rational");
+			b = real("10", "integer");
+			CHECK(a==b);
+			CHECK_FALSE(a>b);
+			CHECK_FALSE(a<b);
+			CHECK_FALSE(b>a);
+			CHECK_FALSE(b<a);
+		}
+	}
+
+	SECTION("ADDITION - SUBTRACTION OPERATOR TEST"){
+		SECTION("RATIONAL - INTEGER"){
+			real a("7/9", "rational");
+			real b("1", "integer");
+			real c = a+b;
+			real d("16/9", "rational");
+			CHECK(c==d);
+			c = b+a;
+			CHECK(c==d);
+			c = a-b;
+			d = real("-2/9", "rational");
+			CHECK(c==d);
+			c = b-a;
+			d = real("2/9", "rational");
+			CHECK(c==d);
+		}
+
+		SECTION("RATIONAL - RATIONAL"){
+			real a("1/4", "rational");
+			real b("1/4", "rational");
+			real c = a+b;
+			real d("1/2", "rational");
+			CHECK(c==d);
+			c = a-b;
+			d = real("0/10", "rational");
+			CHECK(c==d);
+
+		}
+	}
+
+	SECTION("MULTIPLICATION OPERATOR TEST"){
+		SECTION("RATIONAL - RATIONAL"){
+			real a("10/17","rational");
+			real b("1/2","rational");
+			real c = a*b;
+			real d("5/17", "rational");
+			CHECK(c==d);
+			b = real("2", "rational");
+			c = a*b;
+			d = real("20/17", "rational");
+			CHECK(c==d);
+			a = real("1/2", "rational");
+			c = a*b;
+			d = real("1", "rational");
+			CHECK(c==d);
+		}
+
+		SECTION("INTEGER - RATIONAL"){
+			real a("10", "integer");
+			real b("10/17", "rational");
+			real c = a*b;
+			real d("100/17", "rational");
+			CHECK(c==d);
+			c = b*a;
+			CHECK(c==d);
+
+			a = real("0", "integer");
+			c = a*b;
+			d = real("0", "rational");
+			CHECK(c==d);
+
+		}
+	}
+
+	SECTION("DIVISION OPERATION TEST"){
+		SECTION("RATIONAL - RATIONAL"){
+			real a("10/20", "rational");
+			real b("1/3", "rational");
+			real c = a/b;
+			real d("3/2", "rational");
+			CHECK(c==d);
+		}
+
+		SECTION("INTEGER - RATIONAL"){
+			real a("1/3", "rational");
+			real b("2", "integer");
+			real c = a/b;
+			real d("1/6", "rational");
+			CHECK(c==d);
+		}
+
+		SECTION("INTEGER - INTEGER"){
+			real a("1", "integer");
+			real b("3", "integer");
+			real c = a/b;
+			real d("1/3", "rational");
+			CHECK(c==d);
+		}
 	}
 }
 
@@ -228,6 +363,10 @@ TEMPLATE_TEST_CASE("MULTIPLICATION TEST", "[template]", int, unsigned int, long,
 		CHECK(c==d);
 		c = a*b;
 		CHECK(c==d);
+		a = integer("0");
+		c = a*b;
+		d = rational("0");
+		CHECK(c==d);
 	}
 
 	SECTION("BOTH NUMBERS HAVE DIFFERENT SIGNS AND ONE IS INTEGER"){
@@ -274,15 +413,25 @@ TEMPLATE_TEST_CASE("Operator tests", "[template]", int, unsigned int, long, unsi
 	using rational = boost::real::rational_number<TestType>;
 	using integer = boost::real::integer<TestType>;
 	SECTION("Equal Operator test"){
-		rational a,b,c,d;
-		a = rational(integer("1"), integer("2"));
-		b = rational(integer("10"), integer("20"));
-		CHECK(a==b);
+		SECTION("RATIONAL - RATIONAL"){
+			rational a,b,c,d;
+			a = rational(integer("1"), integer("2"));
+			b = rational(integer("10"), integer("20"));
+			CHECK(a==b);
 
-		CHECK(a == rational(integer("40"), integer("80")));
-		integer a1("2");
-		CHECK_FALSE(a==a1);
-		CHECK_FALSE(a1==a);
+			CHECK(a == rational(integer("40"), integer("80")));
+			integer a1("2");
+			CHECK_FALSE(a==a1);
+			CHECK_FALSE(a1==a);
+		}
+
+		SECTION("INTEGER - RATIONAL"){
+			rational a,b;
+			integer c;
+			a = rational("10/11");
+			c = integer("1");
+			CHECK(c>a);
+		}
 
 	}
 	SECTION("Greater than Operator test"){

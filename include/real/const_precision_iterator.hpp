@@ -7,6 +7,8 @@
 #include <real/real_operation.hpp>
 #include <real/exact_number.hpp>
 #include <real/real_exception.hpp>
+#include<real/integer_number.hpp>
+#include<real/rational_number.hpp>
 #include <limits>
 #include <memory>
 #include <variant>
@@ -31,7 +33,7 @@ namespace boost {
         class real;
 
         template <typename T>
-        using real_number = std::variant<std::monostate, real_explicit<T>, real_algorithm<T>, real_operation<T>>;
+        using real_number = std::variant<std::monostate, real_explicit<T>, real_algorithm<T>, real_operation<T>, integer<T>, rational_number<T>>;
         using precision_t = size_t;
 
         /// the default max precision to use if the user hasn't provided one.

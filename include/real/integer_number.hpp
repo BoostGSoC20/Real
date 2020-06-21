@@ -123,37 +123,46 @@ namespace boost{
 
 			// overloading operators for integer numbers
 
-			bool operator == (const integer<T> &other) const{
+			bool operator == (const integer<T> other) const{
 				if((*this).positive != other.positive) return false;
 				if((*this).digits.size()!=other.digits.size()) return false;
 				return (*this).digits==other.digits;
 			}
 
-			bool operator != (const integer &other) const{
+			bool operator != (const integer other) const{
 				return !((*this)==other);
 			}
 
 			// '>' comparison operator for two integer types
-			bool operator > (const integer &other) const{
+			bool operator > (const integer other) const{
 				if((*this).positive != other.positive)
 					return (*this).positive;
 
-				if((*this).digits.size()!=other.digits.size()) 
-					return (*this).digits.size() > other.digits.size();
+				// if sign of both numbers are positive
+				if((*this).positive)
+				{
+					if((*this).digits.size()!=other.digits.size()) 
+						return (*this).digits.size() > other.digits.size();
+					return (*this).digits > other.digits;
+				}
 
-				return (*this).digits > other.digits;
+				// now only case  that is remaining is both numbers are negative
+				if((*this).digits.size()!=other.digits.size()) 
+						return (*this).digits.size() < other.digits.size();
+
+				return (*this).digits < other.digits;
 			}
 
 			// '<=' operator for two integer types
-			bool operator >= (const integer &other) const{
+			bool operator >= (const integer other) const{
 				return ((*this)>other || (*this)==other);
 			}
 
-			bool operator < (const integer &other) const{
+			bool operator < (const integer other) const{
 				return !((*this)>=other);
 			}
 
-			bool operator <= (const integer &other) const{
+			bool operator <= (const integer other) const{
 				return !((*this)>other);
 			}
 
@@ -207,7 +216,7 @@ namespace boost{
 			}
 
 			// overloading "-" operator 
-			integer<T> operator - (integer<T> &other)
+			integer<T> operator - (integer<T> other)
 			{
 				integer<T> result;
 				// if signs of boths numbers are equal
@@ -242,12 +251,26 @@ namespace boost{
 				}
 			}
 
-			integer<T> operator * (integer<T> &other){
+			integer<T> operator * (integer<T> other){
 				integer<T> result;
+				if((*this)==integer<T>("0") || other==integer<T>("0"))
+					return integer<T>("0");
 				// if sign of both numbers are same, then number is positive, else negative
 				result.positive = !((*this).positive^other.positive);
 				result.digits = multiply<T>((*this).digits, other.digits, BASE);
 				return result;
+			}
+
+			inline void operator *=(integer<T> other){
+				auto result = (*this) * other;
+				(*this) = result;
+				return;
+			}
+
+			inline void operator += (integer<T> other){
+				auto result = (*this) + other;
+				(*this) = result;
+				return;
 			}
 
 			// default contructor
@@ -274,7 +297,16 @@ namespace boost{
 				std::vector<T> dividend = (*this).digits;
 				std::vector<T> divisor = other.digits;
 				std::vector<T> quotient;
-				return op.long_divide_vectors(dividend,divisor,quotient);
+				std::vector<T> remainder;
+				op.knuthDivision(dividend,divisor,quotient,remainder, (*this).BASE);
+				integer<T> result(remainder, true);
+				// if sign of a in a%b is negative, then we need to add divisor in quantity we got in remainder
+				// like remainder of (-7)/5 = -2, but (-7)%5 = 3
+				if(!(*this).positive){
+					integer<T> tmp(divisor, true);
+					result = tmp - result;
+				}
+				return result;
 			}
 
 			integer<T> (std::vector<T> num, bool pos = true) : digits(num), positive(pos) {};
@@ -357,12 +389,12 @@ namespace boost{
 			// Note: result will return a integer. 
 			integer<T> divide(integer<T> &divider){
 				exact_number<T> op;
-				std::vector<T> result_vec;
+				std::vector<T> quotient;
 				std::vector<T> remainder;
 				// need to change this line after new long divide algo.
 				// this will produce wrong result, because this algo will do calculations in decimal base.
-				remainder = op.long_divide_vectors((*this).digits, divider.digits, result_vec);
-				integer<T> result(result_vec, !((*this).positive^divider.positive));
+				op.knuthDivision((*this).digits, divider.digits, quotient, remainder);
+				integer<T> result(quotient, !((*this).positive^divider.positive));
 				return result;
 			}
 
@@ -371,7 +403,7 @@ namespace boost{
 		// to find Greatest Common Divisor(GCD) of two integers
 		template<typename T>
 		integer<T> gcd(integer<T> a, integer<T> b) {
-			static integer zero = integer<T>("0"); // to avoid initialization of zero integer for every copy of this function 
+			static integer<T> zero = integer<T>("0"); // to avoid initialization of zero integer for every copy of this function 
     		if (b == zero) 
         		return a; 
     		return gcd(b, a % b);    
@@ -394,6 +426,14 @@ namespace boost{
 			integer<T> gcd_value = gcd(a,b);
 			result = mult.divide(gcd_value);
 			return result;
+		}
+
+		// function to get absolute value of some integer
+		template<typename T>
+		integer<T> abs(integer<T> num){
+			// num is passed by value, so we will directly change it and return it.
+			num.positive = true;
+			return num;
 		}
 
 

@@ -72,18 +72,15 @@ namespace boost{
 				return ;
 			}
 
-			bool operator > (const rational_number<T> &other) const{
+			bool operator > (const rational_number<T> other) const{
 
 				// if numbers have different signs
 				if((*this).positive!=other.positive) return (*this).positive;
 				if((*this).b == other.b) return (*this).a > other.a;
-
 				rational_number<T> _this = (*this);
 				rational_number<T> _other = other;
-
 				_this.a *= _other.b;
 				_other.a *= _this.b;
-
 				// if both number are positive, (cases of different signs are already dealt)
 				if((*this).positive)
 					return _this.a > _other.a;
@@ -118,7 +115,7 @@ namespace boost{
 			// checking whether our number is equal to some integer or not
 			inline bool operator == (const integer<T> other) const{
 				if((*this).b != integer<T>("1")) return false;
-				return (*this).b == other;
+				return (*this).a == other;
 			}
 
 			inline bool operator >= (const integer<T> other) const{
@@ -129,7 +126,7 @@ namespace boost{
 				return !((*this)>=other);
 			}
 
-			inline bool operator <= (const integer<T> other) const{
+			inline bool operator <= (const integer<T> other) const{ 
 				return !((*this)>other);
 			}
 
@@ -333,22 +330,24 @@ namespace boost{
 
 		template<typename T>
 		inline bool operator > (integer<T> int_num, rational_number<T> rat_num){
-			return !(rat_num <= int_num);
+			rational_number<T> _this(int_num);
+			return _this > rat_num;
+			
 		}
 
 		template<typename T>
 		inline bool operator >= (integer<T> int_num, rational_number<T> rat_num){
-			return !(rat_num < int_num);
+			return (int_num > rat_num || int_num==rat_num);
 		}
 
 		template<typename T>
 		inline bool operator < (integer<T> int_num, rational_number<T> rat_num){
-			return !(rat_num >= int_num);
+			return !(int_num >= rat_num);
 		}
 
 		template<typename T>
 		inline bool operator <= (integer<T> int_num, rational_number<T> rat_num){
-			return !(rat_num > int_num);
+			return (int_num<rat_num || int_num==rat_num);
 		}
 
 

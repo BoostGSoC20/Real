@@ -220,7 +220,7 @@ namespace boost {
 
                     // calculate the upper bound
                     quotient = numerator;
-                    quotient.divide_vector(denominator, this->maximum_precision());
+                    quotient.divide_vector(denominator, this->maximum_precision(), DIVISION_RESULT::UPPER);
 
                     residual = quotient * denominator - numerator;
                     residual.normalize();
@@ -271,7 +271,7 @@ namespace boost {
                     }
 
                     quotient = numerator;
-                    quotient.divide_vector(denominator, this->maximum_precision());
+                    quotient.divide_vector(denominator, this->maximum_precision(), DIVISION_RESULT::LOWER);
 
                     residual = quotient * denominator - numerator;
                     residual.normalize();

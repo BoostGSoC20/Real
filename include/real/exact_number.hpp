@@ -886,7 +886,7 @@ namespace boost {
             }
 
             /*       BINARY SEARCH BASED DIVISION
-             *  
+             *  an approximate division method, returns results which have insigificant error
              */
 
             void binary_search_division(
@@ -1012,7 +1012,13 @@ namespace boost {
             }
 
             /*          NEWTON RAPHSON DIVISION
-             *
+             * @param: divisor: an exact_number which divides (*this)
+             * @param: maximum_precision: the precision of (*this)/divisor
+             * @param: deviation: can take three values 
+             *              1. upper: returns result with +epsilon error
+             *              2. lower: return result with -epsilon error
+             *              3. exact: return result with zero error (zero error means
+             *                        error which is insignificant w.r.t precision of result)
              */
 
             void newton_raphson_division(
@@ -1020,6 +1026,7 @@ namespace boost {
                 unsigned int maximum_precision,
                 DIVISION_RESULT deviation){
 
+                /* Exceptions start */
                 if (maximum_precision > (unsigned int) std::abs(std::numeric_limits<exponent_t>::min())) {
                     throw exponent_overflow_exception();
                 }
@@ -1028,7 +1035,9 @@ namespace boost {
                 if(divisor == zero){
                     throw divide_by_zero();
                 }
+                /* Exceptions end */
 
+                /* special cases start */
                 if((*this) == zero){
                     return;
                 }
@@ -1053,12 +1062,14 @@ namespace boost {
                     (*this) = one;
                     return;
                 }
+                /* special cases end */
 
+                /* preprocessing required for the newton raphson algorithm to converge 
+                 * divisor should satisfy condition: 0.5 <= divisor <= 1 (in decimal system) */
                 int exponent_diff = ((*this).exponent) - (divisor.exponent);
                 this->exponent = 0;
                 divisor.exponent = 0;
 
-                // preprocessing required for the algorithm to converge
                 T base = (std::numeric_limits<T>::max() /4)*2;
                 exact_number<T> _2;
                 _2.digits = {2};
@@ -1067,10 +1078,11 @@ namespace boost {
                     divisor = divisor * _2;
                     (*this) = (*this) * _2;
                 }
+                /* preprocessing end */
 
-                // approximating the reciprocal
-                // initializing the reciprocal guess
-
+                /* Reciprocal computation starts */
+                /* initializing the reciprocal guess */
+                /* initial guess for the reciprocal is (48 - 32*divisor)/17 */
                 exact_number<T> reciprocal, more_precise_reciprocal;
                 exact_number<T> _32, _48, _17;
                 _32.digits = {32};
@@ -1081,7 +1093,8 @@ namespace boost {
                 _17.exponent = 1;
 
                 reciprocal = _48 - _32*divisor;
-                reciprocal.binary_search_division(_17, maximum_precision);
+                reciprocal.binary_search_division(_17, maximum_precision); /* approximate division method */
+                /* Initial guess end*/
 
                 exact_number<T> error, max_error, numerator, denominator, residual, answer, more_precise_answer;
                 denominator = divisor.abs();
@@ -1090,9 +1103,12 @@ namespace boost {
                 max_error.exponent = (-1)*(maximum_precision);
                 answer = reciprocal * numerator;
 
+                /* newton raphson iteration starts */
                 do{
-
+                    /* improving guess */
                     reciprocal = reciprocal * ( _2 - reciprocal*denominator);
+
+                    /* truncate insignificant digits from the reciprocal */
                     while(reciprocal.digits.size() > maximum_precision + 2){
                         reciprocal.digits.pop_back();
                     }
@@ -1101,10 +1117,10 @@ namespace boost {
                     while(more_precise_answer.digits.size() > maximum_precision + 2){
                         more_precise_answer.digits.pop_back();
                     }
+                    /* if there is no improvement then exit */
                     if(more_precise_answer == answer){
                         break;
                     }
-
 
                     error = more_precise_answer - answer;
                     error = error.abs();
@@ -1113,13 +1129,14 @@ namespace boost {
 
                     residual = (answer)*denominator - numerator;
                     residual.normalize();
-
                     
                 }while( (deviation == DIVISION_RESULT::UPPER && residual<zero) ||
                     (deviation == DIVISION_RESULT::LOWER && residual>zero) ||
                     error > max_error);
+                /* newton raphson iteration ends*/
 
-                (*this) = reciprocal*numerator;
+                (*this) = answer;
+
                 if(deviation == DIVISION_RESULT::UPPER){
                     (*this) += max_error;
                 }
@@ -1136,7 +1153,7 @@ namespace boost {
             }
 
             // for debugging purposes
-            // static void print(exact_number<T> e, std::string str){
+            // inline static void print(exact_number<T> e, std::string str){
             //     std::cout << str << " is: ";
             //     std::string e10 = e.as_string();
             //     std::cout << e10 << "\n";

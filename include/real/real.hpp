@@ -547,6 +547,138 @@ namespace boost {
                 return recurse_op(other, rc_lvl, OPERATION::SUBTRACTION);
             }
 
+
+
+            /*      POWER METHOD
+             *  @brief:  Calculates real_num^exponent
+             *  @params: real_num: boost real number whose power is to be evaluated
+             *  @params: exponent: power to which real_num is to be raised
+             *  @return: returns a new boost real whose value is real_num^exponent
+             *  @author: Kishan Shukla
+             */
+
+            static real power(const real<T>& real_num, int exponent){
+                real<T> result;
+
+                std::visit( overloaded{
+
+                    [exponent, &result] (const real_explicit<T> real_exp){
+
+                        exact_number<T> temp = real_exp.get_exact_number();
+
+                        binary_exponentiation(temp, exponent);
+
+                        real_explicit<T> explicit_result(temp);
+                        result = real(explicit_result);
+
+                    },
+
+                    [exponent, &result, &real_num] (const real_operation<T> real_op){
+
+                        OPERATION op = real_op.get_operation();
+                        switch(op){
+                            case OPERATION::MULTIPLICATION: {
+                                /* (a*b)^n = (a^n) * (b^n) */
+                                real<T> l = real();
+                                real<T> r = real();
+                                l._real_p = real_op.lhs();
+                                r._real_p = real_op.rhs();
+
+                                real<T> l_ans = power(l, exponent);
+                                real<T> r_ans = power(r, exponent);
+
+                                result = l_ans*r_ans;
+                                break;
+                            }
+                            case OPERATION::DIVISION: {
+                                /* (a/b)^n = (a^n)/(b^n) */
+                                real<T> l = real();
+                                real<T> r = real();
+                                l._real_p = real_op.lhs();
+                                r._real_p = real_op.rhs();
+
+                                real<T> l_ans = power(l, exponent);
+                                real<T> r_ans = power(r, exponent);
+
+                                result = l_ans/r_ans;
+                                break;
+                            }
+                            case OPERATION::ADDITION: {
+                                /* (a+b)^n = (a+b)^(n/2) * (a+b)^(n/2) */
+                                real<T> l = real();
+                                real<T> r = real();
+                                l._real_p = real_op.lhs();
+                                r._real_p = real_op.rhs();
+
+                                if(exponent == 1){
+                                    result = real(real_op);
+                                }else if(exponent%2 == 0){
+                                    real<T> half = power(real_num, exponent/2);
+                                    result = half * half;
+                                }else{
+                                    real<T> half = power(real_num, exponent/2);
+                                    result = half * half * real_num;
+                                }
+                                break;
+                            }
+                            case OPERATION::SUBTRACTION: {
+                                /* (a-b)^n = (a-b)^(n/2) * (a-b)^(n/2) */
+                                real<T> l = real();
+                                real<T> r = real();
+                                l._real_p = real_op.lhs();
+                                r._real_p = real_op.rhs();
+
+                                if(exponent == 1){
+                                    result = real(real_op);
+                                }else if(exponent%2 == 0){
+                                    real<T> half = power(real_num, exponent/2);
+                                    result = half * half;
+                                }else{
+                                    real<T> half = power(real_num, exponent/2);
+                                    result = half * half * real_num;
+                                }
+                                break;
+                            }
+                        }
+                    },
+
+                    [] (const real_algorithm<T> real_algo){
+                        throw boost::real::bad_variant_access_exception();
+                    },
+
+                    [] (auto& real) {
+                        throw boost::real::bad_variant_access_exception();
+                    }
+
+                }, (real_num._real_p)->get_real_number());
+
+                return result;
+
+            }
+
+            /*      Binary Exponentiation
+             *   @brief:  Calculates exact_number^exponent
+             *   @params: num: an exact_number whose power is to be evaluated
+             *   @params: exponent: power to which num is to be raised
+             *   @author: Kishan Shukla
+             */
+            
+            static void binary_exponentiation(exact_number<T>& num, int exponent){
+                exact_number<T> result;
+                result.digits = {1};
+                result.exponent = 1;
+
+                while(exponent > 0){
+                    if(exponent & 1){
+                        result = result * num;
+                    }
+                    num = num * num;
+                    exponent >>= 1;
+                }
+
+                num = result;
+            }
+
             /**
              * @brief Sets this real_data to that of the operation between this previous
              * real_data and other real_data.

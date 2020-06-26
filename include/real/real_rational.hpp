@@ -13,135 +13,135 @@ namespace boost{
 		 * This will have a and b as integer type numbers.
 		 */
 		template<typename T = int>
-		struct rational_number{
+		struct real_rational{
 			// this will number in form of a/b. Where a and b are integer type numbers.
 		public:
-			integer<T> a;
-			integer<T> b;
+			integer_number<T> a;
+			integer_number<T> b;
 			bool positive;
 			T BASE;
 
 			// to simply the representation of rational number
 			// like 4/8 is converted to 1/2/
 			void simplify(){
-				if((*this).a==integer<T>("0")){
-					(*this).b = integer<T>("1");
-					(*this).positive = true;
+				if(a == integer_number<T>("0")){
+					b = integer_number<T>("1");
+					positive = true;
 					return;
 				}
-				integer<T> divider = gcd(abs((*this).a),abs((*this).b));
-				(*this).a = (*this).a.divide(divider);
-				(*this).b = (*this).b.divide(divider);
+				integer_number<T> divider = gcd(abs(a),abs(b));
+				a = a.divide(divider);
+				b = b.divide(divider);
 				return ;
 			}
 
 			// to add a rational number to other rational number
-			void add_rational(rational_number<T> other){
-				(*this).a *= other.b;
-				other.a *= (*this).b;
-				(*this).b = (*this).b * other.b;
-				(*this).a = (*this).a + other.a;
-				(*this).simplify();
+			void add_rational(real_rational<T> other){
+				a *= other.b;
+				other.a *= b;
+				b = b * other.b;
+				a = a + other.a;
+				simplify();
 				return ;
 			}
 
-			void subtract_rational(rational_number<T> other){
-				(*this).a *= other.b;
-				other.a *= (*this).b;
-				(*this).b = (*this).b * other.b;
-				(*this).a = (*this).a - other.a;
-				(*this).simplify();
+			void subtract_rational(real_rational<T> other){
+				a *= other.b;
+				other.a *= b;
+				b = b * other.b;
+				a = a - other.a;
+				simplify();
 				return ;
 			}
 
 			// to add integer number to rational number
-			void add_integer(integer<T> &other)
+			void add_integer(integer_number<T> &other)
 			{
-				(*this).a += (other*(*this).b);
-				(*this).simplify();
+				a += (other*b);
+				simplify();
 				return;
 			}
 
 			// function to return sign of the rational number
 			inline bool get_positive(){
-				return ((*this).positive);
+				return (positive);
 			}
 
 			inline void alter_sign(){
-				(*this).positive = !(*this).positive;
+				positive = (!positive);
 				return ;
 			}
 
-			bool operator > (const rational_number<T> other) const{
+			bool operator > (const real_rational<T> other) const{
 
 				// if numbers have different signs
-				if((*this).positive!=other.positive) return (*this).positive;
-				if((*this).b == other.b) return (*this).a > other.a;
-				rational_number<T> _this = (*this);
-				rational_number<T> _other = other;
+				if(positive!=other.positive) return positive;
+				if(b == other.b) return a > other.a;
+				real_rational<T> _this = (*this);
+				real_rational<T> _other = other;
 				_this.a *= _other.b;
 				_other.a *= _this.b;
 				// if both number are positive, (cases of different signs are already dealt)
-				if((*this).positive)
+				if(positive)
 					return _this.a > _other.a;
 				// only case left is both numbers are negative
 				return _this.a < _other.a;
 			}
 
-			inline bool operator == (const rational_number<T> other) const{
+			inline bool operator == (const real_rational<T> other) const{
 				// since every number is store in its simplifies form, we simply need to check whether both divisor and 
 				// divident are same or not
-				return ((*this).a==other.a && (*this).b==other.b && (*this).positive==other.positive); 
+				return (a == other.a && b == other.b && positive == other.positive); 
 			}
 
-			inline bool operator >= (const rational_number<T> other) const{
-				return ((*this)>other || (*this)==other);
+			inline bool operator >= (const real_rational<T> other) const{
+				return ((*this) > other || (*this) == other);
 			}
 
-			inline bool operator < (const rational_number<T> other) const{
-				return !((*this)>=other);
+			inline bool operator < (const real_rational<T> other) const{
+				return !((*this) >= other);
 			}
 
-			inline bool operator <= (const rational_number<T> other) const{
-				return !((*this)>other);
+			inline bool operator <= (const real_rational<T> other) const{
+				return !((*this) > other);
 			}
 
 			// overloading comparision operators rational numbers and integers
-			inline bool operator > (const integer<T> other) const{
-				rational_number<T> _other(other, integer<T>("1"));
-				return (*this)>_other;
+			inline bool operator > (const integer_number<T> other) const{
+				real_rational<T> _other(other, integer_number<T>("1"));
+				return (*this) > _other;
 			}
 
 			// checking whether our number is equal to some integer or not
-			inline bool operator == (const integer<T> other) const{
-				if((*this).b != integer<T>("1")) return false;
+			inline bool operator == (const integer_number<T> other) const{
+				if(b != integer_number<T>("1")) return false;
 				return (*this).a == other;
 			}
 
-			inline bool operator >= (const integer<T> other) const{
-				return ((*this)>other || (*this)==other);
+			inline bool operator >= (const integer_number<T> other) const{
+				return ((*this) > other || (*this) == other);
 			}
 
-			inline bool operator < (const integer<T> other) const{
-				return !((*this)>=other);
+			inline bool operator < (const integer_number<T> other) const{
+				return !((*this) >= other);
 			}
 
-			inline bool operator <= (const integer<T> other) const{ 
-				return !((*this)>other);
+			inline bool operator <= (const integer_number<T> other) const{ 
+				return !((*this) > other);
 			}
 
-			rational_number<T> &operator=(const rational_number<T>& other) = default;
+			real_rational<T> &operator = (const real_rational<T>& other) = default;
 
-			rational_number<T> operator + (rational_number<T> other){
+			real_rational<T> operator + (real_rational<T> other){
 				// if both numbers have same sign
-				rational_number<T> result;
-				if((*this).positive==other.positive){
+				real_rational<T> result;
+				if(positive == other.positive){
 					result = (*this);
 					result.add_rational(other);
 				}
 
 				// if sign of the first number is positibe
-				else if((*this).positive){
+				else if(positive){
 					result = (*this);
 					result.subtract_rational(other);
 					if(result.a.positive) result.positive = true;
@@ -165,63 +165,63 @@ namespace boost{
 				return result;
 			}
 
-			inline rational_number<T> operator + (integer<T> other){
-				rational_number<T> result = (*this) + rational_number<T>(other);
+			inline real_rational<T> operator + (integer_number<T> other){
+				real_rational<T> result = (*this) + real_rational<T>(other);
 				return result;
 			}
 
-			inline void operator += (rational_number<T> other){
-				rational_number<T> result = (*this) + other;
+			inline void operator += (real_rational<T> other){
+				real_rational<T> result = (*this) + other;
 				(*this) = result;
 				return;
 			}
 
-			inline void operator += (integer<T> other){
+			inline void operator += (integer_number<T> other){
 				(*this) = (*this) + other;
 				return;
 			}
 
-			inline rational_number<T> operator - (rational_number<T> other){
+			inline real_rational<T> operator - (real_rational<T> other){
 				other.positive = (!other.positive);
 				return (*this) + other;
 			}
 
-			inline rational_number<T> operator - (integer<T> other){
+			inline real_rational<T> operator - (integer_number<T> other){
 				other.positive = (!other.positive);
 				return (*this) + other;
 			}
 
-			inline void operator -= (rational_number<T> other){
+			inline void operator -= (real_rational<T> other){
 				(*this) = (*this) - other;
 				return ;
 			}
 
-			inline void operator -= (integer<T> other){
+			inline void operator -= (integer_number<T> other){
 				(*this) = (*this) - other;
 				return;
 			}
 
-			rational_number<T> operator *(rational_number<T> other){
-				rational_number<T> result;
-				result.a = (*this).a * other.a;
-				result.b = (*this).b * other.b;
+			real_rational<T> operator *(real_rational<T> other){
+				real_rational<T> result;
+				result.a = a * other.a;
+				result.b = b * other.b;
 				result.simplify();
-				result.positive = !(((*this).positive)^other.positive);
+				result.positive = !((positive) ^ other.positive);
 				return result;
 			}
 
-			rational_number<T> operator * (integer<T> other){
-				rational_number<T> result;
-				result.a = (*this).a * other;
-				result.b = (*this).b;
+			real_rational<T> operator * (integer_number<T> other){
+				real_rational<T> result;
+				result.a = a * other;
+				result.b = b;
 				result.simplify();
-				result.positive = !((*this).positive^other.positive);
+				result.positive = !(positive ^ other.positive);
 				return result;
 			}
 
-			rational_number<T> operator - (void){
-				rational_number<T> result = (*this);
-				if((*this).a == integer<T>("0"))
+			real_rational<T> operator - (void){
+				real_rational<T> result = (*this);
+				if((*this).a == integer_number<T>("0"))
 					return result;
 
 				result.positive = (!result.positive);
@@ -235,28 +235,28 @@ namespace boost{
 
 
 			// default constructor
-			constexpr explicit rational_number(){
-				(*this).a = integer<T> ("0");
-				(*this).b = integer<T> ("1");
-				(*this).positive = true;
+			constexpr explicit real_rational(){
+				a = integer_number<T> ("0");
+				b = integer_number<T> ("1");
+				positive = true;
 			}
 			
 			// contructor for integer number, when a and b are provided as real::integer for a/b
-			constexpr explicit rational_number(integer<T> a, integer<T> b = integer<T>("1")){
-				(*this).a = abs(a);
-				(*this).b = abs(b);
-				if(b==integer<T>("0"))
+			constexpr explicit real_rational(integer_number<T> _a, integer_number<T> _b = integer_number<T>("1")){
+				a = abs(_a);
+				b = abs(_b);
+				if(_b==integer_number<T>("0"))
 					throw divide_by_zero();
-				(*this).positive = !(a.positive^b.positive);
-				(*this).simplify();
+				positive = !(_a.positive ^ _b.positive);
+				simplify();
 				return ;
 			}
 
 			// copy constructor
-			rational_number<T>(const rational_number<T> &other) = default;
+			real_rational<T>(const real_rational<T> &other) = default;
 
 			// constructor to generate get number from string
-			constexpr explicit rational_number(std::string_view num){
+			constexpr explicit real_rational(std::string_view num){
 				// searching for "/" in string
 				size_t pos;
 				bool found = false;
@@ -273,20 +273,20 @@ namespace boost{
 				if(found) 
 					num2 = num.substr(pos+1, num.size());
 
-				(*this).a = integer<T>(num1);
+				a = integer_number<T>(num1);
 
 				if(found)
-					(*this).b = integer<T>(num2);
+					b = integer_number<T>(num2);
 				else 
-					(*this).b = integer<T>("1");
+					b = integer_number<T>("1");
 
-				if((*this).b == integer<T>("0"))
+				if(b == integer_number<T>("0"))
 					throw divide_by_zero();
 
-				(*this).positive = !((*this).a.positive^(*this).b.positive);
-				(*this).a.positive = true;
-				(*this).b.positive = true;
-				(*this).simplify();
+				positive = !(a.positive ^ b.positive);
+				a.positive = true;
+				b.positive = true;
+				simplify();
 				return;
 			}
 
@@ -303,19 +303,19 @@ namespace boost{
 
 		// operator for multiplication of an rational number with integer
 		template<typename T>
-		inline rational_number<T> operator * (integer<T> integer_num, rational_number<T> rational_num){
+		inline real_rational<T> operator * (integer_number<T> integer_num, real_rational<T> rational_num){
 			return rational_num * integer_num;
 		}
 
 		// addition operator when first number is integer in addition
 		template<typename T>
-		inline rational_number<T> operator + (integer<T> integer_num, rational_number<T> rational_num){
+		inline real_rational<T> operator + (integer_number<T> integer_num, real_rational<T> rational_num){
 			return rational_num + integer_num;
 		}
 
 		// subtraction operator when first number is integer in subtraction
 		template<typename T>
-		inline rational_number<T> operator - (integer<T> integer_num, rational_number<T> rational_num){
+		inline real_rational<T> operator - (integer_number<T> integer_num, real_rational<T> rational_num){
 			return -(rational_num - integer_num);
 		}
 		
@@ -324,47 +324,47 @@ namespace boost{
 		// these methods are when first number is integer in comparision and second is rational number
 		// a comparison b, where a is integer and b is rational number
 		template<typename T>
-		inline bool operator == (integer<T> int_num, rational_number<T> rat_num){
-			return rat_num==int_num;
+		inline bool operator == (integer_number<T> int_num, real_rational<T> rat_num){
+			return rat_num == int_num;
 		}
 
 		template<typename T>
-		inline bool operator > (integer<T> int_num, rational_number<T> rat_num){
-			rational_number<T> _this(int_num);
+		inline bool operator > (integer_number<T> int_num, real_rational<T> rat_num){
+			real_rational<T> _this(int_num);
 			return _this > rat_num;
 			
 		}
 
 		template<typename T>
-		inline bool operator >= (integer<T> int_num, rational_number<T> rat_num){
-			return (int_num > rat_num || int_num==rat_num);
+		inline bool operator >= (integer_number<T> int_num, real_rational<T> rat_num){
+			return (int_num > rat_num || int_num == rat_num);
 		}
 
 		template<typename T>
-		inline bool operator < (integer<T> int_num, rational_number<T> rat_num){
+		inline bool operator < (integer_number<T> int_num, real_rational<T> rat_num){
 			return !(int_num >= rat_num);
 		}
 
 		template<typename T>
-		inline bool operator <= (integer<T> int_num, rational_number<T> rat_num){
-			return (int_num<rat_num || int_num==rat_num);
+		inline bool operator <= (integer_number<T> int_num, real_rational<T> rat_num){
+			return (int_num < rat_num || int_num == rat_num);
 		}
 
 
 
 		// function to return the absolute value of a rational number
 		template<typename T>
-		rational_number<T> abs(rational_number<T> num){
+		real_rational<T> abs(real_rational<T> num){
 				num.positive = true;
 				return num;
 		}
 
 		// floor function for rational numbers
 		template<typename T>
-		integer<T> floor(rational_number<T> num){
+		integer_number<T> floor(real_rational<T> num){
 			// if number is of integer type, (a/1), then return a
-			if(num.b == integer<T>("1")){
-				integer<T> result(num.a);
+			if(num.b == integer_number<T>("1")){
+				integer_number<T> result(num.a);
 				result.positive = num.positive;
 				return result;
 			}
@@ -372,13 +372,13 @@ namespace boost{
 			// if number is less than 1
 			if(num.b > num.a){
 				if(num.positive)
-					return integer<T>("0");
+					return integer_number<T>("0");
 				else 
-					return integer<T>("-1");
+					return integer_number<T>("-1");
 			}
 
 			// now only case left is number is greater than one in magnitude and not an integer type
-			integer<T> result = num.a;
+			integer_number<T> result = num.a;
 			result = result.divide(num.b);
 			if(num.positive)
 			{
@@ -386,16 +386,16 @@ namespace boost{
 				return result;
 			}
 			// now only case left is number is negative and less than one
-			result += integer<T>("1");
+			result += integer_number<T>("1");
 			result.positive = false;
 			return result;
 		}
 
 		// ceiling function for rational numbers
 		template<typename T>
-		integer<T> ceil(rational_number<T> num){
-			if(num.b == integer<T>("1")){
-				integer<T> result(num.a);
+		integer_number<T> ceil(real_rational<T> num){
+			if(num.b == integer_number<T>("1")){
+				integer_number<T> result(num.a);
 				result.positive = num.positive;
 				return result;
 			}
@@ -403,18 +403,18 @@ namespace boost{
 			// if number is less than 1 in magnitude
 			if(num.b > num.a){
 				if(num.positive)
-					return integer<T>("1");
+					return integer_number<T>("1");
 				else 
-					return integer<T>("0");
+					return integer_number<T>("0");
 			}
 
 			// now only case left is number is greater than one in magnitude and not an integer type
-			integer<T> result = num.a;
+			integer_number<T> result = num.a;
 			result = result.divide(num.b);
 			if(num.positive)
 			{
 				result.positive = true;
-				result += integer<T>("1");
+				result += integer_number<T>("1");
 				return result;
 			}
 			// now only case left is number is negative and less than one
@@ -427,45 +427,45 @@ namespace boost{
 
 		// division of one rational number by another
 		template<typename T>
-		rational_number<T> operator / (rational_number<T> a, rational_number<T> b){
-			rational_number<T> result = a;
+		real_rational<T> operator / (real_rational<T> a, real_rational<T> b){
+			real_rational<T> result = a;
 			result.a *= b.b;
 			result.b *= b.a;
 			result.simplify();
-			result.positive = !(a.positive^b.positive);
+			result.positive = !(a.positive ^ b.positive);
 			return result;
 		}
 
 		// division of one integer by another and result is rational number
 		template<typename T>
-		rational_number<T> operator / (integer<T> a, integer<T> b){
-			return rational_number<T>(a,b);
+		real_rational<T> operator / (integer_number<T> a, integer_number<T> b){
+			return real_rational<T>(a,b);
 		}
 
 		// division between rational number and integer and result is a rational number
 		template<typename T>
-		rational_number<T> operator / (rational_number<T> a, integer<T> b){
+		real_rational<T> operator / (real_rational<T> a, integer_number<T> b){
 			a.b *= b;
 			a.simplify();
-			a.positive = !(a.positive^b.positive);
+			a.positive = !(a.positive ^ b.positive);
 			return a;
 		}
 
 		template<typename T>
-		rational_number<T> operator / (integer<T> a, rational_number<T> b){
-			rational_number<T> result;
+		real_rational<T> operator / (integer_number<T> a, real_rational<T> b){
+			real_rational<T> result;
 			result.a = b.b;
 			result.b = b.a;
 			result.a *= a;
 			result.simplify();
-			result.positive = !(a.positive^b.positive);
+			result.positive = !(a.positive ^ b.positive);
 			return result;
 		}
 
 		// result is integer, and division is between integers
 		template<typename T>
-		integer<T> operator / (integer<T> a, integer<T> b){
-			rational_number<T> rational_form(a,b);
+		integer_number<T> operator / (integer_number<T> a, integer_number<T> b){
+			real_rational<T> rational_form(a,b);
 			return floor(rational_form);
 		}
 

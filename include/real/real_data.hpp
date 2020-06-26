@@ -12,8 +12,8 @@
 #include <real/real_algorithm.hpp>
 #include <real/real_operation.hpp>
 #include <real/real_exception.hpp>
+#include <real/real_rational.hpp>
 #include <real/integer_number.hpp>
-#include <real/rational_number.hpp>
 
 namespace boost { 
     namespace real{
@@ -35,8 +35,7 @@ namespace boost {
             real_data(real_explicit<T> x) :_real(x), _precision_itr(&_real) {};
             real_data(real_algorithm<T> x) : _real(x), _precision_itr(&_real) {};
             real_data(real_operation<T> x) : _real(x), _precision_itr(&_real) {};
-            real_data(integer<T> x): _real(x) {};
-            real_data(rational_number<T> x): _real(x) {};
+            real_data(real_rational<T> x): _real(x) {};
 
             const real_number<T>& get_real_number() const {
                 return _real;

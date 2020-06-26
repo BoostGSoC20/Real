@@ -115,10 +115,12 @@ namespace boost {
                     }
                 }
                 if(type=="integer"){
-                    this->_real_p = std::make_shared<real_data<T>>(integer<T>(number));
+                    integer_number<T> a(number);
+                    integer_number<T> b("1");
+                    this->_real_p = std::make_shared<real_data<T>>(real_rational<T>(a,b));
                 }
                 if(type=="rational"){
-                    this->_real_p = std::make_shared<real_data<T>>(rational_number<T>(number));
+                    this->_real_p = std::make_shared<real_data<T>>(real_rational<T>(number));
                 }
             }
 
@@ -564,25 +566,70 @@ namespace boost {
              * @param other - the right side operand boost::real::real number.
              */
 
-            void operator+=(real<T> other) {
-                std::visit( overloaded{
-                    [this] (integer<T> a, integer<T> b){
-                            this->_real_p = 
-                                std::make_shared<real_data<T>>(integer<T>(a+b));
-                        }, 
-                    [this] (rational_number<T> a, rational_number<T> b){
-                        this-> _real_p = 
-                            std::make_shared<real_data<T>>(rational_number<T>(a+b));
-                    },
-                    [this] (rational_number<T> a, integer<T> b){
-                        this-> _real_p = 
-                            std::make_shared<real_data<T>>(rational_number<T>(a+b));
-                    },
-                    [this] (integer<T> a, rational_number<T> b){
+            void operator += (real<T> other) {
+                std::visit( overloaded{ 
+                    [this] (real_rational<T> a, real_rational<T> b){
                         this->_real_p = 
-                            std::make_shared<real_data<T>>(rational_number<T>(a+b));
+                            std::make_shared<real_data<T>>(real_rational<T>(a+b));
                     },
-                    [this, &other] (auto a, auto b){    
+
+                    [this, &other] (real_rational<T> rat, auto tmp){
+                        // converting rational number to explicit or operation
+                        real<T> rat_num;
+                        if(rat.b == integer_number<T>("1")){
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                        }
+                        else{
+                        
+                            // if rational number is of rational type, then it would be converted to a division operation between two integers
+                            real _a;
+                            _a._real_p =
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a)); 
+                            real _b;
+                            _b._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.b));
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(_a._real_p, _b._real_p, OPERATION::DIVISION));
+                        }
+                        
+                        
+                        // now adding the numbers
+                        auto [is_simplified, result] = check_and_distribute(other, true, OPERATION::ADDITION, RECURSION_LEVEL::TWO);
+                        if(!is_simplified){
+                            this->_real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(rat_num._real_p, other._real_p, OPERATION::ADDITION));
+                        }
+                    },
+
+                    [this, &other] (auto tmp, real_rational<T> rat){
+                        real<T> rat_num;
+                        if(rat.b == integer_number<T>("1")){
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                        }
+                        else{
+                            real _a;
+                            _a._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                            real _b;
+                            _b._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.b));
+
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_operation(_a._real_p, _b._real_p, OPERATION::DIVISION));
+                        }
+
+                        // now adding the numbers
+                        auto [is_simplified, result] = check_and_distribute(other, true, OPERATION::ADDITION, RECURSION_LEVEL::TWO);
+                        if(!is_simplified){
+                            this->_real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(this->_real_p,rat_num._real_p, OPERATION::ADDITION));
+                        }
+
+                    },
+
+                    [this, &other] (auto a, auto b){
                         auto [is_simplified,result] = check_and_distribute(other, true, OPERATION::ADDITION, RECURSION_LEVEL::TWO);
                         
                         if (!is_simplified) {
@@ -600,25 +647,70 @@ namespace boost {
              * @param other - the right side operand boost::real::real number.
              * @return A copy of the new boost::real::real number representation.
              */
-            real<T> operator+(real<T> other) {
+            real<T> operator + (real<T> other) {
                 real<T> result;
                 std::visit( overloaded{
-                    [&result] (integer<T> a, integer<T> b){
+                    [&result] (real_rational<T> a, real_rational<T> b){
                         result._real_p = 
-                            std::make_shared<real_data<T>>(integer<T>(a+b));
+                            std::make_shared<real_data<T>>(real_rational<T>(a+b));
                     },
-                    [&result] (rational_number<T> a, rational_number<T> b){
-                        result._real_p = 
-                            std::make_shared<real_data<T>>(rational_number<T>(a+b));
+
+                    [this, &other, &result] (real_rational<T> rat, auto tmp){
+                        // converting rational number to explicit or operation type
+                        real<T> rat_num; //rational number
+
+                        // if number is of integer type, rat_num will be converted to explicit number
+                        if(rat.b == integer_number<T>("1")){
+                            rat_num._real_p =
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                        }
+                        else{
+                            real<T> _a, _b; // explicits numbers to represent numerator and denominator of rational number
+                            _a._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                            _b._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.b));
+
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(_a._real_p, _b._real_p, OPERATION::DIVISION));
+                        }
+
+                        auto [is_simplified, result1] = rat_num.check_and_distribute(other, false, OPERATION::ADDITION, RECURSION_LEVEL::TWO);
+                        if (is_simplified)  {
+                            result = result1.value();
+                        } else {
+                            result = real<T>(real_operation<T>(rat_num._real_p, other._real_p, OPERATION::ADDITION));
+                        }
                     },
-                    [&result] (rational_number<T> a, integer<T> b){
-                        result._real_p = 
-                            std::make_shared<real_data<T>>(rational_number<T>(a+b));
+
+                    [this, &other, &result] (auto tmp, real_rational<T> rat){
+                        // converting rational number to explicit or operation type
+                        real<T> rat_num; //rational number
+
+                        // if number is of integer type, rat_num will be converted to explicit number
+                        if(rat.b == integer_number<T>("1")){
+                            rat_num._real_p =
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                        }
+                        else{
+                            real<T> _a, _b; // explicits numbers to represent numerator and denominator of rational number
+                            _a._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                            _b._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.b));
+
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(_a._real_p, _b._real_p, OPERATION::DIVISION));
+                        }
+
+                        auto [is_simplified, result1] = rat_num.check_and_distribute(other, false, OPERATION::ADDITION, RECURSION_LEVEL::TWO);
+                        if (is_simplified)  {
+                            result = result1.value();
+                        } else {
+                            result = real<T>(real_operation<T>(this->_real_p, rat_num._real_p, OPERATION::ADDITION));
+                        }
                     },
-                    [&result] (integer<T> a, rational_number<T> b){
-                        result._real_p = 
-                            std::make_shared<real_data<T>>(rational_number<T>(a+b));
-                    },
+
                     [this, &other, &result] (auto a, auto b){
                         auto [is_simplified, result1] = check_and_distribute(other, false, OPERATION::ADDITION, RECURSION_LEVEL::TWO);
                         if (is_simplified)  {
@@ -638,24 +730,69 @@ namespace boost {
              *
              * @param other - the right side operand boost::real::real number.
              */
-            void operator-=(real<T> other) {
+            void operator -= (real<T> other) {
                 std::visit(overloaded{
-                    [this] (integer<T> a, integer<T> b){
+                    [this] (real_rational<T> a, real_rational<T> b){
                         this->_real_p = 
-                            std::make_shared<real_data<T>>(integer<T>(a-b));
+                            std::make_shared<real_data<T>>(real_rational<T>(a-b));
                     },
-                    [this] (rational_number<T> a, rational_number<T> b){
-                        this->_real_p = 
-                            std::make_shared<real_data<T>>(rational_number<T>(a-b));
+
+                    [this, &other] (real_rational<T> rat, auto tmp){
+                        // converting rational number to explicit or operation
+                        real<T> rat_num;
+                        if(rat.b == integer_number<T>("1")){
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                        }
+                        else{
+                        
+                            // if rational number is of rational type, then it would be converted to a division operation between two integers
+                            real _a;
+                            _a._real_p =
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a)); 
+                            real _b;
+                            _b._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.b));
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(_a._real_p, _b._real_p, OPERATION::DIVISION));
+                        }
+                        
+                        
+                        // now adding the numbers
+                        auto [is_simplified, result] = check_and_distribute(other, true, OPERATION::SUBTRACTION, RECURSION_LEVEL::TWO);
+                        if(!is_simplified){
+                            this->_real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(rat_num._real_p, other._real_p, OPERATION::SUBTRACTION));
+                        }
                     },
-                    [this] (rational_number<T> a, integer<T> b){
-                        this->_real_p = 
-                            std::make_shared<real_data<T>>(rational_number<T>(a-b));
+
+                    [this, &other] (auto tmp, real_rational<T> rat){
+                        real<T> rat_num;
+                        if(rat.b == integer_number<T>("1")){
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                        }
+                        else{
+                            real _a;
+                            _a._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                            real _b;
+                            _b._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.b));
+
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_operation(_a._real_p, _b._real_p, OPERATION::DIVISION));
+                        }
+
+                        // now adding the numbers
+                        auto [is_simplified, result] = check_and_distribute(other, true, OPERATION::SUBTRACTION, RECURSION_LEVEL::TWO);
+                        if(!is_simplified){
+                            this->_real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(this->_real_p,rat_num._real_p, OPERATION::SUBTRACTION));
+                        }
+
                     },
-                    [this] (integer<T> a, rational_number<T> b){
-                        this->_real_p = 
-                            std::make_shared<real_data<T>>(rational_number<T>(a-b));
-                    },
+
                     [this, &other] (auto a, auto b){
                         auto [is_simplified, result] = check_and_distribute(other, true, OPERATION::SUBTRACTION, RECURSION_LEVEL::TWO);
 
@@ -675,25 +812,70 @@ namespace boost {
              * @param other - the right side operand boost::real::real number.
              * @return A copy of the new boost::real::real number representation.
              */
-            real<T> operator-(real<T> other) {
+            real<T> operator - (real<T> other) {
                 real<T> result;
                 std::visit( overloaded{
-                    [&result] (integer<T> a, integer<T> b){
+                    [&result] (real_rational<T> a, real_rational<T> b){
                         result._real_p = 
-                            std::make_shared<real_data<T>>(integer<T>(a-b));
+                            std::make_shared<real_data<T>>(real_rational<T>(a-b));
                     },
-                    [&result] (rational_number<T> a, rational_number<T> b){
-                        result._real_p = 
-                            std::make_shared<real_data<T>>(rational_number<T>(a-b));
+
+                    [this, &other, &result] (real_rational<T> rat, auto tmp){
+                        // converting rational number to explicit or operation type
+                        real<T> rat_num; //rational number
+
+                        // if number is of integer type, rat_num will be converted to explicit number
+                        if(rat.b == integer_number<T>("1")){
+                            rat_num._real_p =
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                        }
+                        else{
+                            real<T> _a, _b; // explicits numbers to represent numerator and denominator of rational number
+                            _a._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                            _b._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.b));
+
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(_a._real_p, _b._real_p, OPERATION::DIVISION));
+                        }
+
+                        auto [is_simplified, result1] = rat_num.check_and_distribute(other, false, OPERATION::SUBTRACTION, RECURSION_LEVEL::TWO);
+                        if (is_simplified)  {
+                            result = result1.value();
+                        } else {
+                            result = real<T>(real_operation<T>(rat_num._real_p, other._real_p, OPERATION::SUBTRACTION));
+                        }
                     },
-                    [&result] (rational_number<T> a, integer<T> b){
-                        result._real_p = 
-                            std::make_shared<real_data<T>>(rational_number<T>(a-b));
+
+                    [this, &other, &result] (auto tmp, real_rational<T> rat){
+                        // converting rational number to explicit or operation type
+                        real<T> rat_num; //rational number
+
+                        // if number is of integer type, rat_num will be converted to explicit number
+                        if(rat.b == integer_number<T>("1")){
+                            rat_num._real_p =
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                        }
+                        else{
+                            real<T> _a, _b; // explicits numbers to represent numerator and denominator of rational number
+                            _a._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                            _b._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.b));
+
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(_a._real_p, _b._real_p, OPERATION::DIVISION));
+                        }
+
+                        auto [is_simplified, result1] = rat_num.check_and_distribute(other, false, OPERATION::SUBTRACTION, RECURSION_LEVEL::TWO);
+                        if (is_simplified)  {
+                            result = result1.value();
+                        } else {
+                            result = real<T>(real_operation<T>(this->_real_p, rat_num._real_p, OPERATION::SUBTRACTION));
+                        }
                     },
-                    [&result] (integer<T> a, rational_number<T> b){
-                        result._real_p = 
-                            std::make_shared<real_data<T>>(rational_number<T>(a-b));
-                    },
+
                     [this, &other, &result] (auto a, auto b){
                         auto [is_simplified, result1] = check_and_distribute(other, false, OPERATION::SUBTRACTION, RECURSION_LEVEL::TWO);
                         if (is_simplified)  {
@@ -714,22 +896,63 @@ namespace boost {
              */
             void operator*=(real<T> other) {
                 std::visit(overloaded{
-                    [this] (integer<T> a, integer<T> b){
-                        this->_real_p =
-                            std::make_shared<real_data<T>>(integer<T>(a*b));
-                    },
-                    [this] (rational_number<T> a, integer<T> b){
+                    [this] (real_rational<T> a, real_rational<T> b){
                         this->_real_p = 
-                            std::make_shared<real_data<T>>(rational_number<T>(a*b));
+                            std::make_shared<real_data<T>>(real_rational<T>(a*b));
                     },
-                    [this] (rational_number<T> a, rational_number<T> b){
+
+                    [this, &other] (real_rational<T> rat, auto tmp){
+                        // converting rational number to explicit or operation
+                        real<T> rat_num;
+                        if(rat.b == integer_number<T>("1")){
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                        }
+                        else{
+                        
+                            // if rational number is of rational type, then it would be converted to a division operation between two integers
+                            real _a;
+                            _a._real_p =
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a)); 
+                            real _b;
+                            _b._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.b));
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(_a._real_p, _b._real_p, OPERATION::DIVISION));
+                        }
+                        
+                        
+                        // now adding the numbers
                         this->_real_p = 
-                            std::make_shared<real_data<T>>(rational_number<T>(a*b));
+                            std::make_shared<real_data<T>>(real_operation<T>(rat_num._real_p, other._real_p, OPERATION::MULTIPLICATION));
                     },
-                    [this] (integer<T> a, rational_number<T> b){
+
+                    [this, &other] (auto tmp, real_rational<T> rat){
+                        real<T> rat_num;
+                        if(rat.b == integer_number<T>("1")){
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                        }
+                        else{
+                            real _a;
+                            _a._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                            real _b;
+                            _b._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.b));
+
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_operation(_a._real_p, _b._real_p, OPERATION::DIVISION));
+                        }
+
+                        // now adding the numbers
+                        
                         this->_real_p = 
-                            std::make_shared<real_data<T>>(rational_number<T>(a*b));
+                            std::make_shared<real_data<T>>(real_operation<T>(this->_real_p,rat_num._real_p, OPERATION::MULTIPLICATION));
+
                     },
+
+
                     [this, &other] (auto a, auto b){
                         this->_real_p =
                         std::make_shared<real_data<T>>(real_operation<T>(this->_real_p, other._real_p, OPERATION::MULTIPLICATION));
@@ -745,26 +968,64 @@ namespace boost {
              * @param other - the right side operand boost::real::real number.
              * @return A copy of the new boost::real::real number representation.
              */
-            real<T> operator*(real<T> other) {
+            real<T> operator * (real<T> other) {
                 real<T> result;
                 std::visit(overloaded{
-                    [&result] (integer<T> a, integer<T> b){
+                    [&result] (real_rational<T> a, real_rational<T> b){
                         result._real_p = 
-                            std::make_shared<real_data<T>>(integer<T>(a*b));
+                            std::make_shared<real_data<T>>(real_rational<T>(a*b));
                     },
-                    [&result] (integer<T> a, rational_number<T> b){
-                        result._real_p = 
-                            std::make_shared<real_data<T>>(rational_number<T>(a*b));
+
+                    [this, &other, &result] (real_rational<T> rat, auto tmp){
+                        // converting rational number to explicit or operation type
+                        real<T> rat_num; //rational number
+
+                        // if number is of integer type, rat_num will be converted to explicit number
+                        if(rat.b == integer_number<T>("1")){
+                            rat_num._real_p =
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                        }
+                        else{
+                            real<T> _a, _b; // explicits numbers to represent numerator and denominator of rational number
+                            _a._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                            _b._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.b));
+
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(_a._real_p, _b._real_p, OPERATION::DIVISION));
+                        }
+
+                        
+                        result = real<T>(real_operation<T>(rat_num._real_p, other._real_p, OPERATION::MULTIPLICATION));
+                        
                     },
-                    [&result] (rational_number<T> a, integer<T> b)
-                    {
-                        result._real_p = 
-                            std::make_shared<real_data<T>>(rational_number<T>(a*b));
+
+                    [this, &other, &result] (auto tmp, real_rational<T> rat){
+                        // converting rational number to explicit or operation type
+                        real<T> rat_num; //rational number
+
+                        // if number is of integer type, rat_num will be converted to explicit number
+                        if(rat.b == integer_number<T>("1")){
+                            rat_num._real_p =
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                        }
+                        else{
+                            real<T> _a, _b; // explicits numbers to represent numerator and denominator of rational number
+                            _a._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                            _b._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.b));
+
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(_a._real_p, _b._real_p, OPERATION::DIVISION));
+                        }
+
+                        
+                        result = real<T>(real_operation<T>(this->_real_p, rat_num._real_p, OPERATION::MULTIPLICATION));
+                        
                     },
-                    [&result] (rational_number<T> a, rational_number<T> b){
-                        result._real_p = 
-                            std::make_shared<real_data<T>>(rational_number<T>(a*b));
-                    },
+
                     [this, &other, &result] (auto a, auto b){
                         result = real(real_operation<T>(this->_real_p, other._real_p, OPERATION::MULTIPLICATION));
                     }
@@ -779,28 +1040,65 @@ namespace boost {
              * @param other - the right side operand boost::real::real number.
              * @return A copy of the new boost::real::real number representation.
              */
-            real<T> operator/(real<T> other) {
+            real<T> operator / (real<T> other) {
                 real<T> result;
                 std::visit(overloaded{
-                    [&result] (integer<T> a, integer<T> b){
+                    [&result] (real_rational<T> a, real_rational<T> b){
+                        real_rational<T> result1 = a/b;
                         result._real_p = 
-                            std::make_shared<real_data<T>>(rational_number(a,b));
+                            std::make_shared<real_data<T>>(real_rational(result1));
                     },
-                    [&result] (integer<T> a, rational_number<T> b){
-                        rational_number<T> result1 = a/b;
-                        result._real_p = 
-                            std::make_shared<real_data<T>>(rational_number(result1));
+
+                    [this, &other, &result] (real_rational<T> rat, auto tmp){
+                        // converting rational number to explicit or operation type
+                        real<T> rat_num; //rational number
+
+                        // if number is of integer type, rat_num will be converted to explicit number
+                        if(rat.b == integer_number<T>("1")){
+                            rat_num._real_p =
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                        }
+                        else{
+                            real<T> _a, _b; // explicits numbers to represent numerator and denominator of rational number
+                            _a._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                            _b._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.b));
+
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(_a._real_p, _b._real_p, OPERATION::DIVISION));
+                        }
+
+                        
+                        result = real<T>(real_operation<T>(rat_num._real_p, other._real_p, OPERATION::DIVISION));
+                        
                     },
-                    [&result] (rational_number<T> a, integer<T> b){
-                        rational_number<T> result1 = a/b;
-                        result._real_p = 
-                            std::make_shared<real_data<T>>(rational_number(result1));
+
+                    [this, &other, &result] (auto tmp, real_rational<T> rat){
+                        // converting rational number to explicit or operation type
+                        real<T> rat_num; //rational number
+
+                        // if number is of integer type, rat_num will be converted to explicit number
+                        if(rat.b == integer_number<T>("1")){
+                            rat_num._real_p =
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                        }
+                        else{
+                            real<T> _a, _b; // explicits numbers to represent numerator and denominator of rational number
+                            _a._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                            _b._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.b));
+
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(_a._real_p, _b._real_p, OPERATION::DIVISION));
+                        }
+
+                        
+                        result = real<T>(real_operation<T>(this->_real_p, rat_num._real_p, OPERATION::DIVISION));
+                        
                     },
-                    [&result] (rational_number<T> a, rational_number<T> b){
-                        rational_number<T> result1 = a/b;
-                        result._real_p = 
-                            std::make_shared<real_data<T>>(rational_number(result1));
-                    },
+
                     [this, &other, &result] (auto a, auto b){
                         result = real(real_operation<T>(this->_real_p, other._real_p, OPERATION::DIVISION));
                     }
@@ -814,25 +1112,64 @@ namespace boost {
              *
              * @param other - the right side operand boost::real::real number.
              */
-            void operator/=(real<T> other) {
+            void operator /= (real<T> other) {
                 std::visit(overloaded{
-                    [this] (integer<T> a, integer<T> b){
+                    [this] (real_rational<T> a, real_rational<T> b){
                         this->_real_p = 
-                            std::make_shared<real_data<T>>(rational_number<T>(a,b));
+                            std::make_shared<real_data<T>>(real_rational<T>(a/b));
                     },
-                    [this] (integer<T> a, rational_number<T> b){
-                        rational_number result1 = a/b;
+
+                    [this, &other] (real_rational<T> rat, auto tmp){
+                        // converting rational number to explicit or operation
+                        real<T> rat_num;
+                        if(rat.b == integer_number<T>("1")){
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                        }
+                        else{
+                        
+                            // if rational number is of rational type, then it would be converted to a division operation between two integers
+                            real _a;
+                            _a._real_p =
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a)); 
+                            real _b;
+                            _b._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.b));
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(_a._real_p, _b._real_p, OPERATION::DIVISION));
+                        }
+                        
+                        
+                        // now adding the numbers
                         this->_real_p = 
-                            std::make_shared<real_data<T>>(rational_number<T>(result1));
+                            std::make_shared<real_data<T>>(real_operation<T>(rat_num._real_p, other._real_p, OPERATION::DIVISION));
                     },
-                    [this] (rational_number<T> a, rational_number<T> b){
+
+                    [this, &other] (auto tmp, real_rational<T> rat){
+                        real<T> rat_num;
+                        if(rat.b==integer_number<T>("1")){
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                        }
+                        else{
+                            real _a;
+                            _a._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
+                            real _b;
+                            _b._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat.b));
+
+                            rat_num._real_p = 
+                                std::make_shared<real_data<T>>(real_operation(_a._real_p, _b._real_p, OPERATION::DIVISION));
+                        }
+
+                        // now adding the numbers
+                        
                         this->_real_p = 
-                            std::make_shared<real_data<T>>(rational_number<T>(a/b));
+                            std::make_shared<real_data<T>>(real_operation<T>(this->_real_p,rat_num._real_p, OPERATION::DIVISION));
+
                     },
-                    [this] (rational_number<T> a, integer<T> b){
-                        this->_real_p = 
-                            std::make_shared<real_data<T>>(rational_number<T>(a/b));
-                    },
+
                     [this, &other] (auto a, auto b){
                         this->_real_p =
                             std::make_shared<real_data<T>>(real_operation<T>(this->_real_p, other._real_p, OPERATION::DIVISION));
@@ -872,18 +1209,130 @@ namespace boost {
             bool operator<(const real<T>& other) const {
                 bool ret;
                 std::visit(overloaded{
-                    [&ret] (integer<T> a, integer<T> b){
-                        ret =  (a<b);
-                    },
-                    [&ret] (integer<T> a, rational_number<T> b){
+                    [&ret] (real_rational<T> a, real_rational<T> b){
                         ret = (a<b);
                     },
-                    [&ret] (rational_number<T> a, integer<T> b){
-                        ret = (a<b);
+
+                    [this, &other, &ret] (real_rational<T> rat_num, auto tmp){
+                        real<T> _this;
+                        if(rat_num.b == integer_number<T>("1"))
+                            _this._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat_num.a));
+                        else {
+                            real _a, _b; // to represent "a" and "b" in rational number a/b
+                            _a._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat_num.a));
+
+                            _b._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat_num.b));
+
+                            _this._real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(_a._real_p, _b._real_p, OPERATION::DIVISION));
+
+                        }
+
+
+                        // now comparing numbers
+                        auto this_it = _this._real_p->get_precision_itr().cbegin();
+                        auto other_it = other._real_p->get_precision_itr().cbegin();
+
+                        if(this_it == other_it)
+                        {
+                            ret = false;
+                            return;
+                        }
+
+                        unsigned int current_precision = std::max(_this.maximum_precision(), other.maximum_precision());
+                        unsigned int p;
+                        for (p = 0; p < current_precision; ++p){
+                            // Get more precision
+                            ++this_it;
+                            ++other_it;
+
+                            bool this_full_precision = this_it.get_interval().is_a_number();
+                            bool other_full_precision = other_it.get_interval().is_a_number();
+                            if (this_full_precision && other_full_precision){
+                                ret = this_it.get_interval() < other_it.get_interval();
+                                break;
+                            }
+
+                            if (this_it.get_interval()< other_it.get_interval()) {
+                                ret = true;
+                                break;
+                            }
+
+                            if (other_it.get_interval()< this_it.get_interval()) {
+                                ret = false;
+                                break;
+                            }
+                        }
+
+                        // If the precision is reached and the number ranges still overlap, then we cannot
+                        // know if they are equals or other is less than this and we throw an error.
+                        if(p == current_precision)
+                            throw boost::real::precision_exception();
                     },
-                    [&ret] (rational_number<T> a, rational_number<T> b){
-                        ret = (a<b);
+
+                    [this, &ret] (auto tmp, real_rational<T> rat_num){
+                        real<T> other; // representing "other" number, which is a rational number
+                        if(rat_num.b == integer_number<T>("1"))   
+                            other._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat_num.a));
+                        else {
+                            real _a, _b; // to represent "a" and "b" in rational number a/b
+                            _a._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat_num.a));
+
+                            _b._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat_num.b));
+
+                            other._real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(_a._real_p, _b._real_p, OPERATION::DIVISION));
+
+                        }
+
+
+                        // now comparing numbers
+                        auto this_it = this->_real_p->get_precision_itr().cbegin();
+                        auto other_it = other._real_p->get_precision_itr().cbegin();
+
+                        if(this_it == other_it)
+                        {
+                            ret = false;
+                            return;
+                        }
+
+                        unsigned int current_precision = std::max(this->maximum_precision(), other.maximum_precision());
+                        unsigned int p;
+                        for (p = 0; p < current_precision; ++p){
+                            // Get more precision
+                            ++this_it;
+                            ++other_it;
+
+                            bool this_full_precision = this_it.get_interval().is_a_number();
+                            bool other_full_precision = other_it.get_interval().is_a_number();
+                            if (this_full_precision && other_full_precision){
+                                ret = this_it.get_interval() < other_it.get_interval();
+                                break;
+                            }
+
+                            if (this_it.get_interval()< other_it.get_interval()) {
+                                ret = true;
+                                break;
+                            }
+
+                            if (other_it.get_interval()< this_it.get_interval()) {
+                                ret = false;
+                                break;
+                            }
+                        }
+
+                        // If the precision is reached and the number ranges still overlap, then we cannot
+                        // know if they are equals or other is less than this and we throw an error.
+                        if(p == current_precision)
+                            throw boost::real::precision_exception();
                     },
+
                     [this, &other, &ret] (auto a, auto b){
                         auto this_it = this->_real_p->get_precision_itr().cbegin();
                         auto other_it = other._real_p->get_precision_itr().cbegin();
@@ -921,7 +1370,7 @@ namespace boost {
 
                         // If the precision is reached and the number ranges still overlap, then we cannot
                         // know if they are equals or other is less than this and we throw an error.
-                        if(p==current_precision)
+                        if(p == current_precision)
                             throw boost::real::precision_exception();
                     }
                 }, _real_p->get_real_number(), other._real_p->get_real_number());
@@ -943,18 +1392,119 @@ namespace boost {
             bool operator>(const real<T>& other) const {
                 bool ret;
                 std::visit(overloaded{
-                    [&ret] (integer<T> a, integer<T> b){
+                    [&ret] (real_rational<T> a, real_rational<T> b){
                         ret = (a>b);
                     },
-                    [&ret] (rational_number<T> a, rational_number<T> b){
-                        ret = (a>b);
+
+                    [&other, &ret] (real_rational<T> rat_num, auto tmp){
+                        real<T> _this; // representing "other" number, which is a rational number
+                        if(rat_num.b == integer_number<T>("1"))   
+                            _this._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat_num.a));
+                        else {
+                            real _a, _b; // to represent "a" and "b" in rational number a/b
+                            _a._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat_num.a));
+
+                            _b._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat_num.b));
+
+                            _this._real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(_a._real_p, _b._real_p, OPERATION::DIVISION));
+
+                        }
+
+                        auto this_it = _this._real_p->get_precision_itr().cbegin();
+                        auto other_it = other._real_p->get_precision_itr().cbegin();
+
+                        if (this_it == other_it){
+                            ret = false;
+                            return;
+                        }
+
+                        unsigned int current_precision = std::max(_this.maximum_precision(), other.maximum_precision());
+                        unsigned int p;
+                        for (p=0; p < current_precision; ++p) {
+                            // Get more precision
+                            ++this_it;
+                            ++other_it;
+                            bool this_full_precision = this_it.get_interval().is_a_number();
+                            bool other_full_precision = other_it.get_interval().is_a_number();
+                            if (this_full_precision && other_full_precision) {
+                                ret = this_it.get_interval() > other_it.get_interval();
+                                break;
+                            }
+                            if (this_it.get_interval()> other_it.get_interval()) {
+                                ret = true;
+                                break;
+                            }
+                            if (other_it.get_interval()> this_it.get_interval()) {
+                                ret = false;
+                                break;
+                            }
+                        }
+                        // If the precision is reached and the number ranges still overlap, then we cannot
+                        // know if they are equals or other is less than this and we throw an error.
+                        if(p == current_precision)
+                            throw boost::real::precision_exception();
+
+
                     },
-                    [&ret] (rational_number<T> a, integer<T> b){
-                        ret = (a>b);
+
+                    [this, &ret] (auto tmp, real_rational<T> rat_num){
+
+                        real<T> other; // representing "other" number, which is a rational number
+                        if(rat_num.b == integer_number<T>("1"))   
+                            other._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat_num.a));
+                        else {
+                            real _a, _b; // to represent "a" and "b" in rational number a/b
+                            _a._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat_num.a));
+
+                            _b._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat_num.b));
+
+                            other._real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(_a._real_p, _b._real_p, OPERATION::DIVISION));
+
+                        }
+
+                        auto this_it = this->_real_p->get_precision_itr().cbegin();
+                        auto other_it = other._real_p->get_precision_itr().cbegin();
+
+                        if (this_it == other_it){
+                            ret = false;
+                            return;
+                        }
+
+                        unsigned int current_precision = std::max(this->maximum_precision(), other.maximum_precision());
+                        unsigned int p;
+                        for (p=0; p < current_precision; ++p) {
+                            // Get more precision
+                            ++this_it;
+                            ++other_it;
+                            bool this_full_precision = this_it.get_interval().is_a_number();
+                            bool other_full_precision = other_it.get_interval().is_a_number();
+                            if (this_full_precision && other_full_precision) {
+                                ret = this_it.get_interval() > other_it.get_interval();
+                                break;
+                            }
+                            if (this_it.get_interval()> other_it.get_interval()) {
+                                ret = true;
+                                break;
+                            }
+                            if (other_it.get_interval()> this_it.get_interval()) {
+                                ret = false;
+                                break;
+                            }
+                        }
+                        // If the precision is reached and the number ranges still overlap, then we cannot
+                        // know if they are equals or other is less than this and we throw an error.
+                        if(p == current_precision)
+                            throw boost::real::precision_exception();
                     },
-                    [&ret] (integer<T> a, rational_number<T> b){
-                        ret = (a>b);
-                    },
+
                     [this, &other, &ret] (auto a, auto b){
                         auto this_it = this->_real_p->get_precision_itr().cbegin();
                         auto other_it = other._real_p->get_precision_itr().cbegin();
@@ -987,7 +1537,7 @@ namespace boost {
                         }
                         // If the precision is reached and the number ranges still overlap, then we cannot
                         // know if they are equals or other is less than this and we throw an error.
-                        if(p==current_precision)
+                        if(p == current_precision)
                             throw boost::real::precision_exception();
                     }
                 }, _real_p->get_real_number(), other._real_p->get_real_number());
@@ -1005,30 +1555,35 @@ namespace boost {
              *
              * @throws boost::real::precision_exception
              */
-            bool operator==(const real<T>& other) const {
+            bool operator == (const real<T>& other) const {
                 bool ret;
                 std::visit(overloaded{
-                    [&ret] (integer<T> a, integer<T> b){
+                    [&ret] (real_rational<T> a, real_rational<T> b){
                         ret = (a==b);
                     },
 
-                    [&ret] (integer<T> a, rational_number<T> b){
-                        ret = (a==b);
-                    },
+                    [&other, &ret] (real_rational<T> rat_num, auto tmp){
+                        real<T> _this; // representing "other" number, which is a rational number
+                        if(rat_num.b==integer_number<T>("1"))   
+                            _this._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat_num.a));
+                        else {
+                            real _a, _b; // to represent "a" and "b" in rational number a/b
+                            _a._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat_num.a));
 
-                    [&ret] (rational_number<T> a, integer<T> b){
-                        ret = (a==b);
-                    },
+                            _b._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat_num.b));
 
-                    [&ret] (rational_number<T> a, rational_number<T> b){
-                        ret = (a==b);
-                    },
+                            _this._real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(_a._real_p, _b._real_p, OPERATION::DIVISION));
 
-                    [this, &other, &ret] (auto a, auto b){
-                        auto this_it = _real_p->get_precision_itr().cbegin();
+                        }
+
+                        auto this_it = _this._real_p->get_precision_itr().cbegin();
                         auto other_it = other._real_p->get_precision_itr().cbegin();
 
-                        unsigned int current_precision = std::max(this->maximum_precision(), other.maximum_precision());
+                        unsigned int current_precision = std::max(_this.maximum_precision(), other.maximum_precision());
                         unsigned int p;
                         for (p = 0; p < current_precision; ++p) {
                             // Get more precision
@@ -1055,6 +1610,89 @@ namespace boost {
                         if(p==current_precision)
                             throw boost::real::precision_exception();
 
+                    },
+
+                    [this, &ret] (auto tmp, real_rational<T> rat_num){
+                        real<T> other; // representing "other" number, which is a rational number
+                        if(rat_num.b==integer_number<T>("1"))   
+                            other._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat_num.a));
+                        else {
+                            real _a, _b; // to represent "a" and "b" in rational number a/b
+                            _a._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat_num.a));
+
+                            _b._real_p = 
+                                std::make_shared<real_data<T>>(real_explicit<T>(rat_num.b));
+
+                            other._real_p = 
+                                std::make_shared<real_data<T>>(real_operation<T>(_a._real_p, _b._real_p, OPERATION::DIVISION));
+
+                        }
+
+                        auto this_it = this->_real_p->get_precision_itr().cbegin();
+                        auto other_it = other._real_p->get_precision_itr().cbegin();
+
+                        unsigned int current_precision = std::max(this->maximum_precision(), other.maximum_precision());
+                        unsigned int p;
+                        for (p = 0; p < current_precision; ++p) {
+                            // Get more precision
+                            ++this_it;
+                            ++other_it;
+
+                            bool this_full_precision = this_it.get_interval().is_a_number();
+                            bool other_full_precision = other_it.get_interval().is_a_number();
+                            if (this_full_precision && other_full_precision) {
+                                ret = this_it.get_interval()== other_it.get_interval();
+                                break;
+                            }
+
+                            bool this_is_lower = this_it.get_interval()< other_it.get_interval();
+                            bool other_is_lower = other_it.get_interval()< this_it.get_interval();
+                            if (this_is_lower || other_is_lower) {
+                                ret = false;
+                                break;
+                            }
+                        }
+
+                        // If the precision is reached and the numbers full precision is not reached, then
+                        // we cannot know if they are equals or not.
+                        if(p == current_precision)
+                            throw boost::real::precision_exception();
+
+                    },
+
+                    [this, &other, &ret] (auto a, auto b){
+                        auto this_it = this->_real_p->get_precision_itr().cbegin();
+                        auto other_it = other._real_p->get_precision_itr().cbegin();
+
+                        unsigned int current_precision = std::max(this->maximum_precision(), other.maximum_precision());
+                        unsigned int p;
+                        for (p = 0; p < current_precision; ++p) {
+                            // Get more precision
+                            ++this_it;
+                            ++other_it;
+
+                            bool this_full_precision = this_it.get_interval().is_a_number();
+                            bool other_full_precision = other_it.get_interval().is_a_number();
+                            if (this_full_precision && other_full_precision) {
+                                ret = this_it.get_interval()== other_it.get_interval();
+                                break;
+                            }
+
+                            bool this_is_lower = this_it.get_interval()< other_it.get_interval();
+                            bool other_is_lower = other_it.get_interval()< this_it.get_interval();
+                            if (this_is_lower || other_is_lower) {
+                                ret = false;
+                                break;
+                            }
+                        }
+
+                        // If the precision is reached and the numbers full precision is not reached, then
+                        // we cannot know if they are equals or not.
+                        if(p == current_precision)
+                            throw boost::real::precision_exception();
+
                     } 
 
                 }, _real_p->get_real_number(), other._real_p->get_real_number());
@@ -1074,6 +1712,65 @@ namespace boost {
                 os << r.get_real_itr().cend().get_interval();
                 return os;
             }
+
+
+        // to convert a real_integer type number to a real_explicit number
+        void to_explicit(){
+            std::visit(overloaded{
+                [this] (real_rational<T> a){
+                    if(a.b!=real_rational<T>("1")){
+                        throw expected_real_integer_type_number();
+                    }
+                    this->_real_p = 
+                        std::make_shared<real_data<T>>(real_explicit<T>(a.a));
+                },
+                [] (auto a){
+                    throw expected_real_integer_type_number();
+                }
+            }, _real_p->get_real_number());
+
+            return ;
+        }
+
+
+
+        // to convert a real_rational to its real_operation equivalent
+        void to_operation(){
+            std::visit(overloaded{
+                [this] (real_rational<T> rat_num){
+                    real _a, _b;
+                    _a._real_p = 
+                        std::make_shared<real_data<T>>(real_explicit<T>(rat_num.a));
+                    _b._real_p = 
+                        std::make_shared<real_data<T>>(real_explicit<T>(rat_num.b));
+
+                    this->_real_p = 
+                        std::make_shared<real_data<T>>(real_operation<T>(_a, _b, OPERATION::DIVISION));
+                },
+                [] (auto tmp){
+                    throw expected_real_rational_type_number();
+                }
+            }, _real_p->get_real_number());
+        }
+
+
+        real<T> operator % (const real<T> other){
+            real<T> result;
+            std::visit(overloaded{
+                [&result] (real_rational<T> a, real_rational<T> b){
+                    if(a.b != integer_number<T> ("1") || b.b != integer_number<T>("1")){
+                        throw expected_real_integer_type_number();
+                    }
+
+                    result._real_p = 
+                        std::make_shared<real_data<T>>(real_rational<T>(a.a % b.a));
+                },
+                [] (auto a, auto b){
+                    throw expected_real_integer_type_number();
+                }
+            }, _real_p->get_real_number(), other._real_p->get_real_number());
+            return result;
+        }
 
         }; // end real class
     }

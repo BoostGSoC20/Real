@@ -10,12 +10,9 @@
 #include <limits>
 #include <iterator>
 #include <cctype>
-#include <chrono>
 
 namespace boost {
     namespace real {
-
-        enum class DIVISION_RESULT {UPPER, LOWER, EXACT};
 
         template <typename T = int>
         struct exact_number {
@@ -697,202 +694,29 @@ namespace boost {
                 remainder = exact_remainder.digits;
             }
 
-            /// calculates *this / divisor 
-            /// 
-            ///  @brief a binary-search type method for dividing exact_numbers.
-            ///  @param is_upper true: returns result with an error of +epsilon, while
-            ///                  false: returns result with an error of -epsilon
-            void divide_vector(exact_number<T> divisor, unsigned int maximum_precision, DIVISION_RESULT deviation) {
-                /// @TODO: replace this with something more efficient, like newton-raphson method
-                // it also completely recalculates on each precision increase
-                // instead, could use previous information to make better "guesses"
-                // for our iteration scheme.
+            /*              DIVISION
+             *  @brief:  divides (*this) by divisor
+             *  @param:  divisor: number which divides (*this)
+             *  @param:  maximum_precision: Absolute Error in the result should be < 1*base^(-maximum_precision)
+             *  @param:  upper: if true: error lies in [0, +epsilon]
+             *                  else: error lies in [-epsilon, 0], here epsilon = 1*base^(-maximum_precision)
+             *  @author: Kishan Shukla
+             */
+            void divide_vector(const exact_number<T> divisor, unsigned int maximum_precision, bool upper) {
 
-                newton_raphson_division(divisor, maximum_precision, deviation);
+                newton_raphson_division(divisor, maximum_precision, upper);
 
-                // boost::real::exact_number<T> numerator;
-                // boost::real::exact_number<T> left;
-                // boost::real::exact_number<T> right;
-                // boost::real::exact_number<T> residual;
-                // boost::real::exact_number<T> tmp;
-                // boost::real::exact_number<T> half;
-                // boost::real::exact_number<T> distance;
-                // boost::real::exact_number<T> min_boundary_n;
-                // boost::real::exact_number<T> min_boundary_p;
-
-                // bool positive = ((*this).positive == divisor.positive);
-                // numerator = (*this).abs();
-                // divisor = divisor.abs();
-
-                // // ensuring that assignment from -1 * (maximum_precision) to exponent will not
-                // // overflow
-                // if (maximum_precision > (unsigned int) std::abs(std::numeric_limits<exponent_t>::min())) {
-                //     throw exponent_overflow_exception();
-                // }
-
-                // min_boundary_n.digits = {1};
-                // min_boundary_n.exponent = -1 * (maximum_precision);
-                // min_boundary_n.positive = false;
-
-                // min_boundary_p.digits = {1};
-                // min_boundary_p.exponent = -1 * (maximum_precision);
-
-                // T base = (std::numeric_limits<T>::max() /4)*2 - 1;
-                // T H = base/2 + 1;
-                // half.digits = {H};
-                // half.exponent = 0;
-
-                // // we ignore exponents, then set them in the end.
-                // // (a * 10^x) / (b*10^y) = (a*10 / b*10) * 10^((x-1)-(y-1))
-                // // 100/20 -> 1/2 * (10)
-                // int exponent_dif = (numerator.exponent - 1) - (divisor.exponent - 1);
-
-                // numerator.exponent = 1;
-                // divisor.exponent = 1;
-                // tmp.digits = {1};
-                // tmp.exponent = 1;
-
-                // exact_number<T> zero = exact_number<T>(); 
-
-                // if (divisor == tmp) {
-                //     this->exponent = exponent_dif + 1;
-                //     this->positive = positive;
-                //     return;
-                // }
-
-                // if (divisor == (*this)) { 
-                //     (*this) = tmp;
-                //     (*this).positive = positive;
-                //     return;
-                // }
-
-                // if ((*this) == zero)
-                //     return;
-                    
-                // if (divisor == zero)
-                //     throw(boost::real::divide_by_zero());
-
-                // // N < D --> 0 < abs(Q) < 1
-                // if (numerator < divisor) {
-                //         left = exact_number<T>(); // 0
-                //         right = tmp; // 1
-                //     } else { // assuming D > 1. N > D ---> 1 < N / D < N
-                //         left = tmp; // 1
-                //         right = numerator;
-                //     }
-
-                // // distance = (right - left) / 2
-                // distance = (right - left) * half;
-                // (*this) = left + distance;
-                // // N/D = Q -> QD -N = 0
-                // residual = (*this) * divisor - numerator;
-                // if (residual == zero) {
-                //     this->exponent += exponent_dif;
-                //     this->positive = positive;
-                //     return;
-                // }
-
-                // // calculate the result
-                // // continue the loop while we are still inaccurate (up to max precision)
-                // while ((residual.abs() > min_boundary_p) && 
-                //        (distance.exponent >= min_boundary_p.exponent)) {
-                //     // result too small, try halfway between left and (*this) 
-                //     if (residual < min_boundary_n) {
-                //         left = (*this);
-                //     }
-                //     // distance is halved
-                //     distance = half * distance;
-                //     distance.normalize();
-
-                //     // truncate insignificant digits of distance
-                //     while (distance.size() > maximum_precision + 1) {
-                //         distance.digits.pop_back();
-                //     }
-
-                //     // iterate (*this)
-                //     (*this) = left + distance;
-
-                //     // truncate insignificant digits of (*this)
-                //     while ((*this).size() > maximum_precision + 1) {
-                //         (*this).digits.pop_back();
-                //     }
-
-                //     // recalculate residual  N/D = Q ---> QD - N = residual
-                //     residual = ((*this) * divisor) - numerator;
-                //     residual.normalize();
-                // }
-                
-                // // truncate (*this)
-                // this->normalize();
-
-                // while ((*this).size() > maximum_precision)
-                //     (*this).digits.pop_back();
-
-
-                // // recalculate residual for the final (*this) value
-                // exact_number<T> residual_o = ((*this) * divisor) - numerator;
-
-                // // note we have to normalize before comparison, because -0.0 != zero ..
-                // residual_o.normalize();
-
-                // if (residual_o != zero) { // then, we are not fully accurate
-                //     // we try seeing if we can make the residual equal zero by adding/subtracting epsilon
-                //     exact_number<T> tmp_lower = (*this);
-                //     tmp_lower.round_down(base);
-                //     exact_number<T> tmp_upper = (*this);
-                //     tmp_upper.round_up(base);
-
-                //     residual = tmp_lower * divisor - numerator;
-                //     residual.normalize();
-
-                //     if (residual == zero) {
-                //         (*this) = tmp_lower;
-
-                //         if (positive)
-                //             (*this).positive = true;
-                //         else
-                //             (*this).positive = false;
-
-                //         (*this).normalize();
-                //         this->exponent += exponent_dif;
-                //         return;
-                //     } 
-
-                //     residual = tmp_upper * divisor - numerator;
-                //     residual.normalize();
-
-                //     if (residual == zero) {
-                //         (*this) = tmp_upper;
-
-                //         if (positive)
-                //             (*this).positive = true;
-                //         else
-                //             (*this).positive = false;
-
-                //         (*this).normalize();
-                //         this->exponent += exponent_dif;
-                //         return;
-                //     }
-                //     // at this point, it is impossible to make the residual 0
-                // } // else old residual == 0
-
-                // if (positive)
-                //     (*this).positive = true;
-                // else
-                //     (*this).positive = false;
-
-                // this->exponent += exponent_dif;
-                // (*this).normalize();
             }
 
-            /*       BINARY SEARCH BASED DIVISION
-             *  an approximate division method, returns results which have insigificant error
+            /*          BINARY SEARCH BASED DIVISION
+             *      an approximate division method, used in the initial guess of reciprocal in Newton Raphson
              */
 
             void binary_search_division(
-                exact_number<T> divisor,
+                const exact_number<T> divisor,
                 unsigned int maximum_precision){
 
+                /* Exceptions */
                 if (maximum_precision > (unsigned int) std::abs(std::numeric_limits<exponent_t>::min())) {
                     throw exponent_overflow_exception();
                 }
@@ -902,6 +726,7 @@ namespace boost {
                     throw divide_by_zero();
                 }
 
+                /* Special Cases */
                 if((*this) == zero){
                     return;
                 }
@@ -913,12 +738,12 @@ namespace boost {
                     return;
                 }
 
-                bool positive = ((*this).positive == divisor.positive);
+                bool positive = (this->positive == divisor.positive);
 
                 exact_number<T> minus_one = one;
                 minus_one.positive = false;
                 if(divisor == minus_one){
-                    (*this).positive = positive;
+                    this->positive = positive;
                     return;
                 }
 
@@ -927,17 +752,20 @@ namespace boost {
                     return;
                 }
 
-                T base = (std::numeric_limits<T>::max() / 4)*2 - 1;
+                const T base = (std::numeric_limits<T>::max() / 4) * 2 - 1;
                 exact_number<T> half;
-                half.digits = {base/2+1};
+                half.digits = {base / 2 + 1};
 
-                int exponent_diff = ((*this).exponent-1) - (divisor.exponent-1);
-                this->exponent = 1;
-                divisor.exponent = 1;
-                
                 exact_number<T> left, right, numerator, denominator, residual, length;
-                numerator = (*this).abs();
-                denominator = divisor.abs();
+                numerator = (*this);
+                denominator = divisor;
+                numerator = numerator.abs();
+                denominator = denominator.abs();
+
+                int exponent_diff = (this->exponent - 1) - (denominator.exponent - 1);
+                numerator.exponent = 1;
+                denominator.exponent = 1;
+                
 
                 if(numerator > denominator){
                     left = one;
@@ -950,10 +778,10 @@ namespace boost {
                 length = (right - left) * half;
                 (*this) = length + left;
 
-                residual = (*this)*denominator - numerator;
+                residual = (*this) * denominator - numerator;
                 if(residual == zero){
-                    (*this).exponent += exponent_diff;
-                    (*this).positive = positive;
+                    this->exponent += exponent_diff;
+                    this->positive = positive;
                     return;
                 }
 
@@ -982,49 +810,49 @@ namespace boost {
                     }
 
                     (*this) = left + length;
-                    while((*this).digits.size() > maximum_precision + 1){
-                        (*this).digits.pop_back();
+                    while(this->digits.size() > maximum_precision + 1){
+                        this->digits.pop_back();
                     }
 
-                    residual = (*this)*denominator - numerator;
+                    residual = (*this) * denominator - numerator;
                     residual.normalize();
                 }
 
                 this->normalize();
-                while((*this).digits.size() > maximum_precision + 1){
-                    (*this).digits.pop_back();
+                while(this->digits.size() > maximum_precision + 1){
+                    this->digits.pop_back();
                 }
 
-                residual = (*this)*denominator - numerator;
+                residual = (*this) * denominator - numerator;
                 residual.normalize();
 
                 if(residual < zero){
-                    (*this).round_up(base);
+                    this->round_up(base);
                 }
 
                 if(residual > zero){
-                    (*this).round_down(base);
+                    this->round_down(base);
                 }
 
-                (*this).positive = positive;
-                (*this).exponent += exponent_diff;
-                (*this).normalize();
+                this->positive = positive;
+                this->exponent += exponent_diff;
+                this->normalize();
             }
 
             /*          NEWTON RAPHSON DIVISION
-             * @param: divisor: an exact_number which divides (*this)
-             * @param: maximum_precision: the precision of (*this)/divisor
-             * @param: deviation: can take three values 
-             *              1. upper: returns result with +epsilon error
-             *              2. lower: return result with -epsilon error
-             *              3. exact: return result with zero error (zero error means
-             *                        error which is insignificant w.r.t precision of result)
+             * @brief:   calculates (*this)/divisor
+             * @param:   divisor: an exact_number which divides (*this)
+             * @param:   maximum_precision:Absolute Error in the result should be < 1*base^(-maximum_precision)
+             * @param:   upper: if upper is
+             *              1. true: returns result with [0, +epsilon] error
+             *              2. false: return result with [-epsilon, 0] error, here epsilon = 1*base^(-maximum_precision)
+             * @author:  Kishan Shukla
              */
 
             void newton_raphson_division(
-                exact_number<T> divisor,
+                const exact_number<T> divisor,
                 unsigned int maximum_precision,
-                DIVISION_RESULT deviation){
+                bool upper){
 
                 /* Exceptions start */
                 if (maximum_precision > (unsigned int) std::abs(std::numeric_limits<exponent_t>::min())) {
@@ -1042,41 +870,47 @@ namespace boost {
                     return;
                 }
 
-                exact_number<T> one;
-                one.digits={1};
-                one.exponent=1;
-                if(divisor == one){
+                exact_number<T> _1;
+                _1.digits={1};
+                _1.exponent=1;
+                if(divisor == _1){
                     return;
                 }
 
-                bool positive = ((*this).positive == divisor.positive);
+                bool positive = (this->positive == divisor.positive); /* sign of result */
 
-                exact_number<T> minus_one = one;
+                exact_number<T> minus_one = _1;
                 minus_one.positive = false;
                 if(divisor == minus_one){
-                    (*this).positive = positive;
+                    this->positive = positive;
                     return;
                 }
 
                 if(divisor == (*this)){
-                    (*this) = one;
+                    (*this) = _1;
                     return;
                 }
                 /* special cases end */
 
                 /* preprocessing required for the newton raphson algorithm to converge 
                  * divisor should satisfy condition: 0.5 <= divisor <= 1 (in decimal system) */
-                int exponent_diff = ((*this).exponent) - (divisor.exponent);
-                this->exponent = 0;
-                divisor.exponent = 0;
+                exact_number<T> numerator, denominator;
+                numerator = (*this);
+                denominator = divisor;
+                numerator = numerator.abs();
+                denominator = denominator.abs();
 
-                T base = (std::numeric_limits<T>::max() /4)*2;
+                int exponent_diff = numerator.exponent - denominator.exponent;
+                numerator.exponent = 0;
+                denominator.exponent = 0;
+
+                const T base = (std::numeric_limits<T>::max() / 4) * 2;
                 exact_number<T> _2;
                 _2.digits = {2};
                 _2.exponent = 1;
-                while( divisor.digits[0] < base/2 ){
-                    divisor = divisor * _2;
-                    (*this) = (*this) * _2;
+                while( denominator.digits[0] < base/2 ){
+                    denominator = denominator * _2;
+                    numerator = numerator * _2;
                 }
                 /* preprocessing end */
 
@@ -1092,13 +926,12 @@ namespace boost {
                 _17.digits = {17};
                 _17.exponent = 1;
 
-                reciprocal = _48 - _32*divisor;
+                reciprocal = _48 - _32*denominator;
                 reciprocal.binary_search_division(_17, maximum_precision); /* approximate division method */
                 /* Initial guess end*/
 
-                exact_number<T> error, max_error, numerator, denominator, residual, answer, more_precise_answer;
-                denominator = divisor.abs();
-                numerator = (*this);
+                --maximum_precision; 
+                exact_number<T> error, max_error, residual, answer, more_precise_answer;
                 max_error.digits = {1};
                 max_error.exponent = (-1)*(maximum_precision);
                 answer = reciprocal * numerator;
@@ -1107,57 +940,77 @@ namespace boost {
                 do{
                     /* improving guess */
                     reciprocal = reciprocal * ( _2 - reciprocal*denominator);
+                    reciprocal.normalize();
 
                     /* truncate insignificant digits from the reciprocal */
-                    while(reciprocal.digits.size() > maximum_precision + 2){
+                    while((int) reciprocal.digits.size() - reciprocal.exponent - numerator.exponent >  maximum_precision + 1){
                         reciprocal.digits.pop_back();
                     }
 
                     more_precise_answer = reciprocal * numerator;
-                    while(more_precise_answer.digits.size() > maximum_precision + 2){
+                    more_precise_answer.normalize();
+
+                    /* truncate insignificant digits from the reciprocal */
+                    while((int) more_precise_answer.digits.size() - more_precise_answer.exponent > maximum_precision + 1){
                         more_precise_answer.digits.pop_back();
                     }
+
                     /* if there is no improvement then exit */
                     if(more_precise_answer == answer){
                         break;
                     }
 
+                    /* Compute the improvement in result */
                     error = more_precise_answer - answer;
                     error = error.abs();
 
                     answer = more_precise_answer;
-
-                    residual = (answer)*denominator - numerator;
-                    residual.normalize();
                     
-                }while( (deviation == DIVISION_RESULT::UPPER && residual<zero) ||
-                    (deviation == DIVISION_RESULT::LOWER && residual>zero) ||
-                    error > max_error);
+                }while( error > max_error );
                 /* newton raphson iteration ends*/
 
                 (*this) = answer;
+                
+                residual = (*this) * denominator - numerator;
+                residual.normalize();
 
-                if(deviation == DIVISION_RESULT::UPPER){
-                    (*this) += max_error;
+                if(upper){/* residual shoud be positive or = zero */
+
+                    if(residual < zero){/* if residual is negative, we make it positive or = zero */
+                        (*this) += max_error;
+                    }
+
+                    if(residual > zero){/* if residual is positive, we check if we can make it zero */
+                        exact_number<T> tmp_lower = (*this) - max_error;
+                        residual = tmp_lower * denominator - numerator;
+                        residual.normalize();
+                        if(residual == zero){
+                            (*this) = tmp_lower;
+                        }
+                    }
+
+                }else{/* residual shoud be negative = zero */
+
+                    if(residual > zero){/* if residual is positive, we make it negative or = zero */
+                        (*this) -= max_error;
+                    }
+
+                    if(residual < zero){/* if residual is negative, we check if we can make it zero */
+                        exact_number<T> tmp_upper = (*this) + max_error;
+                        residual = tmp_upper * denominator - numerator;
+                        residual.normalize();
+
+                        if(residual == zero){
+                            (*this) = tmp_upper;
+                        }
+                    }
                 }
 
-                if(deviation == DIVISION_RESULT::LOWER){
-                    (*this) -= max_error;
-                }
-
-                (*this).exponent += exponent_diff;
-                (*this).positive = positive;
-                (*this).digits.resize( maximum_precision + 1 );
-                (*this).normalize();
+                this->exponent += exponent_diff;
+                this->positive = positive;
+                this->normalize();
 
             }
-
-            // for debugging purposes
-            // inline static void print(exact_number<T> e, std::string str){
-            //     std::cout << str << " is: ";
-            //     std::string e10 = e.as_string();
-            //     std::cout << e10 << "\n";
-            // }
 
             void round_up_abs(T base) {
                 int index = digits.size() - 1;

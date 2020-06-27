@@ -73,7 +73,7 @@ namespace boost {
                 exact_number x = mn;
 
                 /// @TODO look into possible precision problems
-                x.divide_vector(ln, n+PLACEHOLDER, DIVISION_RESULT::EXACT);
+                x.divide_vector(ln, n+PLACEHOLDER, true);
 
                 // prepare to calculate k=2 term
                 k = one_n + one_n;
@@ -84,7 +84,7 @@ namespace boost {
                 /// @TODO: ensure cast doesn't overflow
                 while(last_term.exponent >= 1-(int)(n+PLACEHOLDER)) {
                     last_term *= x;
-                    last_term.divide_vector(k, n+PLACEHOLDER, DIVISION_RESULT::EXACT);
+                    last_term.divide_vector(k, n+PLACEHOLDER, true);
                     current_value += last_term;
 
                     k = k + one_n;

@@ -879,6 +879,42 @@ namespace boost {
                 (*this).normalize();
             }
 
+            /*  BINARY EXPONENTIATION
+             */
+
+
+            static exact_number<T> binary_exponentiation(const exact_number<T>& number, const exact_number<T>& exponent) {
+                exact_number<T> result, zero = exact_number<T> (), number_copy;
+                result.digits = {1};
+                result.exponent = 1;
+                number_copy = number;
+
+                std::vector<T> exponent_vector, remainder, quotient;
+                exponent_vector = exponent.digits;
+
+                while((int) exponent_vector.size() < exponent.exponent){
+                    exponent_vector.push_back(0);
+                }
+
+                while(true){
+                    DivisionBySingleDigit(exponent_vector, std::vector<T> {2}, quotient, remainder);
+                    if ( !(remainder.empty() || ((int)remainder.size() == 1 && remainder[0] == 0)) ) {
+                        result = result * number_copy;
+                    }
+
+                    number_copy = number_copy * number_copy;
+
+                    exponent_vector = quotient;
+                    if((int)exponent_vector.size() == 1 && exponent_vector[0] == 0){
+                        break;
+                    }
+                    quotient.clear();
+                    remainder.clear();
+                }
+
+                return result;
+            }
+
             void round_up_abs(T base) {
                 int index = digits.size() - 1;
                 bool keep_carrying = true;

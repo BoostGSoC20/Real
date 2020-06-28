@@ -89,6 +89,12 @@ namespace boost {
             }
         };
 
+        struct non_integral_exponent_exception : public std::exception {
+            const char * what () const throw () override {
+                return "Non integral powers not supported";
+            }
+        };
+
     }
 }
 

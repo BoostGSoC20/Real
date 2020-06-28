@@ -879,7 +879,11 @@ namespace boost {
                 (*this).normalize();
             }
 
-            /*  BINARY EXPONENTIATION
+            /*              BINARY EXPONENTIATION
+             *  @brief:  calculates exact_number^exact_number, (only integral powers)
+             *  @params: number: an exact_number whose integral power is to be evaluated
+             *  @params: exponent: an exact_number which is integer power to be evaluated
+             *  @return: returns an exact_number = number^exponent
              */
 
 
@@ -889,6 +893,7 @@ namespace boost {
                 result.exponent = 1;
                 number_copy = number;
 
+                /* exponent_vector is vector representation of exponent */
                 std::vector<T> exponent_vector, remainder, quotient;
                 exponent_vector = exponent.digits;
 
@@ -905,7 +910,7 @@ namespace boost {
                     number_copy = number_copy * number_copy;
 
                     exponent_vector = quotient;
-                    if((int)exponent_vector.size() == 1 && exponent_vector[0] == 0){
+                    if(((int)exponent_vector.size() == 1 && exponent_vector[0] == 0) || exponent_vector.empty()){
                         break;
                     }
                     quotient.clear();

@@ -63,4 +63,13 @@ T one(unsigned int n) { /* 1000000..... */
     return 0;
 }
 
+template <typename T = int>
+T five(unsigned int n) { /* 5000000..... */
+    if (n < 1) {
+        return 5;
+    }
+
+    return 0;
+}
+
 #endif //BOOST_REAL_TEST_HELPERS_HPP

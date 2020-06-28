@@ -171,9 +171,6 @@ namespace boost {
                 explicit_number.exponent = exponent;
             }           
 
-            real_explicit<T>(exact_number<T> other) : explicit_number(other)
-            {};
-
             /**
              * @brief *Initializer list constructor with exponent:* Creates a boost::real::real_explicit
              * instance that represents the number where the exponent is used to set the number

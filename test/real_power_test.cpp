@@ -66,7 +66,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                 }
 
                 SECTION("MULTIPLICATION") {
-                    /* (3*2)^20 */
+                    /* (5)^(5*4) */
                     real a("5");
                     real b("5");
                     real c("4");
@@ -118,7 +118,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                 }
 
                 SECTION("MULTIPLICATION") {
-                    /* (3*2)^20 */
+                    /* (5)^(0.5*0.4) */
                     real a("5");
                     real b("0.5");
                     real c("0.4");
@@ -129,7 +129,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                 }
 
                 SECTION("DIVISION") {
-                    /* (5)^(40/2) */
+                    /* (5)^(0.4/2) */
                     real a("5");
                     real b("0.4");
                     real c("2");
@@ -146,10 +146,10 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
         // SECTION("Exponent = real_algorithm"){
 
         //     SECTION("Integral exponents") {
-        //         /* 2^100  */
+        //         /* 2^5  */
         //         real a("2");
-        //         real exp = real(one<TestType>, 3);
-        //         real actual_result("1267650600228229401496703205376");
+        //         real exp = real(five<TestType>, 1);
+        //         real actual_result("32");
         //         real calculated_result = real::power(a, exp);
 
         //         CHECK(actual_result == calculated_result);
@@ -174,7 +174,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
             SECTION("Exponent = real_explicit") {
 
                 SECTION("Integral exponents") {
-                    /* 20^10  */
+                    /* (12+8)^10  */
                     real a = real("12") + real("8");
                     real exp("10");
                     real actual_result("10240000000000");
@@ -184,7 +184,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                 }
 
                 SECTION("Non-Integral exponents") { /* throw non_integral_exponent_exception */
-                    /* 234^0.1  */
+                    /* (12+8)^0.1  */
                     real a = real("12") + real("8");
                     real exp("0.01e1");
 
@@ -198,7 +198,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                 SECTION("Integral exponents") {
                         
                     SECTION("ADDITION") {
-                        /* (5)^(8+12) */
+                        /* (2+3)^(8+12) */
                         real a = real("2") + real("3");
                         real b("8");
                         real c("12");
@@ -211,7 +211,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("SUBTRACTION") {
-                        /* (5)^(25-5) */
+                        /* (2+3)^(25-5) */
                         real a = real("2") + real("3");
                         real b("25");
                         real c("5");
@@ -224,7 +224,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("MULTIPLICATION") {
-                        /* (3*2)^20 */
+                        /* (2+3)^(5*4) */
                         real a = real("2") + real("3");
                         real b("5");
                         real c("4");
@@ -237,7 +237,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("DIVISION") {
-                        /* (5)^(40/2) */
+                        /* (2+3)^(40/2) */
                         real a = real("2") + real("3");
                         real b("40");
                         real c("2");
@@ -254,7 +254,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                 SECTION("Non-Integral exponents") { /* throw non_integral_exponent_exception */
 
                     SECTION("ADDITION") {
-                        /* (5)^(8+1.2) */
+                        /* (2+3)^(8+1.2) */
                         real a = real("2") + real("3");
                         real b("8");
                         real c("1.2");
@@ -265,7 +265,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("SUBTRACTION") {
-                        /* (5)^(25-0.5) */
+                        /* (2+3)^(25-0.5) */
                         real a = real("2") + real("3");
                         real b("25");
                         real c("0.5");
@@ -276,7 +276,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("MULTIPLICATION") {
-                        /* (3*2)^20 */
+                        /* (3+2)^20 */
                         real a = real("2") + real("3");
                         real b("0.5");
                         real c("0.4");
@@ -287,7 +287,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("DIVISION") {
-                        /* (5)^(40/2) */
+                        /* (2+3)^(40/2) */
                         real a = real("2") + real("3");
                         real b("0.4");
                         real c("2");
@@ -332,7 +332,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
             SECTION("Exponent = real_explicit") {
 
                 SECTION("Integral exponents") {
-                    /* 20^10  */
+                    /* (22-2)^10  */
                     real a = real("22") - real("2");
                     real exp("10");
                     real actual_result("10240000000000");
@@ -342,7 +342,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                 }
 
                 SECTION("Non-Integral exponents") { /* throw non_integral_exponent_exception */
-                    /* 234^0.1  */
+                    /* (240-6)^0.1  */
                     real a = real("240") - real("6");
                     real exp("0.01e1");
 
@@ -356,7 +356,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                 SECTION("Integral exponents") {
                         
                     SECTION("ADDITION") {
-                        /* (5)^(8+12) */
+                        /* (8-3)^(8+12) */
                         real a = real("8") - real("3");
                         real b("8");
                         real c("12");
@@ -369,7 +369,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("SUBTRACTION") {
-                        /* (5)^(25-5) */
+                        /* (8-3)^(25-5) */
                         real a = real("8") - real("3");
                         real b("25");
                         real c("5");
@@ -382,7 +382,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("MULTIPLICATION") {
-                        /* (3*2)^20 */
+                        /* (8-3)^20 */
                         real a = real("8") - real("3");
                         real b("5");
                         real c("4");
@@ -395,7 +395,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("DIVISION") {
-                        /* (5)^(40/2) */
+                        /* (8-3)^(40/2) */
                         real a = real("8") - real("3");
                         real b("40");
                         real c("2");
@@ -412,7 +412,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                 SECTION("Non-Integral exponents") { /* throw non_integral_exponent_exception */
 
                     SECTION("ADDITION") {
-                        /* (5)^(8+1.2) */
+                        /* (8-3)^(8+1.2) */
                         real a = real("8") - real("3");
                         real b("8");
                         real c("1.2");
@@ -423,7 +423,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("SUBTRACTION") {
-                        /* (5)^(25-0.5) */
+                        /* (8-3)^(25-0.5) */
                         real a = real("8") - real("3");
                         real b("25");
                         real c("0.5");
@@ -434,7 +434,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("MULTIPLICATION") {
-                        /* (3*2)^20 */
+                        /* (8-3)^20 */
                         real a = real("8") - real("3");
                         real b("0.5");
                         real c("0.4");
@@ -445,7 +445,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("DIVISION") {
-                        /* (5)^(40/2) */
+                        /* (8-3)^(40/2) */
                         real a = real("8") - real("3");
                         real b("0.4");
                         real c("2");
@@ -490,7 +490,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
             SECTION("Exponent = real_explicit") {
 
                 SECTION("Integral exponents") {
-                    /* 20^10  */
+                    /* (5*4)^10  */
                     real a = real("5") * real("4");
                     real exp("10");
                     real actual_result("10240000000000");
@@ -500,7 +500,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                 }
 
                 SECTION("Non-Integral exponents") { /* throw non_integral_exponent_exception */
-                    /* 234^0.1  */
+                    /* (2*117)^0.1  */
                     real a = real("2") * real("117");
                     real exp("0.01e1");
 
@@ -514,7 +514,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                 SECTION("Integral exponents") {
                         
                     SECTION("ADDITION") {
-                        /* (5)^(8+12) */
+                        /* (5*1)^(8+12) */
                         real a = real("5") * real("1");
                         real b("8");
                         real c("12");
@@ -527,7 +527,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("SUBTRACTION") {
-                        /* (5)^(25-5) */
+                        /* ((5*1))^(25-5) */
                         real a = real("5") * real("1");
                         real b("25");
                         real c("5");
@@ -540,7 +540,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("MULTIPLICATION") {
-                        /* (3*2)^20 */
+                        /* ((5*1))^20 */
                         real a = real("5") * real("1");
                         real b("5");
                         real c("4");
@@ -553,7 +553,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("DIVISION") {
-                        /* (5)^(40/2) */
+                        /* ((5*1))^(40/2) */
                         real a = real("5") * real("1");
                         real b("40");
                         real c("2");
@@ -570,7 +570,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                 SECTION("Non-Integral exponents") { /* throw non_integral_exponent_exception */
 
                     SECTION("ADDITION") {
-                        /* (5)^(8+1.2) */
+                        /* ((5*1))^(8+1.2) */
                         real a = real("5") * real("1");
                         real b("8");
                         real c("1.2");
@@ -581,7 +581,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("SUBTRACTION") {
-                        /* (5)^(25-0.5) */
+                        /* ((5*1))^(25-0.5) */
                         real a = real("5") * real("1");
                         real b("25");
                         real c("0.5");
@@ -592,7 +592,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("MULTIPLICATION") {
-                        /* (3*2)^20 */
+                        /* ((5*1))^20 */
                         real a = real("5") * real("1");
                         real b("0.5");
                         real c("0.4");
@@ -603,7 +603,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("DIVISION") {
-                        /* (5)^(40/2) */
+                        /* ((5*1))^(40/2) */
                         real a = real("5") * real("1");
                         real b("0.4");
                         real c("2");
@@ -648,7 +648,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
             SECTION("Exponent = real_explicit") {
 
                 SECTION("Integral exponents") {
-                    /* 20^10  */
+                    /* (40/2)^10  */
                     real a = real("40") / real("2");
                     real exp("10");
                     real actual_result("10240000000000");
@@ -658,7 +658,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                 }
 
                 SECTION("Non-Integral exponents") { /* throw non_integral_exponent_exception */
-                    /* 234^0.1  */
+                    /* (468/2)^0.1  */
                     real a = real("468") / real("2");
                     real exp("0.01e1");
 
@@ -672,7 +672,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                 SECTION("Integral exponents") {
                         
                     SECTION("ADDITION") {
-                        /* (5)^(8+12) */
+                        /* (10/2)^(8+12) */
                         real a = real("10") / real("2");
                         real b("8");
                         real c("12");
@@ -685,7 +685,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("SUBTRACTION") {
-                        /* (5)^(25-5) */
+                        /* (10/2)^(25-5) */
                         real a = real("10") / real("2");
                         real b("25");
                         real c("5");
@@ -698,7 +698,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("MULTIPLICATION") {
-                        /* (3*2)^20 */
+                        /* (10/2)^20 */
                         real a = real("10") / real("2");
                         real b("5");
                         real c("4");
@@ -711,7 +711,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("DIVISION") {
-                        /* (5)^(40/2) */
+                        /* (10/2)^(40/2) */
                         real a = real("10") / real("2");
                         real b("40");
                         real c("2");
@@ -728,7 +728,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                 SECTION("Non-Integral exponents") { /* throw non_integral_exponent_exception */
 
                     SECTION("ADDITION") {
-                        /* (5)^(8+1.2) */
+                        /* (10/2)^(8+1.2) */
                         real a = real("10") / real("2");
                         real b("8");
                         real c("1.2");
@@ -739,7 +739,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("SUBTRACTION") {
-                        /* (5)^(25-0.5) */
+                        /* (10/2)^(25-0.5) */
                         real a = real("10") / real("2");
                         real b("25");
                         real c("0.5");
@@ -750,7 +750,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("MULTIPLICATION") {
-                        /* (3*2)^20 */
+                        /* (10/2)^20 */
                         real a = real("10") / real("2");
                         real b("0.5");
                         real c("0.4");
@@ -761,7 +761,7 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     }
 
                     SECTION("DIVISION") {
-                        /* (5)^(40/2) */
+                        /* (10/2)^(40/2) */
                         real a = real("10") / real("2");
                         real b("0.4");
                         real c("2");

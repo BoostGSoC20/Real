@@ -8,9 +8,9 @@ namespace boost{
 	namespace real{
 
 		/**
-		 * Written by Vikram Singh Chundawat
-		 * This representation is used to store rational numbers in form of a/b.
-		 * This will have a and b as integer type numbers.
+		 * @author: Vikram Singh Chundawat
+		 * @brief: This representation is used to store rational numbers in form of a/b.
+		 * This will have a and b as integer_numbers.
 		 */
 		template<typename T = int>
 		struct real_rational{
@@ -21,11 +21,15 @@ namespace boost{
 			bool positive;
 			T BASE;
 
+			// making static const varibles "zero" and "one", which store integers 0 and 1
+			inline static const integer_number<T> zero = integer_number<T>("0");
+			inline static const integer_number<T> one = integer_number<T>("1");
+
 			// to simply the representation of rational number
-			// like 4/8 is converted to 1/2/
+			// like 4/8 is converted to 1/2
 			void simplify(){
-				if(a == integer_number<T>("0")){
-					b = integer_number<T>("1");
+				if(a == zero){
+					b = one;
 					positive = true;
 					return;
 				}
@@ -114,7 +118,7 @@ namespace boost{
 
 			// checking whether our number is equal to some integer or not
 			inline bool operator == (const integer_number<T> other) const{
-				if(b != integer_number<T>("1")) return false;
+				if(b != one) return false;
 				return (*this).a == other;
 			}
 
@@ -221,7 +225,7 @@ namespace boost{
 
 			real_rational<T> operator - (void){
 				real_rational<T> result = (*this);
-				if((*this).a == integer_number<T>("0"))
+				if((*this).a == zero)
 					return result;
 
 				result.positive = (!result.positive);
@@ -236,8 +240,8 @@ namespace boost{
 
 			// default constructor
 			constexpr explicit real_rational(){
-				a = integer_number<T> ("0");
-				b = integer_number<T> ("1");
+				a = zero;
+				b = one;
 				positive = true;
 			}
 			
@@ -245,7 +249,7 @@ namespace boost{
 			constexpr explicit real_rational(integer_number<T> _a, integer_number<T> _b = integer_number<T>("1")){
 				a = abs(_a);
 				b = abs(_b);
-				if(_b==integer_number<T>("0"))
+				if(_b==zero)
 					throw divide_by_zero();
 				positive = !(_a.positive ^ _b.positive);
 				simplify();
@@ -278,9 +282,9 @@ namespace boost{
 				if(found)
 					b = integer_number<T>(num2);
 				else 
-					b = integer_number<T>("1");
+					b = one;
 
-				if(b == integer_number<T>("0"))
+				if(b == zero)
 					throw divide_by_zero();
 
 				positive = !(a.positive ^ b.positive);
@@ -352,18 +356,32 @@ namespace boost{
 
 
 
-		// function to return the absolute value of a rational number
+		/*
+		 * ABSOLUTE VALUE OF RATIONAL NUMBER
+		 * @brief: to return the absolute of a rational number.
+		 * @param: num: a real_rational object which represents our rational number.
+		 * @author: Vikram Singh Chundawat.
+		 **/
 		template<typename T>
 		real_rational<T> abs(real_rational<T> num){
 				num.positive = true;
 				return num;
 		}
 
-		// floor function for rational numbers
+		
+		/**
+		 *  FLOOR FUNCTION
+		 * @brief: it will calculate floor of rational number and return it as an integer_number
+		 * @param: num: the rational number, whose floor is to be calculated
+		 * @return: an integer_number object containing floor values
+		 * @author: Vikram Singh Chundawat
+		 **/
 		template<typename T>
 		integer_number<T> floor(real_rational<T> num){
 			// if number is of integer type, (a/1), then return a
-			if(num.b == integer_number<T>("1")){
+			static const integer_number<T> one("1");
+			static const integer_number<T> zero("0"); 
+			if(num.b == one){
 				integer_number<T> result(num.a);
 				result.positive = num.positive;
 				return result;
@@ -372,7 +390,7 @@ namespace boost{
 			// if number is less than 1
 			if(num.b > num.a){
 				if(num.positive)
-					return integer_number<T>("0");
+					return zero;
 				else 
 					return integer_number<T>("-1");
 			}
@@ -386,12 +404,18 @@ namespace boost{
 				return result;
 			}
 			// now only case left is number is negative and less than one
-			result += integer_number<T>("1");
+			result += one;
 			result.positive = false;
 			return result;
 		}
 
-		// ceiling function for rational numbers
+		/**
+		 * CEIL FUNCTION
+		 * @brief: it will calculate ceiling of rational number and return it as an integer_number
+		 * @param: num: the rational number, whose floor is to be calculated
+		 * @return: an integer_number object containing floor values
+		 * @author: Vikram Singh Chundawat
+		 **/
 		template<typename T>
 		integer_number<T> ceil(real_rational<T> num){
 			if(num.b == integer_number<T>("1")){

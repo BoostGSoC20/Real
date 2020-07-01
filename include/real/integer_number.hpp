@@ -16,7 +16,9 @@ namespace boost{
 	namespace real{
 
 		/**
-		 * Written by Vikram Singh Chundawat.
+		 * @author: Vikram Singh Chundawat.
+		 * @brief: A class which can represent integer type number, a vector of digits and a sign.
+		 * 
 		 * This is representation for integer type numbers, for boost::real numbers. 
 		 * As there is no need for precision iterator for operations on integer type numbers, So doing calculations 
 		 * using precision iterators is unnecessary. So, we are declaring new methods for calculations on these types
@@ -26,7 +28,7 @@ namespace boost{
 		struct integer_number{
 			
 
-			T BASE = ((std::numeric_limits<T>::max() / 2) -1);
+			static const T BASE = ((std::numeric_limits<T>::max() / 2) -1);
 			std::vector<T> digits = {};
 			bool positive = true;
 
@@ -396,7 +398,12 @@ namespace boost{
 
 		};
 
-		// to find Greatest Common Divisor(GCD) of two integers
+		/* GREATEST COMMON DIVISOR
+		 * @brief: to find GCD/HCF of two integers
+		 * @param: a: an integer_number object which represents the first integer in GCD operation.
+		 * @param: b: an integer_number object which represents the second integer in GCD operation.
+		 * @author: Vikram Singh Chundawat.
+		 **/
 		template<typename T>
 		integer_number<T> gcd(integer_number<T> a, integer_number<T> b) {
 			static integer_number<T> zero = integer_number<T>("0"); // to avoid initialization of zero integer for every copy of this function 
@@ -411,12 +418,19 @@ namespace boost{
 			return gcd(a, b);
 		}
 
-		/* to find Least Common Multiple (LCM) of two numbers
-		 * a x b = LCM(a,b) * GCD(a,b)
-		 * LCM(a,b) = (a x b)/GCD(a,b)
-		 */
+		/*
+		 * LEAST COMMON MULTIPLE
+		 * @brief: to find the least common multiple of two integer type numbers
+		 * @param: a: an integer_number object which represents the first integer in LCM operation.
+		 * @param: b: an integer_number object which represents the second integer in LCM operation.
+		 * @author: Vikram Singh Chundawat.
+		 **/
 		template <typename T>
 		integer_number<T> lcm(integer_number<T> a, integer_number<T> b){
+			/* to find Least Common Multiple (LCM) of two numbers
+		 	 * a x b = LCM(a,b) * GCD(a,b)
+		 	 * LCM(a,b) = (a x b)/GCD(a,b)
+		 	 **/
 			integer_number<T> mult = a * b;
 			integer_number<T> result;
 			integer_number<T> gcd_value = gcd(a, b);
@@ -424,7 +438,12 @@ namespace boost{
 			return result;
 		}
 
-		// function to get absolute value of some integer
+		/**
+		 * ABSOLUTE VALUE OF INTEGER_NUMBER
+		 * @brief: it will retuen the absolute value of integer_number.
+		 * @param: num: the number whose absolute value is to be returned.
+		 * @author: Vikram Singh Chundawat.
+		 **/
 		template<typename T>
 		integer_number<T> abs(integer_number<T> num){
 			// num is passed by value, so we will directly change it and return it.

@@ -21,7 +21,7 @@ namespace boost {
 
             // Number representation as a function that returns the number digits
             // an integer part and a sign (+/-)
-            int (*_get_nth_digit)(unsigned int);
+            T (*_get_nth_digit)(unsigned int);
             int _exponent;
             bool _positive;
 

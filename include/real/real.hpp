@@ -23,6 +23,14 @@ namespace boost {
     namespace real {
 
         /**
+         * Enumerator class for type of real number
+         * @brief: enumerator class which will store store types of number for constructor, for 
+         * to avoid errors in giving types using string.
+         * @author: Vikram Singh Chundawat.
+         **/
+        enum class TYPE{EXPLICIT, INTEGER, RATIONAL, ALGORITHM, OPERATION};
+
+        /**
          * @author Laouen Mayal Louan Belloli
          *
          * @brief boost::real::real is a C++ class that represent real numbers as abstract entities that
@@ -123,6 +131,50 @@ namespace boost {
                     this->_real_p = std::make_shared<real_data<T>>(real_rational<T>(number));
                 }
             }
+
+
+
+
+            real(const std::string& number, TYPE type) {
+                switch(type){
+                    case TYPE::EXPLICIT: {
+                        auto [integer_part, decimal_part, exponent, positive] = exact_number<>::number_from_string(number);
+
+                        if ((int)(decimal_part.length() + integer_part.length()) <= exponent) {
+                            this->_real_p = std::make_shared<real_data<T>>(real_explicit<T>(integer_part, decimal_part, exponent, positive));
+                        } else {
+                            int zeroes = decimal_part.length() + integer_part.length() - exponent;
+                            std::string denominator = "1";
+                            for (int i = 0; i<zeroes; ++i)
+                                denominator = denominator + "0";
+
+                            // source of inefficiency. copying, casting.
+                            std::string numerator = (std::string) std::string(integer_part).c_str() + (std::string) std::string(decimal_part);
+                            if (!positive)
+                                numerator = "-" + numerator;
+                            std::shared_ptr<real_data<T>> lhs = std::make_shared<real_data<T>>(real_explicit<T>(numerator));
+                            std::shared_ptr<real_data<T>> rhs = std::make_shared<real_data<T>>(real_explicit<T>(denominator));
+            
+                            this->_real_p  = std::make_shared<real_data<T>>(real_operation(lhs, rhs, OPERATION::DIVISION));
+                        }
+                        break;
+                    }
+                
+                    case TYPE::INTEGER:{
+                        integer_number<T> a(number);
+                        integer_number<T> b("1");
+                        this->_real_p = std::make_shared<real_data<T>>(real_rational<T>(a,b));
+                        break;
+                    }
+                    case TYPE::RATIONAL:{
+                        this->_real_p = std::make_shared<real_data<T>>(real_rational<T>(number));
+                        break;
+                    }
+                    default:
+                        throw constructin_real_algorithm_or_real_operation_using_string();
+            }
+        }
+
 
             /**
              * @brief Initializer list constructor

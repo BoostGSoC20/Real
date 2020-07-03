@@ -61,10 +61,13 @@ TEMPLATE_TEST_CASE("CONSTRUCTOR UNIT TEST","[template]", int, unsigned int, long
 
 TEMPLATE_TEST_CASE("INTEGRATION WITH REAL HPP", "[template]", int, unsigned int, long, unsigned long, long long, unsigned long long){
 	using real = boost::real::real<TestType>;
+	using TYPE = boost::real::TYPE;
 	SECTION("CONSTRUCTOR TEST"){
 		boost::real::real<int> a("10/11", "rational");
 		boost::real::real<int> b = "10/11"_rational;
 		CHECK(a==b);
+		boost::real::real<int> c("10/11", TYPE::RATIONAL);
+		CHECK(a==c);
 	}
 
 	SECTION("COMPARISON OPERATOR TESTS"){
@@ -243,12 +246,15 @@ TEMPLATE_TEST_CASE("INTEGRATION WITH REAL HPP", "[template]", int, unsigned int,
 
 TEMPLATE_TEST_CASE("INTEGRATION OF INTEGER TYPE RATIONAL NUMBERS WITH REAL.HPP", "[template]", int, unsigned int, long, unsigned long, long long, unsigned long long){
 	using real = boost::real::real<TestType>;
+	using TYPE = boost::real::TYPE;
 	SECTION("CONSTRUCTORS"){
 		boost::real::real<int> a("10", "integer");
 		auto b = 10_integer;
 		auto c = "10"_integer;
 		CHECK(a==b);
 		CHECK(a==c);
+		boost::real::real<int> d("10", TYPE::INTEGER);
+		CHECK(a==d);
 	}
 
 	SECTION("COMPARISION OPERATORS"){

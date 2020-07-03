@@ -101,6 +101,12 @@ namespace boost {
             }
         };
 
+        struct constructin_real_algorithm_or_real_operation_using_string : public std::exception {
+            const char * what() const throw () override {
+                return "Can not construct a real_algorithm or real_operation type from a string";
+            }
+        };
+
     }
 }
 

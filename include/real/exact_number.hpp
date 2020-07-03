@@ -876,7 +876,7 @@ namespace boost {
                 bool positive = (this->positive == divisor.positive); /* sign of result */
 
                 static const exact_number<T> _n1(std::vector<T> {1}, 1, false); /* _n1 => negative one */
-                if(divisor == _n1){
+                if (divisor == _n1) {
                     this->positive = positive;
                     return;
                 }
@@ -896,7 +896,7 @@ namespace boost {
                 const T base = (std::numeric_limits<T>::max() / 4) * 2;
                 exact_number<T> _2(std::vector<T> {2}, 1, true);
 
-                while( denominator.digits[0] < base / 2 ){
+                while (denominator.digits[0] < base / 2) {
                     denominator = denominator * _2;
                     numerator = numerator * _2;
                 }

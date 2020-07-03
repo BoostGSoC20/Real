@@ -35,8 +35,7 @@ namespace boost {
             real_data(real_explicit<T> x) :_real(x), _precision_itr(&_real) {};
             real_data(real_algorithm<T> x) : _real(x), _precision_itr(&_real) {};
             real_data(real_operation<T> x) : _real(x), _precision_itr(&_real) {};
-            real_data(real_rational<T> x): _real(x) {};
-
+            real_data(real_rational<T> x) : _real(x), _precision_itr(&_real) {};
             const real_number<T>& get_real_number() const {
                 return _real;
             }

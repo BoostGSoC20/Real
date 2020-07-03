@@ -60,7 +60,7 @@ namespace boost {
                  */ 
                 // raw pointer here is ok, precision iterator is always attached to the variant it points to
                 // (refer to real_data.hpp). Any time the variant is destroyed, so is this pointer.
-                real_number<T> * _real_ptr;
+                std::shared_ptr<real_number<T>>  _real_ptr;
 
                 /// current iterator precision
                 precision_t _precision;
@@ -137,7 +137,75 @@ namespace boost {
                 /**
                  * @brief Constructor for the least precise precision iterator
                  */ 
-                explicit const_precision_iterator(real_number<T> * a) : _real_ptr(a), _precision(1) {
+                explicit const_precision_iterator(real_number<T> * a) : _real_ptr(std::make_shared<real_number<T>>(*a)), _precision(1) {
+                    std::visit( overloaded { // perform operation on whatever is held in variant
+                        [this] (real_explicit<T>& real) {
+                            T base = (std::numeric_limits<T>::max() /4)*2 - 1;
+                            this->_approximation_interval.lower_bound.exponent = real.exponent();
+                            this->_approximation_interval.upper_bound.exponent = real.exponent();
+                            this->_approximation_interval.lower_bound.positive = real.positive();
+                            this->_approximation_interval.upper_bound.positive = real.positive();
+
+                            T first_digit = real.digits()[0];
+                            this->_approximation_interval.lower_bound.digits.push_back(first_digit);
+
+                            if (first_digit == base) {
+                                this->_approximation_interval.upper_bound.digits.push_back(1);
+                                this->_approximation_interval.upper_bound.exponent++;
+                            } else if (this->_precision < real.digits().size()) {
+                                this->_approximation_interval.upper_bound.digits.push_back(first_digit + 1);
+                            } else {
+                                this->_approximation_interval.upper_bound.digits.push_back(first_digit);
+                            }
+                            this->check_and_swap_boundaries();
+                        },
+
+                        [this] (real_algorithm<T>& real) {
+                            T base = (std::numeric_limits<T>::max() /4)*2 - 1;
+                            this->_approximation_interval.lower_bound.exponent = real.exponent();
+                            this->_approximation_interval.upper_bound.exponent = real.exponent();
+                            this->_approximation_interval.lower_bound.positive = real.positive();
+                            this->_approximation_interval.upper_bound.positive = real.positive();
+
+                            T first_digit = real[0];
+                            this->_approximation_interval.lower_bound.digits.push_back(first_digit);
+
+                            if (first_digit == base) {
+                                this->_approximation_interval.upper_bound.digits.push_back(1);
+                                this->_approximation_interval.upper_bound.exponent++;
+                            } else {
+                                this->_approximation_interval.upper_bound.digits.push_back(first_digit + 1);
+                            }
+                            this->check_and_swap_boundaries();
+                        },
+
+                        [this] (real_operation<T>& real) {
+                            // we don't need to init operands here - they *SHOULD* already be at cbegin or >
+                            update_operation_boundaries(real);
+                            // _maximum_precision = std::max(real.get_lhs_itr().maximum_precision(), real.get_rhs_itr().maximum_precision());
+                            },
+
+                        [this] (real_rational<T> &real){
+                            if(real.b == integer_number<T>("1")){
+                                real_number<T> tmp_num = real_number<T>(real_explicit<T>(real.a));
+                                (*this) = const_precision_iterator(std::make_shared<real_number<T>>(tmp_num));
+                            }
+                            else{
+                                auto a = std::make_shared<real_data<T>>(real_explicit<T>(real.a));
+                                auto b = std::make_shared<real_data<T>>(real_explicit<T>(real.b));
+                                real_number<T> tmp_num = real_number<T>(real_operation<T>(a, b, OPERATION::DIVISION));
+                                (*this) = const_precision_iterator(std::make_shared<real_number<T>>(tmp_num));
+
+                            }
+                        },
+                        
+                        [] (auto& real) {
+                            throw boost::real::bad_variant_access_exception();
+                            }
+                    }, *_real_ptr);
+                }
+
+                explicit const_precision_iterator(std::shared_ptr<real_number<T>>  a) : _real_ptr(a), _precision(1) {
                     std::visit( overloaded { // perform operation on whatever is held in variant
                         [this] (real_explicit<T>& real) {
                             T base = (std::numeric_limits<T>::max() /4)*2 - 1;

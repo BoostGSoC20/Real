@@ -119,7 +119,7 @@ namespace boost{
 			// checking whether our number is equal to some integer or not
 			inline bool operator == (const integer_number<T> other) const{
 				if(b != one) return false;
-				return (*this).a == other;
+				return a == other;
 			}
 
 			inline bool operator >= (const integer_number<T> other) const{
@@ -225,7 +225,7 @@ namespace boost{
 
 			real_rational<T> operator - (void){
 				real_rational<T> result = (*this);
-				if((*this).a == zero)
+				if(a == zero)
 					return result;
 
 				result.positive = (!result.positive);

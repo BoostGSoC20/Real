@@ -142,10 +142,10 @@ void append_digits(std::vector<int> &number, int num_base, int digit, int digit_
     int tmp_carry; // to store current carry, getting created by multiplication
     unsigned long long result; // to store value of result
 
-    for(size_t i = n-1; i >= 0; --i)
+    for(auto &digit : boost::real::detail::reverse(number))
     {
 		tmp_carry = 0;
-		result = number[i]*digit_base;
+		result = digit*digit_base;
 		if(result >= num_base) 
 		{
 		    tmp_carry += result/num_base;
@@ -158,9 +158,8 @@ void append_digits(std::vector<int> &number, int num_base, int digit, int digit_
 	    	result %= num_base;
 		}
 		// done all required calculation, now assigning all required values
-		number[i] = result;
+		digit = result;
 		carry = tmp_carry;
-		if(i == 0) break;
     }
 
     // if carry is not zero, add it to begining of vector
@@ -236,7 +235,7 @@ std::vector<T> multiply(std::vector<T> &a, std::vector<T> &b, T base = (std::num
     // in result.
     size_t i_n1 = (int) temp.size() - 1;
     // Go from right to left in lhs
-    for (size_t i = a.size()-1; true; --i) {
+    for (auto &digit_a : boost::real::detail::reverse(a)) {
         T carry = 0;
         // To shift position to left after every
         // multiplication of a digit in rhs
@@ -244,13 +243,13 @@ std::vector<T> multiply(std::vector<T> &a, std::vector<T> &b, T base = (std::num
 
         // Go from right to left in rhs
         //checking is done at the end of loop, size_t can not be zero, so we can not check for negative values of size_t
-        for (size_t j = b.size() - 1; true; --j) {
+        for (auto &digit_b : boost::real::detail::reverse(b)) {
 
             // Multiply current digit of second number with current digit of first number
             // and add result to previously stored result at current position.
-            T rem = op.mulmod(a[i], b[j], base);
+            T rem = op.mulmod(digit_a, digit_b, base);
             T rem_s;
-            T q = op.mult_div(a[i], b[j], base);
+            T q = op.mult_div(digit_a, digit_b, base);
             if ( temp[i_n1 - i_n2] >= base - carry ) {
                 rem_s = carry - (base - temp[i_n1 - i_n2]);
                 ++q;
@@ -271,8 +270,6 @@ std::vector<T> multiply(std::vector<T> &a, std::vector<T> &b, T base = (std::num
             temp[i_n1 - i_n2] = rem;
 
             i_n2++;
-
-            if(j == 0) break;
         }
 
         // store carry in next cell
@@ -284,7 +281,6 @@ std::vector<T> multiply(std::vector<T> &a, std::vector<T> &b, T base = (std::num
         // multiplication of a digit in lhs.
         i_n1--;
 
-        if(i == 0) break;
     }
 
     typename std::vector<T> :: iterator itr = temp.begin();

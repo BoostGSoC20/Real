@@ -272,6 +272,70 @@ namespace boost {
 
                     break;
                 }
+                case OPERATION::POWER: {
+                    ro.get_rhs_itr().iterate_n_times(ro.get_rhs_itr().maximum_precision());
+
+                    if (ro.get_rhs_itr().get_interval().lower_bound != ro.get_rhs_itr().get_interval().upper_bound ||
+                        (int) ro.get_rhs_itr().get_interval().lower_bound.digits.size() > ro.get_rhs_itr().get_interval().lower_bound.exponent) {
+                        throw non_integral_exponent_exception();
+                    }
+
+                    exact_number<T> exponent = ro.get_rhs_itr().get_interval().upper_bound, _2, zero = exact_number<T> (), tmp;
+                    _2.digits = {2};
+                    _2.exponent = 1;
+
+                    std::vector<T> exponent_vector, quotient, remainder;
+                    exponent_vector = exponent.digits;
+                    while ((int) exponent_vector.size() < exponent.exponent) {
+                        exponent_vector.push_back(0);
+                    }
+
+                    tmp.DivisionBySingleDigit(exponent_vector, std::vector<T> {2}, quotient, remainder);
+
+                    bool exponent_is_even = false;
+
+                    if (remainder.empty()) {
+                        exponent_is_even = true;
+                    }
+
+                    if (ro.get_lhs_itr().get_interval().positive()) {
+                        this->_approximation_interval.upper_bound = 
+                                tmp.binary_exponentiation(ro.get_lhs_itr().get_interval().upper_bound, exponent);
+                        this->_approximation_interval.lower_bound =
+                                tmp.binary_exponentiation(ro.get_lhs_itr().get_interval().lower_bound, exponent);
+                    } else if (ro.get_lhs_itr().get_interval().negative()) {
+                        if (exponent_is_even) {
+                            this->_approximation_interval.upper_bound =
+                                    tmp.binary_exponentiation(ro.get_lhs_itr().get_interval().lower_bound, exponent);
+                            this->_approximation_interval.lower_bound =
+                                    tmp.binary_exponentiation(ro.get_lhs_itr().get_interval().upper_bound, exponent);
+                        } else {
+                            this->_approximation_interval.upper_bound =
+                                    tmp.binary_exponentiation(ro.get_lhs_itr().get_interval().upper_bound, exponent);
+                            this->_approximation_interval.lower_bound =
+                                    tmp.binary_exponentiation(ro.get_lhs_itr().get_interval().lower_bound, exponent);
+                        }
+                    } else {
+                        if (exponent_is_even) {
+                            if (ro.get_lhs_itr().get_interval().upper_bound.abs() > ro.get_lhs_itr().get_interval().lower_bound.abs()) {
+                                this->_approximation_interval.upper_bound =
+                                        tmp.binary_exponentiation(ro.get_lhs_itr().get_interval().upper_bound, exponent);
+                                this->_approximation_interval.lower_bound = zero;
+                            } else {
+                                this->_approximation_interval.upper_bound =
+                                        tmp.binary_exponentiation(ro.get_lhs_itr().get_interval().lower_bound, exponent);
+                                this->_approximation_interval.lower_bound = zero;
+                            }
+                        } else {
+                            this->_approximation_interval.upper_bound =
+                                    tmp.binary_exponentiation(ro.get_lhs_itr().get_interval().upper_bound, exponent);
+                            this->_approximation_interval.lower_bound =
+                                    tmp.binary_exponentiation(ro.get_lhs_itr().get_interval().lower_bound, exponent);
+                        }
+                    }
+
+                    break;
+                }
 
                 default:
                     throw boost::real::none_operation_exception();

@@ -27,17 +27,18 @@ namespace Catch {
     };
 }
 
-int one_and_max(unsigned int n) {
+int one_and_max(unsigned int n) { /* 199999..... (for base 10)*/
     if (n == 0) {
         return 1;
     }
     return BASE - 1;
 }
 
-int ones(unsigned int n) {
+int ones(unsigned int n) {/* 1111111..... */
     return 1;
 }
 
+int one_one_one(unsigned int n) {/* 111000000..... */
 template <typename T = int>
 T one_one_one(unsigned int n) {
     if (n < 3) {
@@ -46,11 +47,35 @@ T one_one_one(unsigned int n) {
 
     return 0;
 }
+  
+  
+int one_one(unsigned int n) {/* 1100000..... */
+    if (n < 2) {
+        return 1;
+    }
+
+    return 0;
+}
+
+template <typename T = int>
+T one(unsigned int n) { /* 1000000..... */
+    if (n < 1) {
+        return 1;
+    }
+
+    return 0;
+}
+
+template <typename T = int>
+T five(unsigned int n) { /* 5000000..... */
+    if (n < 1) {
+        return 5;
 
 template <typename T = int>
 T two(unsigned int n) {
     if (n < 1) {
         return 2;
+
     }
 
     return 0;

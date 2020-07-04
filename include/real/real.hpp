@@ -609,6 +609,21 @@ namespace boost {
                 return recurse_op(other, rc_lvl, OPERATION::SUBTRACTION);
             }
 
+
+
+            /*      POWER METHOD
+             *  @brief:  Calculates real_num^exponent
+             *  @params: real_num: boost real number whose power is to be evaluated
+             *  @params: exponent: power to which real_num is to be raised (needs to be an integer)
+             *  @return: returns a new boost real whose value is real_num^exponent
+             *  @author: Kishan Shukla
+             */
+
+            static real power(real<T> real_num, real<T> exponent){
+
+                return real(real_operation<T>(real_num._real_p, exponent._real_p, OPERATION::POWER));
+            }
+
             /**
              * @brief Sets this real_data to that of the operation between this previous
              * real_data and other real_data.

@@ -1,18 +1,26 @@
 #ifndef BOOST_REAL_CONVENIENCE_HPP
 #define BOOST_REAL_CONVENIENCE_HPP
 
-#include<vector>
-#include<iostream>
+#include <vector>
+#include <iostream>
 #include <real/real_exception.hpp>
 #include <real/interval.hpp>
 #include <real/exact_number.hpp> //for some methods, that are declared in this file
 #include <real/real_exception.hpp>
-//#include <real/integer_number.hpp>
+#include <real/details.hpp>
 
 
+/* APPEND DIGIT IN NEW BASE
+ * @brief: to append digit of different base in a number of different base.
+ * @param: number: number in which digit is going to be appended.
+ * @param: num_base: the base of number.
+ * @param: digit: the digit which is to be appended in the number.
+ * @digit_base: the base of the digit which is going to appended.
+ * @author: Vikram Singh Chundawat
+ **/
 
 template<typename T1, typename T2>
-void add_digits(std::vector<T1> &number, T1 num_base, T2 digit, T2 digit_base)
+void append_digits(std::vector<T1> &number, T1 num_base, T2 digit, T2 digit_base)
 {
     /*
      * Warning: this function will misbehave if num_base > numeric_limits<T1>::max()/2 or digit_base > numeric_limits<T2>::max()/2
@@ -21,7 +29,7 @@ void add_digits(std::vector<T1> &number, T1 num_base, T2 digit, T2 digit_base)
      * The internal base representation of all number in real for any type T is not greater numeric_limits<T>::max()/2, so it should work perfectly fine
      * for the type of conversions it is mainly build, but may misbehave in case larger bases.
      */
-    if(number.size()==0) number.push_back(0);
+    if(number.size() == 0) number.push_back(0);
     size_t n = number.size();
 
     // to append a digit of base = base_digit, we will first multiply number by digit_base
@@ -33,35 +41,35 @@ void add_digits(std::vector<T1> &number, T1 num_base, T2 digit, T2 digit_base)
     T1 tmp_carry; // to store current carry, getting created by multiplication
     T1 result; // to store value of result
 
-    for(size_t i = n-1; i>=0; --i)
+    for(T1 &digit: boost::real::detail::reverse(number))
     {
     	tmp_digit_base = digit_base;
     	tmp_carry = 0;
     	result = 0;
-    	while(tmp_digit_base!=0)
+    	while(tmp_digit_base != 0)
     	{
     	    // tmp_digit_base is a even number, multiply it by 2 and divide tmp_digit_base by 2
-    	    if(tmp_digit_base%2==1)
+    	    if(tmp_digit_base%2 == 1)
     	    {
-        		result = result + number[i];
+        		result = result + digit;
         		// if result becomes greater than num_base
         		if(result >= num_base)
         		{
         		    ++tmp_carry;
         		    result -= num_base;
         		}
-        		tmp_digit_base-=1;
+        		tmp_digit_base -= 1;
     	    }
     	    // else multiply number[i] with 2
     	    else
     	    {
                 
-        	    number[i] = number[i]*2;
+        	    digit = digit*2;
                 tmp_digit_base = tmp_digit_base/2;
-        	    if(number[i] >= num_base) 
+        	    if(digit >= num_base) 
         	    {
             		tmp_carry += tmp_digit_base;
-            		number[i] -= num_base;
+            		digit -= num_base;
         	    }
         	    
         	    // divide by 2
@@ -77,13 +85,12 @@ void add_digits(std::vector<T1> &number, T1 num_base, T2 digit, T2 digit_base)
     	    result -= num_base;
     	}
 	   // done all required calculation, now assigning all required values
-    	number[i] = result;
+    	digit = result;
     	carry = tmp_carry;
-    	if(i==0) break;
     }
 
     // if carry is not zero, add it to begining of vector
-    if(carry!=0)
+    if(carry != 0)
     {
 	   number.insert(number.begin(),carry);
     }
@@ -91,16 +98,16 @@ void add_digits(std::vector<T1> &number, T1 num_base, T2 digit, T2 digit_base)
     // completed multiplication, now we will add the digit to number
     n = number.size();
     number[--n] += digit;
-    carry = number[n]/num_base;
+    carry = number[n] / num_base;
     number[n] %= num_base;
-    while(carry!=0 && n!=0)
+    while(carry != 0 && n != 0)
     {
     	number[--n] += carry;
-    	carry = number[n]/num_base;
+    	carry = number[n] / num_base;
     	number[n] %= num_base;
     }
 
-    if(carry!=0) number.insert(number.begin(), carry);
+    if(carry != 0) number.insert(number.begin(), carry);
     return;
 }
 
@@ -115,7 +122,7 @@ void add_digits(std::vector<T1> &number, T1 num_base, T2 digit, T2 digit_base)
  * so a new specilized function for integers is created.
  */
 template<>
-void add_digits(std::vector<int> &number, int num_base, int digit, int digit_base)
+void append_digits(std::vector<int> &number, int num_base, int digit, int digit_base)
 {
     /*
      * Warning: this function will misbehave if num_base > numeric_limits<T1>::max()/2 or digit_base > numeric_limits<T2>::max()/2
@@ -124,7 +131,7 @@ void add_digits(std::vector<int> &number, int num_base, int digit, int digit_bas
      * The internal base representation of all number in real for any type T is not greater numeric_limits<T>::max()/2, so it should work perfectly fine
      * for the type of conversions it is mainly build, but may misbehave in case of larger bases.
      */
-    if(number.size()==0) number.push_back(0);
+    if(number.size() == 0) number.push_back(0);
     size_t n = number.size();
 
     // to append a digit of base = base_digit, we will first multiply number by digit_base
@@ -135,10 +142,10 @@ void add_digits(std::vector<int> &number, int num_base, int digit, int digit_bas
     int tmp_carry; // to store current carry, getting created by multiplication
     unsigned long long result; // to store value of result
 
-    for(size_t i = n-1; i>=0; --i)
+    for(auto &digit : boost::real::detail::reverse(number))
     {
 		tmp_carry = 0;
-		result = number[i]*digit_base;
+		result = digit*digit_base;
 		if(result >= num_base) 
 		{
 		    tmp_carry += result/num_base;
@@ -151,13 +158,12 @@ void add_digits(std::vector<int> &number, int num_base, int digit, int digit_bas
 	    	result %= num_base;
 		}
 		// done all required calculation, now assigning all required values
-		number[i] = result;
+		digit = result;
 		carry = tmp_carry;
-		if(i==0) break;
     }
 
     // if carry is not zero, add it to begining of vector
-    if(carry!=0)
+    if(carry != 0)
     {
 		number.insert(number.begin(),carry);
     }
@@ -166,12 +172,12 @@ void add_digits(std::vector<int> &number, int num_base, int digit, int digit_bas
     // completed multiplication, now we will add the digit to number
     n = number.size();
     number[--n] += digit;
-    carry = number[n]/num_base;
+    carry = number[n] / num_base;
     number[n] %= num_base;
-    while(carry!=0 && n!=0)
+    while(carry != 0 && n != 0)
     {
     	number[--n] += carry;
-    	carry = number[n]/num_base;
+    	carry = number[n] / num_base;
     	number[n] %= num_base;
     }
 
@@ -180,6 +186,15 @@ void add_digits(std::vector<int> &number, int num_base, int digit, int digit_bas
     return;
 }
 
+
+/* APPEND MULTIPLE DIGITS IN NEW BASE
+ * @brief: to add multiple digits of different base in a number.
+ * @param: number: the number in which digits are going to be appended.
+ * @param: num_base: base in which number is store
+ * @digits: vector containing multiple digits, which needs to be appended in number.
+ * @digit_base: The base in which digits are stored.
+ * @author: Vikram Singh Chundawat.
+ **/
 
 
 /*
@@ -190,20 +205,26 @@ void add_digits(std::vector<int> &number, int num_base, int digit, int digit_bas
  */
  
 template<typename T1, typename T2>
-void add_digits(std::vector<T1> &number, T1 num_base, std::vector<T2> &digits, T2 digit_base)
+void append_digits(std::vector<T1> &number, T1 num_base, std::vector<T2> &digits, T2 digit_base)
 {
-    size_t n = digits.size();
-    for(size_t i=0;i<n;i++)
-    {
-	add_digits(number, num_base, digits[i], digit_base);
+    for(auto &digit: digits){
+        add_digits(number, num_base, digit, digit_base); 
     }
     return ;
 }
 
 
+/*
+ *  MULTIPLY TWO NUMBERS STORED IN VECTOR
+ * @brief: method to multiply two vectors
+ * @param: a: first number, vector of digits(no reverse order)
+ * @param: b: second number, vector of digits(no reverse order)
+ * @param: base: the base in which numbers are stored
+ * @author: Vikram Singh Chundawat
+ **/
 // Algorithm to multiply two vectors.
 template<typename T>
-std::vector<T> multiply(std::vector<T> &a, std::vector<T> &b, T base = (std::numeric_limits<T>::max()/4)*2 +1)
+std::vector<T> multiply(std::vector<T> &a, std::vector<T> &b, T base = (std::numeric_limits<T>::max() / 4) * 2 -1)
 {
     std::vector<T> temp;
     size_t new_size = a.size() + b.size();
@@ -214,7 +235,7 @@ std::vector<T> multiply(std::vector<T> &a, std::vector<T> &b, T base = (std::num
     // in result.
     size_t i_n1 = (int) temp.size() - 1;
     // Go from right to left in lhs
-    for (size_t i = a.size()-1; true; --i) {
+    for (auto &digit_a : boost::real::detail::reverse(a)) {
         T carry = 0;
         // To shift position to left after every
         // multiplication of a digit in rhs
@@ -222,13 +243,13 @@ std::vector<T> multiply(std::vector<T> &a, std::vector<T> &b, T base = (std::num
 
         // Go from right to left in rhs
         //checking is done at the end of loop, size_t can not be zero, so we can not check for negative values of size_t
-        for (size_t j = b.size()-1; true; --j) {
+        for (auto &digit_b : boost::real::detail::reverse(b)) {
 
             // Multiply current digit of second number with current digit of first number
             // and add result to previously stored result at current position.
-            T rem = op.mulmod(a[i], b[j], base);
+            T rem = op.mulmod(digit_a, digit_b, base);
             T rem_s;
-            T q = op.mult_div(a[i], b[j], base);
+            T q = op.mult_div(digit_a, digit_b, base);
             if ( temp[i_n1 - i_n2] >= base - carry ) {
                 rem_s = carry - (base - temp[i_n1 - i_n2]);
                 ++q;
@@ -249,8 +270,6 @@ std::vector<T> multiply(std::vector<T> &a, std::vector<T> &b, T base = (std::num
             temp[i_n1 - i_n2] = rem;
 
             i_n2++;
-
-            if(j==0) break;
         }
 
         // store carry in next cell
@@ -262,18 +281,17 @@ std::vector<T> multiply(std::vector<T> &a, std::vector<T> &b, T base = (std::num
         // multiplication of a digit in lhs.
         i_n1--;
 
-        if(i==0) break;
     }
 
     typename std::vector<T> :: iterator itr = temp.begin();
-    while((*itr)==0) itr++;
+    while((*itr) == 0) itr++;
     // if initial element was zero, then we need to delete all initial zeroes
-    if(temp[0]==0)
+    if(temp[0] == 0)
     {
         //itr--;
         temp.erase(temp.begin(), itr);
     }
-    if(temp.size()==0) temp.push_back(0);
+    if(temp.size() == 0) temp.push_back(0);
 
                 
     return temp;

@@ -39,13 +39,16 @@ int ones(unsigned int n) {/* 1111111..... */
 }
 
 int one_one_one(unsigned int n) {/* 111000000..... */
+template <typename T = int>
+T one_one_one(unsigned int n) {
     if (n < 3) {
         return 1;
     }
 
     return 0;
 }
-
+  
+  
 int one_one(unsigned int n) {/* 1100000..... */
     if (n < 2) {
         return 1;
@@ -67,6 +70,12 @@ template <typename T = int>
 T five(unsigned int n) { /* 5000000..... */
     if (n < 1) {
         return 5;
+
+template <typename T = int>
+T two(unsigned int n) {
+    if (n < 1) {
+        return 2;
+
     }
 
     return 0;

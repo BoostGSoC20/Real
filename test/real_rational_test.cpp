@@ -1,12 +1,12 @@
 #include <catch2/catch.hpp>
 
-#include <real/rational_number.hpp>
-#include<real/real_exception.hpp>
+#include <real/real_exception.hpp>
+#include <real/real.hpp>
 #include <test_helpers.hpp>
 
 TEMPLATE_TEST_CASE("CONSTRUCTOR UNIT TEST","[template]", int, unsigned int, long, unsigned long, long long, unsigned long long){
-	using rational = boost::real::rational_number<TestType>;
-	using integer = boost::real::integer<TestType>;
+	using rational = boost::real::real_rational<TestType>;
+	using integer = boost::real::integer_number<TestType>;
 	SECTION("USING INTEGERS"){
 		integer a("10");
 		integer b("20");
@@ -59,10 +59,295 @@ TEMPLATE_TEST_CASE("CONSTRUCTOR UNIT TEST","[template]", int, unsigned int, long
 	}
 }
 
+TEMPLATE_TEST_CASE("INTEGRATION WITH REAL HPP", "[template]", int, unsigned int, long, unsigned long, long long, unsigned long long){
+	using real = boost::real::real<TestType>;
+	using TYPE = boost::real::TYPE;
+	SECTION("CONSTRUCTOR TEST"){
+		boost::real::real<int> a("10/11", "rational");
+		boost::real::real<int> b = "10/11"_rational;
+		CHECK(a==b);
+		boost::real::real<int> c("10/11", TYPE::RATIONAL);
+		CHECK(a==c);
+	}
+
+	SECTION("COMPARISON OPERATOR TESTS"){
+		SECTION("RATIONAL - RATIONAL"){
+			real a("10/11", "rational");
+			real b("9/11", "rational");
+			CHECK(a>b);
+			CHECK_FALSE(a<b);
+			CHECK_FALSE(a==b);
+
+			b = real("10/11","rational");
+			CHECK(a==b);
+			CHECK_FALSE(a>b);
+			CHECK_FALSE(a<b);
+			b = real("20/22", "rational");
+			CHECK(a==b);
+		}
+
+		SECTION("INTEGER - RATIONAL"){
+			real a("10/11", "rational");
+			real b("1", "integer");
+			CHECK_FALSE(a==b);
+			CHECK(a<b);
+			CHECK_FALSE(a>b);
+			CHECK(b>a);
+			CHECK_FALSE(b<a);
+
+			a = real("10", "rational");
+			b = real("10", "integer");
+			CHECK(a==b);
+			CHECK_FALSE(a>b);
+			CHECK_FALSE(a<b);
+			CHECK_FALSE(b>a);
+			CHECK_FALSE(b<a);
+		}
+
+		SECTION("RATIONAL - EXPLICIT"){
+			real a("0.5");
+			real b("10/20","rational");
+			CHECK(a==b);
+
+			b = real("1/3", "rational");
+			CHECK(a>b);
+			CHECK_FALSE(a<b);
+			CHECK_FALSE(a==b);	
+		}
+	}
+
+	SECTION("ADDITION - SUBTRACTION OPERATOR TEST"){
+		SECTION("RATIONAL - INTEGER"){
+			real a("7/9", "rational");
+			real b("1", "integer");
+			real c = a+b;
+			real d("16/9", "rational");
+			CHECK(c==d);
+			c = b+a;
+			CHECK(c==d);
+			c = a-b;
+			d = real("-2/9", "rational");
+			CHECK(c==d);
+			c = b-a;
+			d = real("2/9", "rational");
+			CHECK(c==d);
+		}
+
+		SECTION("RATIONAL - RATIONAL"){
+			real a("1/4", "rational");
+			real b("1/4", "rational");
+			real c = a+b;
+			real d("1/2", "rational");
+			CHECK(c==d);
+			c = a-b;
+			d = real("0/10", "rational");
+			CHECK(c==d);
+
+		}
+
+		SECTION("RATIONAL - EXPLICIT"){
+			real a("2");
+			real b("2", "rational");
+			real c("4");
+			real d = a+b;
+			CHECK(c==d);
+			c = real("0");
+			d = a-b;
+			CHECK(c==d);
+			d = b-a;
+			CHECK(c==d);
+		}
+	}
+
+	SECTION("MULTIPLICATION OPERATOR TEST"){
+		SECTION("RATIONAL - RATIONAL"){
+			real a("10/17","rational");
+			real b("1/2","rational");
+			real c = a*b;
+			real d("5/17", "rational");
+			CHECK(c==d);
+			b = real("2", "rational");
+			c = a*b;
+			d = real("20/17", "rational");
+			CHECK(c==d);
+			a = real("1/2", "rational");
+			c = a*b;
+			d = real("1", "rational");
+			CHECK(c==d);
+		}
+
+		SECTION("INTEGER - RATIONAL"){
+			real a("10", "integer");
+			real b("10/17", "rational");
+			real c = a*b;
+			real d("100/17", "rational");
+			CHECK(c==d);
+			c = b*a;
+			CHECK(c==d);
+
+			a = real("0", "integer");
+			c = a*b;
+			d = real("0", "rational");
+			CHECK(c==d);
+
+		}
+
+		SECTION("RATIONAL - EXPLICIT"){
+			real a("10");
+			real b("10", "rational");
+			real c = a*b;
+			real d("100");
+			CHECK(c==d);
+
+			c = b*a;
+			CHECK(c==d);
+		}
+	}
+
+	SECTION("DIVISION OPERATION TEST"){
+		SECTION("RATIONAL - RATIONAL"){
+			real a("10/20", "rational");
+			real b("1/3", "rational");
+			real c = a/b;
+			real d("3/2", "rational");
+			CHECK(c==d);
+		}
+
+		SECTION("INTEGER - RATIONAL"){
+			real a("1/3", "rational");
+			real b("2", "integer");
+			real c = a/b;
+			real d("1/6", "rational");
+			CHECK(c==d);
+		}
+
+		SECTION("INTEGER - INTEGER"){
+			real a("1", "integer");
+			real b("3", "integer");
+			real c = a/b;
+			real d("1/3", "rational");
+			CHECK(c==d);
+		}
+
+		SECTION("RATIONAL - EXPLICIT"){
+			real a("2");
+			real b("2", "rational");
+			real c("1", "rational");
+			real d = a/b;
+			CHECK(c==d);
+			a = real("1");
+			b = real("2");
+			c = a/b;
+			d = real("1/2","rational");
+			CHECK(c==d);
+		}
+	}
+}
+
+TEMPLATE_TEST_CASE("INTEGRATION OF INTEGER TYPE RATIONAL NUMBERS WITH REAL.HPP", "[template]", int, unsigned int, long, unsigned long, long long, unsigned long long){
+	using real = boost::real::real<TestType>;
+	using TYPE = boost::real::TYPE;
+	SECTION("CONSTRUCTORS"){
+		boost::real::real<int> a("10", "integer");
+		auto b = 10_integer;
+		auto c = "10"_integer;
+		CHECK(a==b);
+		CHECK(a==c);
+		boost::real::real<int> d("10", TYPE::INTEGER);
+		CHECK(a==d);
+	}
+
+	SECTION("COMPARISION OPERATORS"){
+		real a("10", "integer");
+		real b("15", "integer");
+		CHECK(a<b);
+		CHECK_FALSE(a==b);
+		CHECK_FALSE(a>b);
+
+		b = real("10", "integer");
+		CHECK(a==b);
+		CHECK_FALSE(a>b);
+		CHECK_FALSE(a<b);
+	}
+
+	SECTION("CALCULATION OPERATIONS"){
+		SECTION("ADDITION"){
+			real a("10", "integer");
+			real b("20", "integer");
+			real c = a+b;
+			real d("30", "integer");
+			CHECK(c==d);
+
+			b = real("0", "integer");
+			c = a+b;
+			CHECK(a==c);
+
+			b = real("-10", "integer");
+			c = a+b;
+			d = real("0", "integer");
+			CHECK(c==d);
+
+			b = real("-20", "integer");
+			c = a+b;
+			d = real("-10", "integer");
+			CHECK(c==d);
+		}
+
+		SECTION("SUBTRACTION"){
+			real a("30", "integer");
+			real b("20", "integer");
+			real c = a-b;
+			real d("10", "integer");
+			CHECK(c==d);
+
+			b = real("-20", "integer");
+			c = a-b;
+			d = real("50", "integer");
+			CHECK(c==d);
+
+			c = b-a;
+			d = real("-50", "integer");
+			CHECK(c==d);
+		}
+
+		SECTION("MULTIPLICATION"){
+			real a("20", "integer");
+			real b("30", "integer");
+			real c = a*b;
+			real d("600", "integer");
+			CHECK(c==d);
+
+			a = real("0", "integer");
+			c = a*b;
+			CHECK(a==c);
+
+			a = real("-2", "integer");
+			c = a*b;
+			d = real("-60", "integer");
+			CHECK(c==d);
+
+			b = real("-20", "integer");
+			c = a*b;
+			d = real("40", "integer");
+			CHECK(c==d);
+		}
+
+		SECTION("REMAINDER"){
+			real a("20", "integer");
+			real b("30", "integer");
+			real c = b%a;
+			real d("10", "integer");
+			CHECK(c==d);
+		}
+
+		// Division is checked in rational number test.
+	}
+}
+
 
 TEMPLATE_TEST_CASE("Addition Test","[template]", int, unsigned int, long, unsigned long, long long, unsigned long long){
-	using rational = boost::real::rational_number<TestType>;
-	using integer = boost::real::integer<TestType>;
+	using rational = boost::real::real_rational<TestType>;
+	using integer = boost::real::integer_number<TestType>;
 	SECTION("BOTH NUMBERS ARE POSITIVE AND RATIONAL NUMBERS"){
 		rational a,b,c,d;
 		a = rational(integer("1"), integer("2"));
@@ -108,8 +393,8 @@ TEMPLATE_TEST_CASE("Addition Test","[template]", int, unsigned int, long, unsign
 }
 
 TEMPLATE_TEST_CASE("Subtraction Test", "[template]", int, unsigned int, long, unsigned long, long long, unsigned long long){
-	using rational = boost::real::rational_number<TestType>;
-	using integer = boost::real::integer<TestType>;
+	using rational = boost::real::real_rational<TestType>;
+	using integer = boost::real::integer_number<TestType>;
 	SECTION("BOTH NUMBERS ARE POSITIVE AND RATIONAL NUMBERS"){
 		rational a,b,c,d;
 		a = rational("1/2");
@@ -179,8 +464,8 @@ TEMPLATE_TEST_CASE("Subtraction Test", "[template]", int, unsigned int, long, un
 }
 
 TEMPLATE_TEST_CASE("MULTIPLICATION TEST", "[template]", int, unsigned int, long, unsigned long, long long, unsigned long long){
-	using rational = boost::real::rational_number<TestType>;
-	using integer = boost::real::integer<TestType>;
+	using rational = boost::real::real_rational<TestType>;
+	using integer = boost::real::integer_number<TestType>;
 	SECTION("BOTH NUMBERS ARE POSITIVE AND RATIONAL NUMBERS"){
 		rational a,b,c,d;
 		a = rational("1/2");
@@ -228,6 +513,10 @@ TEMPLATE_TEST_CASE("MULTIPLICATION TEST", "[template]", int, unsigned int, long,
 		CHECK(c==d);
 		c = a*b;
 		CHECK(c==d);
+		a = integer("0");
+		c = a*b;
+		d = rational("0");
+		CHECK(c==d);
 	}
 
 	SECTION("BOTH NUMBERS HAVE DIFFERENT SIGNS AND ONE IS INTEGER"){
@@ -239,8 +528,8 @@ TEMPLATE_TEST_CASE("MULTIPLICATION TEST", "[template]", int, unsigned int, long,
 }
 
 TEMPLATE_TEST_CASE("DIVISION TEST", "[template]", int, unsigned int, long, unsigned long, long long, unsigned long long){
-	using rational = boost::real::rational_number<TestType>;
-	using integer = boost::real::integer<TestType>;
+	using rational = boost::real::real_rational<TestType>;
+	using integer = boost::real::integer_number<TestType>;
 	SECTION("BOTH NUMBERS ARE RATIONAL"){
 		rational a,b,c,d;
 		a = rational("1/2");
@@ -271,18 +560,28 @@ TEMPLATE_TEST_CASE("DIVISION TEST", "[template]", int, unsigned int, long, unsig
 }
 
 TEMPLATE_TEST_CASE("Operator tests", "[template]", int, unsigned int, long, unsigned long, long long, unsigned long long){
-	using rational = boost::real::rational_number<TestType>;
-	using integer = boost::real::integer<TestType>;
+	using rational = boost::real::real_rational<TestType>;
+	using integer = boost::real::integer_number<TestType>;
 	SECTION("Equal Operator test"){
-		rational a,b,c,d;
-		a = rational(integer("1"), integer("2"));
-		b = rational(integer("10"), integer("20"));
-		CHECK(a==b);
+		SECTION("RATIONAL - RATIONAL"){
+			rational a,b,c,d;
+			a = rational(integer("1"), integer("2"));
+			b = rational(integer("10"), integer("20"));
+			CHECK(a==b);
 
-		CHECK(a == rational(integer("40"), integer("80")));
-		integer a1("2");
-		CHECK_FALSE(a==a1);
-		CHECK_FALSE(a1==a);
+			CHECK(a == rational(integer("40"), integer("80")));
+			integer a1("2");
+			CHECK_FALSE(a==a1);
+			CHECK_FALSE(a1==a);
+		}
+
+		SECTION("INTEGER - RATIONAL"){
+			rational a,b;
+			integer c;
+			a = rational("10/11");
+			c = integer("1");
+			CHECK(c>a);
+		}
 
 	}
 	SECTION("Greater than Operator test"){
@@ -319,8 +618,8 @@ TEMPLATE_TEST_CASE("Operator tests", "[template]", int, unsigned int, long, unsi
 }
 
 TEMPLATE_TEST_CASE("HELPER FUNCTION TEST", "[template]", int, unsigned int, long, unsigned long, long long, unsigned long long){
-	using integer = boost::real::integer<TestType>;
-	using rational = boost::real::rational_number<TestType>;
+	using integer = boost::real::integer_number<TestType>;
+	using rational = boost::real::real_rational<TestType>;
 
 	SECTION("Testing abs() Function"){
 		rational a("-1/4");

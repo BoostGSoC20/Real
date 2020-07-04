@@ -1,21 +1,23 @@
 #include <catch2/catch.hpp>
 
-#include <real/integer_number.hpp>
+#include <real/real.hpp>
 #include <test_helpers.hpp>
 
 TEST_CASE("CONSTRUCTOR UNIT TEST"){
-	boost::real::integer a("1000000");
-	boost::real::integer b("1.0e6");
+	boost::real::integer_number a("1000000");
+	boost::real::integer_number b("1e6");
 	CHECK(a==b);
 
-	a = boost::real::integer("1");
-	b = boost::real::integer("-1");
+	a = boost::real::integer_number("1");
+	b = boost::real::integer_number("-1");
 	CHECK_FALSE(a==b);
 
 }
 
+
+
 TEMPLATE_TEST_CASE("Addition Test", "[template]", int, unsigned int, long , unsigned long, long long, unsigned long long){
-	using integer=boost::real::integer<TestType>;
+	using integer=boost::real::integer_number<TestType>;
 	SECTION("BOTH NUMBERS ARE POSITIVE"){
 		integer a("10");
 		integer b("20");
@@ -109,7 +111,7 @@ TEMPLATE_TEST_CASE("Addition Test", "[template]", int, unsigned int, long , unsi
 	}
 }
 TEMPLATE_TEST_CASE("Subtraction Test ", "[template]", int, unsigned int, long, unsigned long, long long, unsigned long long){
-	using integer = boost::real::integer<TestType>;
+	using integer = boost::real::integer_number<TestType>;
 	SECTION("BOTH NUMBERS ARE POSITIVE"){
 		integer a("1");
 		integer b("2");
@@ -148,7 +150,7 @@ TEMPLATE_TEST_CASE("Subtraction Test ", "[template]", int, unsigned int, long, u
 
 
 TEMPLATE_TEST_CASE("COMPARISION OPERATOR TESTS", "[template]", int, unsigned int, long, unsigned long, long long, unsigned long long){
-	using integer = boost::real::integer<TestType>;
+	using integer = boost::real::integer_number<TestType>;
 
 	SECTION("ALL OPERATOR TESTS FOR NUMBERS"){
 		integer a("1");
@@ -175,11 +177,26 @@ TEMPLATE_TEST_CASE("COMPARISION OPERATOR TESTS", "[template]", int, unsigned int
 		CHECK_FALSE(a<=b);
 		CHECK_FALSE(a<b);
 
+		a = integer("-1");
+		b = integer("-2");
+		CHECK_FALSE(b>a);
+		CHECK(a>b);
+		CHECK_FALSE(a==b);
+
+		a = integer("1");
+		b = integer("-1");
+		CHECK_FALSE(a==b);
+		CHECK(a>b);
+
+		a = integer("0");
+		b = integer("-1");
+		CHECK(a>b);
+
 	}
 }
 
 TEMPLATE_TEST_CASE("MULTIPLICATION TEST","[template]", int, unsigned int, long, unsigned long, long long, unsigned long long){
-	using integer = boost::real::integer<TestType>;
+	using integer = boost::real::integer_number<TestType>;
 
 	SECTION("BOTH NUMBERS ARE POSITIVE"){
 		integer a,b,c,d;
@@ -192,7 +209,7 @@ TEMPLATE_TEST_CASE("MULTIPLICATION TEST","[template]", int, unsigned int, long, 
 }
 
 TEMPLATE_TEST_CASE("REMAINDER OPERATOR TEST","[template]", int, unsigned int, long, unsigned long, long long, unsigned long long){
-	using integer = boost::real::integer<TestType>;
+	using integer = boost::real::integer_number<TestType>;
 	SECTION("BOTH NUMBERS ARE POSITIVE"){
 		integer a,b,c,d;
 		a = integer("10");
@@ -201,10 +218,26 @@ TEMPLATE_TEST_CASE("REMAINDER OPERATOR TEST","[template]", int, unsigned int, lo
 		d = integer("3");
 		CHECK(c==d);
 
-		/*a = integer("1000000000000000000000000000000005");
+		a = integer("1000000000000000000000000000000005");
 		b = integer("1000000000000000000000000000000000");
 		c = a%b;
 		d = integer("5");
-		CHECK(c==d);*/
+		CHECK(c==d);
+	}
+
+	SECTION("ONE NUMBER IS NEGATIVE AND OTHER IS POSITIVE"){
+		integer a,b,c,d;
+		a = integer("-7");
+		b = integer("5");
+		c = a%b;
+		d = integer("3");
+		CHECK(c==d);
+
+		a = integer("7");
+		b = integer("-5");
+		c = a%b;
+		d = integer("2");
+		CHECK(c==d);		
+
 	}
 }

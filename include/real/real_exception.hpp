@@ -89,6 +89,24 @@ namespace boost {
             }
         };
 
+        struct expected_real_integer_type_number : public std::exception {
+            const char * what() const throw () override {
+                return "Expected a integer type number but got a non-integer type number";
+            }
+        };
+
+        struct expected_real_rational_type_number : public std::exception {
+            const char * what() const throw () override {
+                return "Expected a rational type number but got a non-rational type number";
+            }
+        };
+
+        struct constructin_real_algorithm_or_real_operation_using_string : public std::exception {
+            const char * what() const throw () override {
+                return "Can not construct a real_algorithm or real_operation type from a string";
+            }
+        };
+
     }
 }
 

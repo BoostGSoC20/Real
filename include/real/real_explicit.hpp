@@ -11,6 +11,7 @@
 #include <real/real_exception.hpp>
 #include <real/interval.hpp>
 #include <real/exact_number.hpp>
+#include <real/integer_number.hpp>
 
 namespace boost {
     namespace real {
@@ -26,6 +27,7 @@ namespace boost {
 
             // Number representation as a vector of digits with an integer part and a sign (+/-)
             // TODO: Add normalizations to the constructors
+        
             exact_number<T> explicit_number;
             
         public:
@@ -169,6 +171,37 @@ namespace boost {
                 exponent += (int)new_digits.size();
                 explicit_number.digits = new_digits;
                 explicit_number.exponent = exponent;
+               
+            }
+
+            // constructor to convert an integer type rational number into an explicit number
+            constexpr explicit real_explicit(integer_number<T> num){
+                int _exponent = 0;
+                std::vector<T> num_vector = num.digits;
+                size_t n = num_vector.size();
+                if(n==0) return;
+                for(size_t i=n-1;true;--i){
+                    if(num_vector[i]==0){
+                        _exponent++;
+                        num_vector.pop_back();
+                    }
+                    else break;
+                    if(i==0){
+                        // this means all digits were zero, 
+                        // generally, this condition should not occur, but if occured, then 
+                        explicit_number.exponent  =0;
+                        explicit_number.digits = {0};
+                        explicit_number.positive = true;
+                        return;
+                    }
+                }
+            
+                _exponent += num_vector.size();
+                explicit_number.digits = num_vector;
+                explicit_number.exponent = _exponent;
+                explicit_number.positive = num.positive;
+
+                return;
             }           
 
             /**

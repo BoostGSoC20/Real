@@ -38,9 +38,19 @@ int ones(unsigned int n) {
     return 1;
 }
 
-int one_one_one(unsigned int n) {
+template <typename T = int>
+T one_one_one(unsigned int n) {
     if (n < 3) {
         return 1;
+    }
+
+    return 0;
+}
+
+template <typename T = int>
+T two(unsigned int n) {
+    if (n < 1) {
+        return 2;
     }
 
     return 0;

@@ -296,7 +296,7 @@ namespace boost{
 				std::vector<T> divisor = other.digits;
 				std::vector<T> quotient;
 				std::vector<T> remainder;
-				op.knuthDivision(dividend,divisor,quotient,remainder, (*this).BASE);
+				op.knuth_division(dividend,divisor,quotient,remainder, (*this).BASE);
 				integer_number<T> result(remainder, true);
 				// if sign of a in a%b is negative, then we need to add divisor in quantity we got in remainder
 				// like remainder of (-7)/5 = -2, but (-7)%5 = 3
@@ -363,7 +363,7 @@ namespace boost{
                 while (!digits.empty()) {
                     std::vector<T> quotient;
                     //std::vector<T> rem;
-                    std::vector<T> rem = op.long_divide_vectors(digits, base, quotient);
+                    std::vector<T> rem = op.long_divide_vectors(digits, base, quotient, 10);
                     T result = 0;
                     for (auto d : rem)  
                     {
@@ -391,7 +391,7 @@ namespace boost{
 				std::vector<T> remainder;
 				// need to change this line after new long divide algo.
 				// this will produce wrong result, because this algo will do calculations in decimal base.
-				op.knuthDivision(digits, divider.digits, quotient, remainder);
+				op.knuth_division(digits, divider.digits, quotient, remainder);
 				integer_number<T> result(quotient, !(positive^divider.positive));
 				return result;
 			}

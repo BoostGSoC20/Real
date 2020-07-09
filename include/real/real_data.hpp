@@ -290,7 +290,7 @@ namespace boost {
                         exponent_vector.push_back(0);
                     }
 
-                    tmp.DivisionBySingleDigit(exponent_vector, std::vector<T> {2}, quotient, remainder);
+                    tmp.division_by_single_digit(exponent_vector, std::vector<T> {2}, quotient, remainder);
 
                     bool exponent_is_even = false;
 

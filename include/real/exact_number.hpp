@@ -268,7 +268,8 @@ namespace boost {
             std::vector<T> long_divide_vectors(
                     const std::vector<T>& dividend,
                     const std::vector<T>& divisor,
-                    std::vector<T>& quotient
+                    std::vector<T>& quotient,
+                    T base = (std::numeric_limits<T>::max() / 4) * 2
             ) {
                 /*
                  *   Currently knuths algorithm has been implemented for long division, the
@@ -278,9 +279,13 @@ namespace boost {
                  */
 
                 std::vector<T> zero = {0}, remainder;
-                knuthDivision(dividend, divisor, quotient, remainder, 10);
-                if(quotient == zero) quotient.clear();
-                if(remainder == zero) remainder.clear();
+                knuth_division(dividend, divisor, quotient, remainder, base);
+                if (quotient == zero) {
+                    quotient.clear();
+                }
+                if (remainder == zero) {
+                    remainder.clear();
+                }
                 return remainder;
             }
 
@@ -297,22 +302,23 @@ namespace boost {
              *   @ref:    The Art of Computer Programming, Vol 2, 4.33 Algorithm D
              */
 
-            static void knuthDivision(
+            static void knuth_division(
                     const std::vector<T>& dividend, 
                     const std::vector<T>& divisor,
                     std::vector<T>& quotient,
                     std::vector<T>& remainder,
-                    T base = (std::numeric_limits<T>::max()/4)*2){
+                    T base = (std::numeric_limits<T>::max() / 4) * 2){
 
                 exact_number<T> tmp;
                 std::vector<T> aligned_dividend = dividend;
                 std::vector<T> aligned_divisor = divisor;
                 size_t idx = 0;
-                while(idx < aligned_dividend.size() && aligned_dividend[idx] == 0)
+                while (idx < aligned_dividend.size() && aligned_dividend[idx] == 0) {
                     idx++;
+                }
                 aligned_dividend.erase(aligned_dividend.begin(), aligned_dividend.begin() + idx);
 
-                if(aligned_dividend.empty()) {
+                if (aligned_dividend.empty()) {
                     quotient.clear();
                     remainder.clear();
                     return;
@@ -321,17 +327,16 @@ namespace boost {
                         tmp.aligned_vectors_is_lower(aligned_dividend, aligned_divisor)) || 
                             aligned_dividend.size() < aligned_divisor.size()) {
                     quotient.clear();
-                    remainder=aligned_dividend;
+                    remainder = aligned_dividend;
                     return;
                 }
 
-                if(divisor.size() == 1){
-                    exact_number<T> temp;
-                    temp.DivisionBySingleDigit(dividend, divisor, quotient, remainder, base);
+                if ((int)divisor.size() == 1) {
+                    division_by_single_digit(dividend, divisor, quotient, remainder, base);
                     return;
                 }
 
-                exact_number<T> exact_divisor, exact_dividend, two, zero;
+                exact_number<T> exact_divisor, exact_dividend;
 
                 exact_dividend.digits = dividend;
                 exact_dividend.exponent = dividend.size();
@@ -341,39 +346,40 @@ namespace boost {
                 exact_divisor.exponent = divisor.size();
                 exact_divisor.normalize();
 
-                if(exact_divisor.digits[0] == 0) throw divide_by_zero();
+                if (exact_divisor.digits[0] == 0) {
+                    throw divide_by_zero();
+                }
 
-                zero.digits = {0};
+                exact_number<T> zero(std::vector<T> {0}, 0, true);
+                exact_number<T> two(std::vector<T> {2});
 
-                two.digits = {2};
-                two.exponent = 1;
-                int lnNormalizationFator=0;
-                while(exact_divisor.digits[0] < base/2){
+                int normalization_factor = 0;
+                while (exact_divisor.digits[0] < base / 2) {
                     exact_divisor.multiply_vector(two, base);
                     exact_dividend.multiply_vector(two, base);
-                    lnNormalizationFator++;
+                    normalization_factor++;
                 }
 
                 //   To make the most significant bit of divisor >= (base/2) (which is required
                 //   for the correctness of the algorithm), we multiply the numerator and the
                 //   denominator by a factor of d as it won't affect our answer
 
-                while((exact_divisor.exponent - (int)exact_divisor.digits.size()) > 0){
+                while (exact_divisor.exponent - (int)exact_divisor.digits.size() > 0) {
                     exact_divisor.digits.push_back(0);
                 }
-                while((exact_dividend.exponent - (int)exact_dividend.digits.size()) > 0){
+                while (exact_dividend.exponent - (int)exact_dividend.digits.size() > 0) {
                     exact_dividend.digits.push_back(0);
                 }
 
                 int n = exact_divisor.digits.size();
                 int m = exact_dividend.digits.size();
 
-                if(m < n){
-                    // divisor=remainder and quotient=0
+                if (m < n) {
+                    // divisor = remainder and quotient = 0
                     quotient.push_back(0);
                     remainder = exact_divisor.digits;
-                }else if(m==n){
-                    if(exact_dividend < exact_divisor){
+                } else if (m == n){
+                    if (exact_dividend < exact_divisor) {
                         remainder = exact_dividend.digits;
                         quotient.push_back(0);
                     }
@@ -383,81 +389,81 @@ namespace boost {
                      *  of same size. Doing a bit research may yield some method with constant
                      *  complexity.
                      */
-                    else{
+                    else {
 
-                        T left=1, right=base-1, mid = (right-left)/2 + left;
+                        T left = 1, right = base - 1, mid = (right - left) / 2 + left;
 
                         // Binary search to obtain single quotient digit. loop runs less
                         // than log(base) number of times
-                        exact_number<T> tempDividend, tempQuotient;
-                        while(left<=right){
+                        exact_number<T> temp_dividend, temp_quotient;
+                        while (left <= right) {
 
-                            mid = (right-left)/2 + left;
-                            tempQuotient.digits = {mid};
-                            tempQuotient.exponent=1;
-                            tempDividend = exact_dividend;
-                            tempQuotient.multiply_vector(exact_divisor, base);
+                            mid = (right - left) / 2 + left;
+                            temp_quotient.digits = {mid};
+                            temp_quotient.exponent = 1;
+                            temp_dividend = exact_dividend;
+                            temp_quotient.multiply_vector(exact_divisor, base);
 
-                            if(tempQuotient > tempDividend){
-                                right = mid-1;
-                            }else if(tempQuotient == tempDividend){
-                                tempDividend = zero;
+                            if (temp_quotient > temp_dividend) {
+                                right = mid - 1;
+                            } else if (temp_quotient == temp_dividend) {
+                                temp_dividend = zero;
                                 break;
-                            }else{
-                                tempDividend.subtract_vector(tempQuotient, base-1);
-                                if(tempDividend < exact_divisor){
+                            } else {
+                                temp_dividend.subtract_vector(temp_quotient, base - 1);
+                                if (temp_dividend < exact_divisor) {
                                     break;
-                                }else if (tempDividend == exact_divisor){
+                                } else if (temp_dividend == exact_divisor) {
                                     mid++;
-                                    tempDividend = zero;
+                                    temp_dividend = zero;
                                     break;
-                                }else{
-                                    left = mid+1;
+                                } else {
+                                    left = mid + 1;
                                 }
                             }
                         }
                         quotient.push_back(mid);
-                        tempDividend.normalize();
-                        while((tempDividend.exponent - (int)tempDividend.digits.size())>0){
-                            tempDividend.digits.push_back(0);
+                        temp_dividend.normalize();
+                        while (temp_dividend.exponent - (int)temp_dividend.digits.size() > 0) {
+                            temp_dividend.digits.push_back(0);
                         }
-                        remainder = tempDividend.digits;
+                        remainder = temp_dividend.digits;
                     }
                 }
-                else{
+                else {
+                    exact_number<T> exact_base(std::vector<T> {1,0}, 2, true);
+                    exact_number<T> one(std::vector<T> {1});
 
-                    exact_number<T>  firstDigit, secondDigit, exact_base, tempDividend, tempQuotient, temp, one;
-                    exact_base.digits={1,0};
-                    exact_base.exponent=2;
-                    one.digits={1};
-                    one.exponent=1;
                     std::vector<T> dividend_part(exact_dividend.digits.begin(), exact_dividend.digits.begin()+n);
-                    tempDividend.digits = dividend_part;
-                    tempDividend.exponent = n;
-                    std::vector<T> quotientDigit, tempRemainder;
+                    exact_number<T> temp_dividend(dividend_part, n, true);
+                    
+                    exact_number<T> first_digit, second_digit, temp_quotient, temp;
+                    std::vector<T> quotient_digit, temp_remainder;
 
-                    for(long int j=n; j<m; ++j){
-                        tempDividend.digits.push_back(exact_dividend.digits[j]);
-                        tempDividend.exponent++;
-                        if(tempDividend == zero) {
-                            tempDividend.clear();
-                            tempDividend.exponent=0;
+                    for (long int j = n; j < m; ++j) {
+                        temp_dividend.digits.push_back(exact_dividend.digits[j]);
+                        temp_dividend.exponent++;
+                        if (temp_dividend == zero) {
+                            temp_dividend.clear();
+                            temp_dividend.exponent = 0;
                         }
-                        while(tempDividend < exact_divisor){
-                            if(j==m-1) break;
+                        while (temp_dividend < exact_divisor) {
+                            if (j == m - 1) {
+                                break;
+                            }
                             j++;
-                            tempDividend.digits.push_back(exact_dividend.digits[j]);
-                            tempDividend.exponent++;
+                            temp_dividend.digits.push_back(exact_dividend.digits[j]);
+                            temp_dividend.exponent++;
                             quotient.push_back(0);
                         }
 
-                        if(tempDividend < exact_divisor){
+                        if (temp_dividend < exact_divisor) {
                             quotient.push_back(0);
-                            tempDividend.normalize();
-                            remainder = tempDividend.digits;
-                            while((tempDividend.exponent - (long int)tempDividend.digits.size())>0){
+                            temp_dividend.normalize();
+                            remainder = temp_dividend.digits;
+                            while (temp_dividend.exponent - (long int)temp_dividend.digits.size() > 0) {
                                 remainder.push_back(0);
-                                tempDividend.exponent--;
+                                temp_dividend.exponent--;
                             }
                             break;
                         }
@@ -468,100 +474,105 @@ namespace boost {
                          *  of same size. Doing a bit research may yield some method with constant
                          *  complexity.
                          */
-                        if((int)tempDividend.digits.size() == n){
+                        if ((int)temp_dividend.digits.size() == n) {
 
-                            T left=1, right=base-1, mid = (right-left)/2 + left;
+                            T left = 1, right = base - 1, mid = (right - left) / 2 + left;
 
                             // Binary search to obtain single quotient digit. loop runs less
                             // than log(base) number of times
 
-                            exact_number<T> tempDividend2;
-                            while(left<=right){
+                            exact_number<T> temp_dividend2;
+                            while (left <= right) {
 
-                                mid = (right-left)/2 + left;
-                                tempQuotient.digits = {mid};
-                                tempQuotient.exponent=1;
-                                tempDividend2 = tempDividend;
-                                tempQuotient.multiply_vector(exact_divisor, base);
+                                mid = (right - left) / 2 + left;
+                                temp_quotient.digits = {mid};
+                                temp_quotient.exponent = 1;
+                                temp_dividend2 = temp_dividend;
+                                temp_quotient.multiply_vector(exact_divisor, base);
 
-                                if(tempQuotient > tempDividend2){
-                                    right = mid-1;
-                                }else if(tempQuotient == tempDividend2){
-                                    tempDividend2 = zero;
+                                if (temp_quotient > temp_dividend2) {
+                                    right = mid - 1;
+                                } else if (temp_quotient == temp_dividend2) {
+                                    temp_dividend2 = zero;
                                     break;
-                                }else{
-                                    tempDividend2.subtract_vector(tempQuotient, base-1);
-                                    if(tempDividend2 < exact_divisor){
+                                } else {
+                                    temp_dividend2.subtract_vector(temp_quotient, base - 1);
+                                    if (temp_dividend2 < exact_divisor) {
                                         break;
-                                    }else if (tempDividend2 == exact_divisor){
+                                    } else if (temp_dividend2 == exact_divisor){
                                         mid++;
-                                        tempDividend2 = zero;
+                                        temp_dividend2 = zero;
                                         break;
-                                    }else{
-                                        left = mid+1;
+                                    } else {
+                                        left = mid + 1;
                                     }
                                 }
                             }
                             quotient.push_back(mid);
-                            tempDividend = tempDividend2;
-                            tempDividend.normalize();
-                            if(tempDividend == zero){
-                                tempDividend.digits.clear();
+                            temp_dividend = temp_dividend2;
+                            temp_dividend.normalize();
+                            if (temp_dividend == zero) {
+                                temp_dividend.digits.clear();
                                 continue;
                             }
-                            while((tempDividend.exponent - (int)tempDividend.digits.size())>0){
-                                tempDividend.digits.push_back(0);
+                            while (temp_dividend.exponent - (int)temp_dividend.digits.size() > 0) {
+                                temp_dividend.digits.push_back(0);
                             }
-                            if(j==m-1){
-                                remainder = tempDividend.digits;
+                            if (j == m - 1) {
+                                remainder = temp_dividend.digits;
                                 break;
-                            }else continue;
+                            } else {
+                                continue;
+                            }
                         }
-                        tempDividend.exponent=n+1;
+                        temp_dividend.exponent = n + 1;
 
-                        firstDigit.digits = {tempDividend.digits[0]};
-                        secondDigit.digits = {tempDividend.digits[1]};
-                        firstDigit.exponent=1;
-                        secondDigit.exponent=1;
-                        firstDigit.multiply_vector(exact_base, base);
-                        firstDigit.add_vector(secondDigit, base);
-                        while(firstDigit.exponent > (int)firstDigit.digits.size()){
-                            firstDigit.digits.push_back(0);
+                        first_digit.digits = {temp_dividend.digits[0]};
+                        second_digit.digits = {temp_dividend.digits[1]};
+                        first_digit.exponent = 1;
+                        second_digit.exponent = 1;
+                        first_digit.multiply_vector(exact_base, base);
+                        first_digit.add_vector(second_digit, base);
+                        while (first_digit.exponent > (int)first_digit.digits.size()) {
+                            first_digit.digits.push_back(0);
                         }
 
-                        quotientDigit.clear(); tempRemainder.clear();
-                        firstDigit.DivisionBySingleDigit(firstDigit.digits,
-                            std::vector<T> {exact_divisor[0]}, quotientDigit, tempRemainder, base);
+                        quotient_digit.clear(); temp_remainder.clear();
+                        first_digit.division_by_single_digit(first_digit.digits,
+                            std::vector<T> {exact_divisor[0]}, quotient_digit, temp_remainder, base);
 
-                        tempQuotient.digits = quotientDigit;
-                        tempQuotient.exponent = quotientDigit.size();
-                        temp = tempQuotient;
+                        temp_quotient.digits = quotient_digit;
+                        temp_quotient.exponent = quotient_digit.size();
+                        temp = temp_quotient;
                         temp.multiply_vector(exact_divisor, base);
-                        while(temp > tempDividend){
-                            tempQuotient.subtract_vector(one, base-1);
-                            temp = tempQuotient;
+                        while (temp > temp_dividend) {
+                            temp_quotient.subtract_vector(one, base - 1);
+                            temp = temp_quotient;
                             temp.multiply_vector(exact_divisor, base);
                         }
-                        while((tempQuotient.exponent - (int)tempQuotient.digits.size()) > 0){
-                            tempQuotient.digits.push_back(0);
+                        while (temp_quotient.exponent - (int)temp_quotient.digits.size() > 0) {
+                            temp_quotient.digits.push_back(0);
                         }
-                        quotient.insert(quotient.end(), tempQuotient.digits.begin(), tempQuotient.digits.end());
+                        quotient.insert(quotient.end(), temp_quotient.digits.begin(), temp_quotient.digits.end());
 
-                        tempDividend.subtract_vector(temp, base-1);
-                        tempDividend.normalize();
-                        while((tempDividend.exponent - (int)tempDividend.digits.size())>0){
-                            tempDividend.digits.push_back(0);
+                        temp_dividend.subtract_vector(temp, base - 1);
+                        temp_dividend.normalize();
+                        while (temp_dividend.exponent - (int)temp_dividend.digits.size() > 0) {
+                            temp_dividend.digits.push_back(0);
                         }
-                        if(j==m-1)    remainder = tempDividend.digits;
-                        if(tempDividend == zero)    tempDividend.digits.clear();
+                        if (j == m - 1) {
+                            remainder = temp_dividend.digits;
+                        }
+                        if (temp_dividend == zero) {
+                            temp_dividend.digits.clear();
+                        }
                     }
                 }
-                if(lnNormalizationFator >= 1){
-                    T factor = 1 << lnNormalizationFator;
+                if (normalization_factor >= 1) {
+                    T factor = 1 << normalization_factor;
                     std::vector<T> temp = remainder, tempr;
                     remainder.clear();
-                    exact_number<T> t;
-                    t.DivisionBySingleDigit(temp, std::vector<T> {factor}, remainder, tempr, base);
+                    division_by_single_digit(temp, std::vector<T> {factor}, remainder, tempr, base);
                 }
             }
 
@@ -574,122 +585,123 @@ namespace boost {
              *  @param remainder: an empty vector in which remainder is returned
              */
 
-            static void DivisionBySingleDigit(
+            static void division_by_single_digit(
                     const std::vector<T> & dividend,
                     const std::vector<T> & divisor,
                     std::vector<T> & quotient,
                     std::vector<T> & remainder,
-                    T base = (std::numeric_limits<T>::max()/4)*2){
+                    T base = (std::numeric_limits<T>::max() / 4) * 2){
 
                 // division by zero exception
-                if (divisor[0] == 0)
+                if (divisor[0] == 0) {
                     throw divide_by_zero();
+                }
 
                 // if Divisor is one then => quotient = dividend, remainder=0
-                if(divisor[0]==1){
-                    for(auto x : dividend)
+                if (divisor[0] == 1) {
+                    for(auto x : dividend) {
                         quotient.push_back(x);
+                    }
                     remainder.push_back(0);
                     return;
                 }
 
-                auto dividendSize = dividend.size();
+                int dividend_size = dividend.size();
 
                 // if dividend size is one, then the operation is simply integer division
-                if(dividendSize==1){
+                if (dividend_size == 1) {
                     T a = dividend[0];
                     T b = divisor[0];
-                    quotient.push_back(a/b);
-                    remainder.push_back(a%b);
+                    quotient.push_back(a / b);
+                    remainder.push_back(a % b);
                     return;
                 }
 
                 exact_number<T> exact_remainder, exact_divisor;
                 exact_remainder.digits.push_back(dividend[0]);
-                exact_remainder.exponent=1;
+                exact_remainder.exponent = 1;
                 exact_divisor.digits = divisor;
-                exact_divisor.exponent=1;
+                exact_divisor.exponent = 1;
 
-                auto nextDigit=1;
+                auto next_digit = 1;
 
-                if(dividend[0] < divisor[0]){
-                    exact_remainder.digits.push_back(dividend[nextDigit]);
-                    exact_remainder.exponent=2;
-                    nextDigit++;
+                if (dividend[0] < divisor[0]) {
+                    exact_remainder.digits.push_back(dividend[next_digit]);
+                    exact_remainder.exponent = 2;
+                    next_digit++;
                 }
 
-                exact_number<T> tempQuotient, tempRemainder, zero;
+                exact_number<T> temp_quotient, temp_remainder, zero;
                 zero.digits = {0};
 
                 // looping over the digits of dividend vector
-                while(nextDigit <= dividendSize){
+                while (next_digit <= dividend_size) {
 
-                    T left=1, right=base-1, mid = (right-left)/2 + left;
+                    T left = 1, right = base - 1, mid = (right - left) / 2 + left;
 
                     // Binary search to obtain single quotient digit. loop runs less
                     // than log(base) number of times
 
-                    while(left<=right){
+                    while (left <= right) {
+                        mid = (right - left) / 2 + left;
+                        temp_quotient.digits = {mid};
+                        temp_quotient.exponent = 1;
+                        temp_remainder = exact_remainder;
+                        temp_quotient.multiply_vector(exact_divisor, base);
 
-                        mid = (right-left)/2 + left;
-                        tempQuotient.digits = {mid};
-                        tempQuotient.exponent=1;
-                        tempRemainder = exact_remainder;
-                        tempQuotient.multiply_vector(exact_divisor, base);
-
-                        if(tempQuotient > tempRemainder){
-                            right = mid-1;
-                        }else if(tempQuotient == tempRemainder){
-                            tempRemainder = zero;
+                        if (temp_quotient > temp_remainder) {
+                            right = mid - 1;
+                        } else if (temp_quotient == temp_remainder) {
+                            temp_remainder = zero;
                             break;
-                        }else{
-                            tempRemainder.subtract_vector(tempQuotient, base-1);
-                            if(tempRemainder < exact_divisor){
+                        } else {
+                            temp_remainder.subtract_vector(temp_quotient, base - 1);
+                            if (temp_remainder < exact_divisor) {
                                 break;
-                            }else if (tempRemainder == exact_divisor){
+                            } else if (temp_remainder == exact_divisor) {
                                 mid++;
-                                tempRemainder = zero;
+                                temp_remainder = zero;
                                 break;
-                            }else{
-                                left = mid+1;
+                            } else {
+                                left = mid + 1;
                             }
                         }
                     }
-                    // std::cout << "Dividend is: ";
-                    // for(auto c: exact_remainder.digits)
-                    //     std::cout << c;
-                    // std::cout << "\nmid: " << mid << "\n";
                     quotient.push_back(mid);
 
-                    exact_remainder = tempRemainder;
-                    if(exact_remainder==zero){
-                        // std::cout <<"hello\n";
-                        if(nextDigit < dividendSize){
+                    exact_remainder = temp_remainder;
+                    if (exact_remainder == zero) {
+                        if (next_digit < dividend_size) {
                             exact_remainder.digits.clear();
-                            while(dividend[nextDigit]==0 && nextDigit<dividendSize){
-                                quotient.push_back(0); nextDigit++;
+                            while (dividend[next_digit] == 0 && next_digit < dividend_size) {
+                                quotient.push_back(0); next_digit++;
                             }
-                            if(nextDigit==dividendSize) break;
-                            exact_remainder.digits.push_back(dividend[nextDigit]);
-                            exact_remainder.exponent=1;
-                            nextDigit++;
+                            if (next_digit == dividend_size) {
+                                break;
+                            }
+                            exact_remainder.digits.push_back(dividend[next_digit]);
+                            exact_remainder.exponent = 1;
+                            next_digit++;
+                        } else {
+                            break;
                         }
-                        else{break;}
-                        if(exact_remainder < exact_divisor){
+                        if (exact_remainder < exact_divisor) {
                             quotient.push_back(0);
-                            if(nextDigit < dividendSize){
-                                exact_remainder.digits.push_back(dividend[nextDigit]);
-                                exact_remainder.exponent=2;
-                                nextDigit++;
+                            if (next_digit < dividend_size) {
+                                exact_remainder.digits.push_back(dividend[next_digit]);
+                                exact_remainder.exponent = 2;
+                                next_digit++;
+                            } else {
+                                break;
                             }
-                            else{break;}
                         }
+                    } else if (next_digit < dividend_size) {
+                        exact_remainder.digits.push_back(dividend[next_digit]);
+                        exact_remainder.exponent = 2;
+                        next_digit++;
+                    } else {
+                        break;
                     }
-                    else if(nextDigit < dividendSize){
-                        exact_remainder.digits.push_back(dividend[nextDigit]);
-                        exact_remainder.exponent=2;
-                        nextDigit++;
-                    }else break;
                 }
                 remainder = exact_remainder.digits;
             }
@@ -1019,7 +1031,7 @@ namespace boost {
                 }
 
                 while(true){
-                    DivisionBySingleDigit(exponent_vector, std::vector<T> {2}, quotient, remainder);
+                    division_by_single_digit(exponent_vector, std::vector<T> {2}, quotient, remainder);
                     if ( !(remainder.empty() || ((int)remainder.size() == 1 && remainder[0] == 0)) ) {
                         result = result * number_copy;
                     }
@@ -1677,7 +1689,7 @@ namespace boost {
                     }
                     std::vector<T> k = *pwr++;
                     std::vector<T> q;
-                    tmp.long_divide_vectors(temp, k, q);
+                    tmp.long_divide_vectors(temp, k, q, 10);
                     tmp = (exact_number<T>(fraction).base10_add(exact_number<T>(q)));
                     fraction = tmp.digits;
                     while (tmp.exponent - (int)tmp.digits.size() > 0) {

@@ -78,7 +78,7 @@ namespace boost {
                 
                 while (explicit_number.digits.size() > 1) {
                     std::vector<T> quotient;
-                    std::vector<T> rem = op.long_divide_vectors(explicit_number.digits, base, quotient);
+                    std::vector<T> rem = op.long_divide_vectors(explicit_number.digits, base, quotient, 10);
                     if (rem.empty()) {
                         explicit_number.digits = quotient;
                         ++exponent; 
@@ -91,7 +91,7 @@ namespace boost {
                 while (!explicit_number.digits.empty()) {
                     std::vector<T> quotient;
                     //std::vector<T> rem;
-                    std::vector<T> rem = op.long_divide_vectors(explicit_number.digits, base, quotient);
+                    std::vector<T> rem = op.long_divide_vectors(explicit_number.digits, base, quotient, 10);
                     T result = 0;
                     for (auto d : rem)  
                     {
@@ -143,7 +143,7 @@ namespace boost {
                 
                 while (explicit_number.digits.size() > 1) {
                     std::vector<T> quotient;
-                    std::vector<T> rem = op.long_divide_vectors(explicit_number.digits, base, quotient);
+                    std::vector<T> rem = op.long_divide_vectors(explicit_number.digits, base, quotient, 10);
                     if (rem.empty()) {
                         explicit_number.digits = quotient;
                         ++exponent; 
@@ -156,7 +156,7 @@ namespace boost {
                 while (!explicit_number.digits.empty()) {
                     std::vector<T> quotient;
                     //std::vector<T> rem;
-                    std::vector<T> rem = op.long_divide_vectors(explicit_number.digits, base, quotient);
+                    std::vector<T> rem = op.long_divide_vectors(explicit_number.digits, base, quotient, 10);
                     T result = 0;
                     for (auto d : rem)  
                     {

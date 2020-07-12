@@ -14,6 +14,7 @@
 #include <real/real_exception.hpp>
 #include <real/real_rational.hpp>
 #include <real/integer_number.hpp>
+#include <real/real_math.hpp>
 
 namespace boost { 
     namespace real{
@@ -334,6 +335,22 @@ namespace boost {
                         }
                     }
 
+                    break;
+                }
+
+                case OPERATION::EXPONENT :{
+                    this->_approximation_interval.lower_bound = 
+                        exponent(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
+                    this->_approximation_interval.upper_bound = 
+                        exponent(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
+                    break;
+                }
+
+                case OPERATION::LOGARITHM :{
+                    this->_approximation_interval.lower_bound = 
+                        logarithm(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
+                    this->_approximation_interval.upper_bound = 
+                        logarithm(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
                     break;
                 }
 

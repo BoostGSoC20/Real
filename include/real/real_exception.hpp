@@ -112,7 +112,11 @@ namespace boost {
             }
         };
        
-
+        struct logarithm_not_defined_for_non_positive_number : public std::exception {
+            const char * what() const throw () override {
+                return "Logarithm is only defined for positive number";
+            }
+        };
         
 
     }

@@ -609,7 +609,29 @@ namespace boost {
                 return recurse_op(other, rc_lvl, OPERATION::SUBTRACTION);
             }
 
+            /**
+             *      EXPONENT METHOD
+             * @brief: Calculates e^real_num
+             * @params: real_num: power to which e is to be raised
+             * @return: returns a new boost::real which is e^real_num
+             * @author: Vikram Singh Chundawat
+             **/
+            static real exp(real<T> real_num){
+                static real<T> zero("0");
+                return real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::EXPONENT));
+            }
 
+            /**
+             *      LOGARITHM METHOD
+             * @brief: Calculated ln(real_num) or log(real_num) (base e)
+             * @params: real_num: boost::real number whose logarithm is to be calculated.
+             * @return: returns a new boost::real which is ln(real_num)
+             * @author: Vikram Singh Chundawat
+             **/
+            static real log(real<T> real_num){
+                static real<T> zero("0");
+                return real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::LOGARITHM));
+            }
 
             /*      POWER METHOD
              *  @brief:  Calculates real_num^exponent
@@ -620,7 +642,7 @@ namespace boost {
              */
 
             static real power(real<T> real_num, real<T> exponent){
-
+ 
                 return real(real_operation<T>(real_num._real_p, exponent._real_p, OPERATION::POWER));
             }
 

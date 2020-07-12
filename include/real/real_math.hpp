@@ -1,4 +1,8 @@
-#include "real/real.hpp"
+#ifndef BOOST_REAL_MATH_HPP
+#define BOOST_REAL_MATH_HPP
+
+#include "real/exact_number.hpp"
+#include "real/real_exception.hpp"
 
 namespace boost{
 	namespace real{
@@ -43,15 +47,20 @@ namespace boost{
 		 **/
 		template<typename T>
 		exact_number<T> logarithm(exact_number<T> x, size_t max_error_exponent, bool upper){
+			// log is only defined for numbers greater than 0
+			static const exact_number<T> zero("0");
+			static exact_number<T> one("1");
+			static const exact_number<T> two("2");
+			if(x == zero || x.positive == false){
+				throw logarithm_not_defined_for_non_positive_number();
+			}
 			exact_number<T> result("0");
 			exact_number<T> term_number("1");
 			unsigned int term_number_int = 1;
 			exact_number<T> cur_term("0");
 			exact_number<T> x_pow ("1");
 			exact_number<T> max_error(std::vector<T> {1}, -max_error_exponent, true);
-			static exact_number<T> one("1");
-			static const exact_number<T> zero("0");
-			static const exact_number<T> two("2");
+			
 			if(x > zero && x < two){
 				do{
 					if(term_number_int %2 == 1)
@@ -83,7 +92,7 @@ namespace boost{
 		/**
 		 *  SINE FUNCTION USING TAYLOR EXPANSION
 		 * @brief: calculates sin(x) of a exact_number using taylor expansion
-		 * @param: x: the exact_number.
+		 * @param: x: the exact_number, representing angle in radian
 		 * @param: max_error_exponent: Absolute Error in the result should be < 1*base^(-max_error_exponent)
 		 * @param:  upper: if true: error lies in [0, +epsilon]
 		 *                  else: error lies in [-epsilon, 0], here epsilon = 1*base^(-max_error_exponent)
@@ -123,7 +132,7 @@ namespace boost{
 		/**
 		 *  COSINE FUNCTION USING TAYLOR EXPANSION
 		 * @brief: calculates cos(x) of a exact_number using taylor expansion
-		 * @param: x: the exact_number.
+		 * @param: x: the exact_number, representing angle in radian
 		 * @param: max_error_exponent: Absolute Error in the result should be < 1*base^(-max_error_exponent)
 		 * @param:  upper: if true: error lies in [0, +epsilon]
 		 *                  else: error lies in [-epsilon, 0], here epsilon = 1*base^(-max_error_exponent)
@@ -164,7 +173,7 @@ namespace boost{
 		/**
 		 *  TANGENT FUNCTION USING TAYLOR EXPANSION
 		 * @brief: calculates tan(x) of a exact_number using taylor expansion
-		 * @param: x: the exact_number.
+		 * @param: x: the exact_number, representing angle in radian
 		 * @param: max_error_exponent: Absolute Error in the result should be < 1*base^(-max_error_exponent)
 		 * @param:  upper: if true: error lies in [0, +epsilon]
 		 *                  else: error lies in [-epsilon, 0], here epsilon = 1*base^(-max_error_exponent)
@@ -182,7 +191,7 @@ namespace boost{
 		/**
 		 *  COTANGENT FUNCTION USING TAYLOR EXPANSION
 		 * @brief: calculates cot(x) of a exact_number using taylor expansion
-		 * @param: x: the exact_number.
+		 * @param: x: the exact_number, representing angle in radian
 		 * @param: max_error_exponent: Absolute Error in the result should be < 1*base^(-max_error_exponent)
 		 * @param:  upper: if true: error lies in [0, +epsilon]
 		 *                  else: error lies in [-epsilon, 0], here epsilon = 1*base^(-max_error_exponent)
@@ -200,7 +209,7 @@ namespace boost{
 		/**
 		 *  SECANT FUNCTION USING TAYLOR EXPANSION
 		 * @brief: calculates sec(x) of a exact_number using taylor expansion
-		 * @param: x: the exact_number.
+		 * @param: x: the exact_number, representing angle in radian
 		 * @param: max_error_exponent: Absolute Error in the result should be < 1*base^(-max_error_exponent)
 		 * @param:  upper: if true: error lies in [0, +epsilon]
 		 *                  else: error lies in [-epsilon, 0], here epsilon = 1*base^(-max_error_exponent)
@@ -218,7 +227,7 @@ namespace boost{
 		/**
 		 *  COSECANT FUNCTION USING TAYLOR EXPANSION
 		 * @brief: calculates cosec(x) of a exact_number using taylor expansion
-		 * @param: x: the exact_number.
+		 * @param: x: the exact_number, representing angle in radian
 		 * @param: max_error_exponent: Absolute Error in the result should be < 1*base^(-max_error_exponent)
 		 * @param:  upper: if true: error lies in [0, +epsilon]
 		 *                  else: error lies in [-epsilon, 0], here epsilon = 1*base^(-max_error_exponent)
@@ -235,3 +244,5 @@ namespace boost{
 
 	}
 }
+
+#endif//BOOST_REAL_MATH_HPP

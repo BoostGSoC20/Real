@@ -1,6 +1,7 @@
 #ifndef BOOST_REAL_MATH_HPP
 #define BOOST_REAL_MATH_HPP
 
+#include <tuple>
 #include "real/exact_number.hpp"
 #include "real/real_exception.hpp"
 
@@ -168,6 +169,57 @@ namespace boost{
 			}while(cur_term.abs() > max_error);
 			result = result.up_to(max_error_exponent, upper);
 			return result;
+		}
+
+		 
+		 /**
+		 *  SINE AND COSINE FUNCTION USING TAYLOR EXPANSION
+		 * @brief: calculates cos(x) and sin(x) of a exact_number using taylor expansion
+		 * @param: x: the exact_number, representing angle in radian
+		 * @param: max_error_exponent: Absolute Error in the result should be < 1*base^(-max_error_exponent)
+		 * @param:  upper: if true: error lies in [0, +epsilon]
+		 *                  else: error lies in [-epsilon, 0], here epsilon = 1*base^(-max_error_exponent)
+		 * @return: a tuple containing sin(x) and cos(x)
+		 * @author: Vikram Singh Chundawat
+		 **/
+		template<typename T>
+		std::tuple<exact_number<T>, exact_number<T> > sin_cos(exact_number<T> x, size_t max_error_exponent, bool upper){
+			exact_number<T> sin_result("0");
+			exact_number<T> cos_result("0");
+			exact_number<T> cur_sin_term = x;
+			exact_number<T> cur_cos_term("1");
+			exact_number<T> cur_power = x;
+			exact_number<T> factorial("1");
+			static exact_number<T> one("1");
+			static exact_number<T> two("2");
+			exact_number<T> factorial_number("1");
+			unsigned int term_number_int = 0;
+			exact_number<T> max_error(std::vector<T> {1}, -max_error_exponent, true);
+			do{
+
+				if(term_number_int % 2 == 0){
+					sin_result += cur_sin_term;
+					cos_result += cur_cos_term;
+				}
+				else{
+					sin_result -= cur_sin_term;
+					cos_result -= cur_cos_term;
+				}
+				++term_number_int;
+				factorial_number += one;
+				factorial *= factorial_number;
+				cur_power *= x;
+				cur_cos_term = cur_power;
+				cur_cos_term.divide_vector(factorial, max_error_exponent, upper);
+
+				factorial_number += one;
+				factorial *= factorial_number;
+				cur_power *= x;
+				cur_sin_term = cur_power;
+				cur_sin_term.divide_vector(factorial, max_error_exponent, upper);
+			}while( (cur_cos_term.abs() > max_error) || (cur_sin_term.abs() > max_error) );
+
+			return std::make_tuple(sin_result, cos_result);
 		}
 
 		/**

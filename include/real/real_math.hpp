@@ -233,8 +233,7 @@ namespace boost{
 		 **/
 		template<typename T>
 		inline exact_number<T> tangent(exact_number<T> x, size_t max_error_exponent, bool upper){
-			exact_number<T> result = sine(x, max_error_exponent, upper);
-			exact_number<T> cos = cosine(x,  max_error_exponent, upper);
+			auto [result, cos] = sin_cos(x, max_error_exponent, upper);
 			result.divide_vector(cos, max_error_exponent, upper);
 			result = result.up_to(max_error_exponent, upper);
 			return result; 
@@ -251,8 +250,7 @@ namespace boost{
 		 **/
 		template<typename T>
 		inline exact_number<T> cotangent(exact_number<T> x, size_t max_error_exponent, bool upper){
-			exact_number<T> result = cosine(x, max_error_exponent, upper);
-			exact_number<T> sin = sine(x,  max_error_exponent, upper);
+			auto [sin, result] = sin_cos(x, max_error_exponent, upper);
 			result.divide_vector(sin, max_error_exponent, upper);
 			result = result.up_to(max_error_exponent, upper);
 			return result; 

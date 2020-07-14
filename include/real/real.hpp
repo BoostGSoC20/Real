@@ -646,6 +646,31 @@ namespace boost {
                 return real(real_operation<T>(real_num._real_p, exponent._real_p, OPERATION::POWER));
             }
 
+
+            /**
+             *      SIN METHOD (INPUT IN RADIANS)
+             * @brief: Calculated sin(real_num), real_num should represent angle in radians
+             * @params: real_num: boost::real number whose sin is to be calculated.
+             * @return: returns a new boost::real which is sin(real_num)
+             * @author: Vikram Singh Chundawat
+             **/
+            static real sin(real<T> real_num){
+                static real<T> zero("0");
+                return real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::SIN));
+            }
+
+            /**
+             *      COS METHOD (INPUT IN RADIANS)
+             * @brief: Calculated cos(real_num), real_num should represent angle in radians
+             * @params: real_num: boost::real number whose cos is to be calculated.
+             * @return: returns a new boost::real which is cos(real_num)
+             * @author: Vikram Singh Chundawat
+             **/
+            static real cos(real<T> real_num){
+                static real<T> zero("0");
+                return real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::COS));
+            }
+
             /**
              * @brief Sets this real_data to that of the operation between this previous
              * real_data and other real_data.

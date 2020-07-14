@@ -354,6 +354,83 @@ namespace boost {
                     break;
                 }
 
+                case OPERATION::SIN :{
+                    auto [sin_lower, cos_lower] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
+                    auto [sin_upper, cos_upper] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
+                    // checking for sign change of derivative, detection of minima-maxima point
+                    // if sign of both upper and lower bound of cos(x) is same, then there are no minima-maxima point in input interval
+                    if(cos_upper.positive == cos_lower.positive){
+                        if(sin_lower < sin_upper){
+                            this->_approximation_interval.lower_bound = sin_lower;
+                            this->_approximation_interval.upper_bound = sin_upper;
+                        }
+                        else{
+                            this->_approximation_interval.lower_bound = sin_upper;
+                            this->_approximation_interval.upper_bound = sin_lower;
+                        }
+
+                    }
+                    // if sign of derivative was changed, then there is point of maxima or minima
+                    // if sign of values given by sin(x) is negative, then lower bound should be -1
+                    else if(!sin_upper.positive){
+                        this->_approximation_interval.lower_bound = exact_number<T>("-1");
+                        if(sin_lower > sin_upper){
+                            this->_approximation_interval.upper_bound = sin_lower;
+                        }
+                        else{
+                            this->_approximation_interval.upper_bound = sin_upper;
+                        }
+                    }
+                    else{
+                        this->_approximation_interval.upper_bound = exact_number<T>("1");
+                        if(sin_upper < sin_lower){
+                            this->_approximation_interval.lower_bound = sin_upper;
+                        }
+                        else{
+                            this->_approximation_interval.lower_bound = sin_lower;
+                        }
+                    }
+                    break;
+                }
+
+                case OPERATION::COS :{
+                    auto [sin_lower, cos_lower] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
+                    auto [sin_upper, cos_upper] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
+                    // checking for sign change of derivative, detection of minima-maxima point
+                    // if sign of both upper and lower bound of cos(x) is same, then there are no minima-maxima point in input interval
+                    if(sin_upper.positive == sin_lower.positive){
+                        if(cos_lower < cos_upper){
+                            this->_approximation_interval.lower_bound = cos_lower;
+                            this->_approximation_interval.upper_bound = cos_upper;
+                        }
+                        else{
+                            this->_approximation_interval.lower_bound = cos_upper;
+                            this->_approximation_interval.upper_bound = cos_lower;
+                        }
+                    }
+                    // if sign of derivative was changed, then there is point of maxima or minima
+                    // if sign of values given by sin(x) is negative, then lower bound should be -1
+                    else if(!cos_upper.positive){
+                        this->_approximation_interval.lower_bound = exact_number<T>("-1");
+                        if(sin_lower > sin_upper){
+                            this->_approximation_interval.upper_bound = cos_lower;
+                        }
+                        else{
+                            this->_approximation_interval.upper_bound = cos_upper;
+                        }
+                    }
+                    else{
+                        this->_approximation_interval.upper_bound = exact_number<T>("1");
+                        if(sin_upper < sin_lower){
+                            this->_approximation_interval.lower_bound = cos_upper;
+                        }
+                        else{
+                            this->_approximation_interval.lower_bound = cos_lower;
+                        }
+                    }
+                    break;
+                }
+
                 default:
                     throw boost::real::none_operation_exception();
             }

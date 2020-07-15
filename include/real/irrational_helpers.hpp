@@ -69,6 +69,11 @@ namespace boost {
                 static const boost::real::real_explicit<T> real_x("1");
                 static const boost::real::real_explicit<T> real_x0("-262537412640768000");
                 static const boost::real::real_explicit<T> real_s("13591409");
+
+                // real_c is constant C in the above formula
+                // its actual value is C = 426880 * sqrt(10005)
+                // following approximation for C can be removed 
+                // once the square root function is implemented
                 static const boost::real::real<T> real_c("42698670.6663333958177128891606596082733208840025090828008380071788526051574575942163017999114556686013457371674940804113922927361812667281931368821705825634600667987664834607957359835523339854848545832762473774912507545850325782197456759912124003920153233212768354462964858373556973060121234587580491432166");
 
                 exact_number<T> K = real_k.get_exact_number();
@@ -77,13 +82,13 @@ namespace boost {
                 exact_number<T> X = real_x.get_exact_number();
                 exact_number<T> S = real_s.get_exact_number();
 
-                exact_number<T> L0 = real_l0.get_exact_number();
-                exact_number<T> X0 = real_x0.get_exact_number();
-                exact_number<T> _16(std::vector<T> {16}, 1, true);
-                exact_number<T> _12(std::vector<T> {12}, 1, true);
-                exact_number<T> _1("1");
+                static exact_number<T> L0 = real_l0.get_exact_number();
+                static exact_number<T> X0 = real_x0.get_exact_number();
+                static exact_number<T> _16(std::vector<T> {16}, 1, true);
+                static exact_number<T> _12(std::vector<T> {12}, 1, true);
+                static exact_number<T> _1("1");
 
-                boost::real::const_precision_iterator<T> real_c_itr = real_c.get_real_itr();
+                static boost::real::const_precision_iterator<T> real_c_itr = real_c.get_real_itr();
                 real_c_itr.set_maximum_precision(n + 1);
                 const exact_number<T> C = real_c_itr.cend().get_interval().lower_bound;
 

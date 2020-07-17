@@ -117,6 +117,12 @@ namespace boost {
                 return "Logarithm is only defined for positive number";
             }
         };
+
+        struct max_precision_for_trigonometric_function_error : public std::exception {
+            const char * what() const throw () override {
+                return "Number is not in domain of this trigonometric function";
+            }
+        };
         
 
     }

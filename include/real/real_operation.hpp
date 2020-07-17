@@ -21,7 +21,7 @@ namespace boost{
         * 
         * @warning due to the recursive nature of real_operation, destruction may cause stack overflow
         */
-        enum class OPERATION{ADDITION, SUBTRACTION, MULTIPLICATION, DIVISION, POWER, EXPONENT, LOGARITHM, SIN, COS}; 
+        enum class OPERATION{ADDITION, SUBTRACTION, MULTIPLICATION, DIVISION, POWER, EXPONENT, LOGARITHM, SIN, COS, TAN, COT}; 
 
         template <typename T = int>
         class real_operation{

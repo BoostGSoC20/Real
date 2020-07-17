@@ -671,6 +671,32 @@ namespace boost {
                 return real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::COS));
             }
 
+
+            /**
+             *      TAN METHOD (INPUT IN RADIANS)
+             * @brief: Calculated tan(real_num), real_num should represent angle in radians
+             * @params: real_num: boost::real number whose tan is to be calculated.
+             * @return: returns a new boost::real which is tan(real_num)
+             * @author: Vikram Singh Chundawat
+             **/
+            static real tan(real<T> real_num){
+                static real<T> zero("0");
+                return real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::TAN));
+            }
+
+            /**
+             *      COT METHOD (INPUT IN RADIANS)
+             * @brief: Calculated cot(real_num), real_num should represent angle in radians
+             * @params: real_num: boost::real number whose cot is to be calculated.
+             * @return: returns a new boost::real which is cot(real_num)
+             * @author: Vikram Singh Chundawat
+             **/
+            static real cot(real<T> real_num){
+                static real<T> zero("0");
+                return real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::COT));
+            }
+
+
             /**
              * @brief Sets this real_data to that of the operation between this previous
              * real_data and other real_data.

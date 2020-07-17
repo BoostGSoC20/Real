@@ -431,6 +431,73 @@ namespace boost {
                     break;
                 }
 
+                case OPERATION::TAN :{
+                    // we will keep on iterating until we get our interval in domain of tan(x)
+                    exact_number<T> sin_lower, cos_lower, sin_upper, cos_upper;
+                                        
+                    while(true)
+                    {
+                        auto [sin_lower_tmp, cos_lower_tmp] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
+                        auto [sin_upper_tmp, cos_upper_tmp] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
+
+                            // if we have point of maxima of minima in our input interval
+                            if(cos_upper_tmp.positive != cos_lower_tmp.positive || cos_lower_tmp == exact_number<T>("0") || cos_upper_tmp == exact_number<T>("0")){
+                                // updating the boundaries of lhs
+                                if(_precision >= ro.get_lhs_itr().maximum_precision()){
+                                    throw max_precision_for_trigonometric_function_error();
+                                }
+                                ro.get_lhs_itr().iterate_n_times(1);
+                                ++_precision;
+                            }
+                            else{
+                                sin_lower = sin_lower_tmp;
+                                sin_upper = sin_upper_tmp;
+                                cos_lower = cos_lower_tmp;
+                                cos_upper = cos_upper_tmp;
+                                break;
+                            }
+                    }
+                    sin_lower.divide_vector(cos_lower, _precision, false);
+                    sin_upper.divide_vector(cos_upper, _precision, true);
+                    this->_approximation_interval.lower_bound = sin_lower;
+                    this->_approximation_interval.upper_bound = sin_upper;
+                    break;
+
+                }
+
+                case OPERATION::COT :{
+                    exact_number<T> sin_lower, cos_lower, sin_upper, cos_upper;
+                                        
+                    while(true)
+                    {
+                        auto [sin_lower_tmp, cos_lower_tmp] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
+                        auto [sin_upper_tmp, cos_upper_tmp] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
+
+                            // if we have point of maxima of minima in our input interval
+                            if(sin_upper_tmp.positive != sin_lower_tmp.positive || sin_lower_tmp == exact_number<T>("0") || sin_upper_tmp == exact_number<T>("0")){
+                                // updating the boundaries of lhs
+                                if(_precision >= ro.get_lhs_itr().maximum_precision()){
+                                    throw max_precision_for_trigonometric_function_error();
+                                }
+                                ro.get_lhs_itr().iterate_n_times(1);
+                                ++_precision;
+                            }
+                            else{
+                                sin_lower = sin_lower_tmp;
+                                sin_upper = sin_upper_tmp;
+                                cos_lower = cos_lower_tmp;
+                                cos_upper = cos_upper_tmp;
+                                break;
+                            }
+                    }
+                    cos_lower.divide_vector(sin_lower, _precision, false);
+                    cos_upper.divide_vector(sin_upper, _precision, true);
+                    this->_approximation_interval.lower_bound = cos_upper;
+                    this->_approximation_interval.upper_bound = cos_lower;
+                    break;
+
+                }
+
                 default:
                     throw boost::real::none_operation_exception();
             }

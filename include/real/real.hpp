@@ -696,6 +696,30 @@ namespace boost {
                 return real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::COT));
             }
 
+            /**
+             *      SEC METHOD (INPUT IN RADIANS)
+             * @brief: Calculated sec(real_num), real_num should represent angle in radians
+             * @params: real_num: boost::real number whose sec is to be calculated.
+             * @return: returns a new boost::real which is sec(real_num)
+             * @author: Vikram Singh Chundawat
+             **/
+            static real sec(real<T> real_num){
+                static real<T> zero("0");
+                return real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::SEC));
+            }
+
+            /**
+             *      COSEC METHOD (INPUT IN RADIANS)
+             * @brief: Calculated cosec(real_num), real_num should represent angle in radians
+             * @params: real_num: boost::real number whose cosec is to be calculated.
+             * @return: returns a new boost::real which is cosec(real_num)
+             * @author: Vikram Singh Chundawat
+             **/
+            static real cosec(real<T> real_num){
+                static real<T> zero("0");
+                return real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::COSEC));
+            }
+
 
             /**
              * @brief Sets this real_data to that of the operation between this previous

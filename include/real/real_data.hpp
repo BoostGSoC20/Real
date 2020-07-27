@@ -14,6 +14,7 @@
 #include <real/real_exception.hpp>
 #include <real/real_rational.hpp>
 #include <real/integer_number.hpp>
+#include <real/real_math.hpp>
 
 namespace boost { 
     namespace real{
@@ -331,6 +332,312 @@ namespace boost {
                                     tmp.binary_exponentiation(ro.get_lhs_itr().get_interval().upper_bound, exponent);
                             this->_approximation_interval.lower_bound =
                                     tmp.binary_exponentiation(ro.get_lhs_itr().get_interval().lower_bound, exponent);
+                        }
+                    }
+
+                    break;
+                }
+
+                case OPERATION::EXPONENT :{
+                    this->_approximation_interval.lower_bound = 
+                        exponent(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
+                    this->_approximation_interval.upper_bound = 
+                        exponent(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
+                    break;
+                }
+
+                case OPERATION::LOGARITHM :{
+                    this->_approximation_interval.lower_bound = 
+                        logarithm(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
+                    this->_approximation_interval.upper_bound = 
+                        logarithm(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
+                    break;
+                }
+
+                case OPERATION::SIN :{
+                    auto [sin_lower, cos_lower] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
+                    auto [sin_upper, cos_upper] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
+                    // checking for sign change of derivative, detection of minima-maxima point
+                    // if sign of both upper and lower bound of cos(x) is same, then there are no minima-maxima point in input interval
+                    if(cos_upper.positive == cos_lower.positive){
+                        if(sin_lower < sin_upper){
+                            this->_approximation_interval.lower_bound = sin_lower;
+                            this->_approximation_interval.upper_bound = sin_upper;
+                        }
+                        else{
+                            this->_approximation_interval.lower_bound = sin_upper;
+                            this->_approximation_interval.upper_bound = sin_lower;
+                        }
+
+                    }
+                    // if sign of derivative was changed, then there is point of maxima or minima
+                    // if sign of values given by sin(x) is negative, then lower bound should be -1
+                    else if(!sin_upper.positive){
+                        this->_approximation_interval.lower_bound = exact_number<T>("-1");
+                        if(sin_lower > sin_upper){
+                            this->_approximation_interval.upper_bound = sin_lower;
+                        }
+                        else{
+                            this->_approximation_interval.upper_bound = sin_upper;
+                        }
+                    }
+                    else{
+                        this->_approximation_interval.upper_bound = exact_number<T>("1");
+                        if(sin_upper < sin_lower){
+                            this->_approximation_interval.lower_bound = sin_upper;
+                        }
+                        else{
+                            this->_approximation_interval.lower_bound = sin_lower;
+                        }
+                    }
+                    break;
+                }
+
+                case OPERATION::COS :{
+                    auto [sin_lower, cos_lower] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
+                    auto [sin_upper, cos_upper] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
+                    // checking for sign change of derivative, detection of minima-maxima point
+                    // if sign of both upper and lower bound of cos(x) is same, then there are no minima-maxima point in input interval
+                    if(sin_upper.positive == sin_lower.positive){
+                        if(cos_lower < cos_upper){
+                            this->_approximation_interval.lower_bound = cos_lower;
+                            this->_approximation_interval.upper_bound = cos_upper;
+                        }
+                        else{
+                            this->_approximation_interval.lower_bound = cos_upper;
+                            this->_approximation_interval.upper_bound = cos_lower;
+                        }
+                    }
+                    // if sign of derivative was changed, then there is point of maxima or minima
+                    // if sign of values given by sin(x) is negative, then lower bound should be -1
+                    else if(!cos_upper.positive){
+                        this->_approximation_interval.lower_bound = exact_number<T>("-1");
+                        if(sin_lower > sin_upper){
+                            this->_approximation_interval.upper_bound = cos_lower;
+                        }
+                        else{
+                            this->_approximation_interval.upper_bound = cos_upper;
+                        }
+                    }
+                    else{
+                        this->_approximation_interval.upper_bound = exact_number<T>("1");
+                        if(sin_upper < sin_lower){
+                            this->_approximation_interval.lower_bound = cos_upper;
+                        }
+                        else{
+                            this->_approximation_interval.lower_bound = cos_lower;
+                        }
+                    }
+                    break;
+                }
+
+                case OPERATION::TAN :{
+                    // we will keep on iterating until we get our interval in domain of tan(x)
+                    exact_number<T> sin_lower, cos_lower, sin_upper, cos_upper;
+                    exact_number<T> zero("0");            
+                    while(true)
+                    {
+                        auto [sin_lower_tmp, cos_lower_tmp] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
+                        auto [sin_upper_tmp, cos_upper_tmp] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
+
+                            // if we have point of maxima of minima in our input interval
+                            if(cos_upper_tmp.positive != cos_lower_tmp.positive || cos_lower_tmp == zero || cos_upper_tmp == zero){
+                                // updating the boundaries of lhs
+                                if(_precision >= ro.get_lhs_itr().maximum_precision()){
+                                    throw max_precision_for_trigonometric_function_error();
+                                }
+                                ro.get_lhs_itr().iterate_n_times(1);
+                                ++_precision;
+                            }
+                            else{
+                                sin_lower = sin_lower_tmp;
+                                sin_upper = sin_upper_tmp;
+                                cos_lower = cos_lower_tmp;
+                                cos_upper = cos_upper_tmp;
+                                break;
+                            }
+                    }
+                    sin_lower.divide_vector(cos_lower, _precision, false);
+                    sin_upper.divide_vector(cos_upper, _precision, true);
+                    this->_approximation_interval.lower_bound = sin_lower;
+                    this->_approximation_interval.upper_bound = sin_upper;
+                    break;
+
+                }
+
+                case OPERATION::COT :{
+                    exact_number<T> sin_lower, cos_lower, sin_upper, cos_upper;
+                    exact_number<T> zero("0");                   
+                    while(true)
+                    {
+                        auto [sin_lower_tmp, cos_lower_tmp] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
+                        auto [sin_upper_tmp, cos_upper_tmp] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
+
+                            // if we have point of maxima of minima in our input interval
+                            if(sin_upper_tmp.positive != sin_lower_tmp.positive || sin_lower_tmp == zero || sin_upper_tmp == zero){
+                                // updating the boundaries of lhs
+                                if(_precision >= ro.get_lhs_itr().maximum_precision()){
+                                    throw max_precision_for_trigonometric_function_error();
+                                }
+                                ro.get_lhs_itr().iterate_n_times(1);
+                                ++_precision;
+                            }
+                            else{
+                                sin_lower = sin_lower_tmp;
+                                sin_upper = sin_upper_tmp;
+                                cos_lower = cos_lower_tmp;
+                                cos_upper = cos_upper_tmp;
+                                break;
+                            }
+                    }
+                    cos_lower.divide_vector(sin_lower, _precision, false);
+                    cos_upper.divide_vector(sin_upper, _precision, true);
+                    this->_approximation_interval.lower_bound = cos_upper;
+                    this->_approximation_interval.upper_bound = cos_lower;
+                    break;
+
+                }
+
+                case OPERATION::SEC :{
+                    exact_number<T> sin_lower, cos_lower, sin_upper, cos_upper;
+                    exact_number<T> zero("0");
+
+                    while(true){
+                        auto [sin_lower_tmp, cos_lower_tmp] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
+                        auto [sin_upper_tmp, cos_upper_tmp] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
+                        // if we have point of maxima of minima in our input interval
+                        if(cos_upper_tmp.positive != cos_lower_tmp.positive || cos_lower_tmp == zero || cos_upper_tmp == zero){
+                            // updating the boundaries of lhs
+                            if(_precision >= ro.get_lhs_itr().maximum_precision()){
+                                throw max_precision_for_trigonometric_function_error();
+                            }
+                            ro.get_lhs_itr().iterate_n_times(1);
+                            ++_precision;
+                        }
+                        else{
+                            sin_lower = sin_lower_tmp;
+                            sin_upper = sin_upper_tmp;
+                            cos_lower = cos_lower_tmp;
+                            cos_upper = cos_upper_tmp;
+                            break;
+                        }
+                    }
+
+                    // derivative of sec(x) is sec(x)tan(x)
+                    exact_number<T> derivative_lower = sin_lower;
+                    derivative_lower.divide_vector(cos_lower*cos_lower, _precision, false);
+                    
+                    
+                    exact_number<T> derivative_upper = sin_upper;
+                    derivative_upper.divide_vector(cos_upper*cos_upper, _precision, true); 
+                    // checking for point of minima
+                    if(derivative_lower.positive != derivative_upper.positive){
+                        // if minima exists and either number is positive, then lower end of resulting interval is 1
+                        if(cos_upper.positive){
+                            this->_approximation_interval.lower_bound = exact_number<T>("1");
+                            this->_approximation_interval.upper_bound = exact_number<T>("1");
+                            if(cos_upper > cos_lower){
+                                this->_approximation_interval.upper_bound.divide_vector(cos_lower, _precision, true);
+                            }
+                            else{
+                                this->_approximation_interval.upper_bound.divide_vector(cos_upper, _precision, true);
+                            }
+                        }
+                        else{
+                            this->_approximation_interval.upper_bound = exact_number<T>("-1");
+                            this->_approximation_interval.lower_bound = exact_number<T>("1");
+                            if(cos_upper > cos_lower){
+                                this->_approximation_interval.upper_bound.divide_vector(cos_lower, _precision, true);
+                            }
+                            else{
+                                this->_approximation_interval.upper_bound.divide_vector(cos_upper, _precision, true);
+                            }
+
+                        }
+                    }
+                    else{
+                        this->_approximation_interval.upper_bound = exact_number<T>("1");
+                        this->_approximation_interval.lower_bound = exact_number<T>("1");
+                        if(cos_upper > cos_lower){
+                            this->_approximation_interval.lower_bound.divide_vector(cos_upper, _precision, false);
+                            this->_approximation_interval.upper_bound.divide_vector(cos_lower, _precision, true);
+                        }
+                        else{
+                            this->_approximation_interval.lower_bound.divide_vector(cos_lower, _precision, false);
+                            this->_approximation_interval.upper_bound.divide_vector(cos_upper, _precision, true);
+                        }
+                    }
+
+                    break;
+                }
+
+                case OPERATION::COSEC :{
+                    exact_number<T> sin_lower, cos_lower, sin_upper, cos_upper;
+                    exact_number<T> zero("0");
+
+                    while(true){
+                        auto [sin_lower_tmp, cos_lower_tmp] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
+                        auto [sin_upper_tmp, cos_upper_tmp] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
+                        // if we have point of maxima of minima in our input interval
+                        if(sin_upper_tmp.positive != sin_lower_tmp.positive || sin_lower_tmp == zero || sin_upper_tmp == zero){
+                            // updating the boundaries of lhs
+                            if(_precision >= ro.get_lhs_itr().maximum_precision()){
+                                throw max_precision_for_trigonometric_function_error();
+                            }
+                            ro.get_lhs_itr().iterate_n_times(1);
+                            ++_precision;
+                        }
+                        else{
+                            sin_lower = sin_lower_tmp;
+                            sin_upper = sin_upper_tmp;
+                            cos_lower = cos_lower_tmp;
+                            cos_upper = cos_upper_tmp;
+                            break;
+                        }
+                    }
+
+                    // derivative of sec(x) is sec(x)tan(x)
+                    exact_number<T> derivative_lower = cos_lower;
+                    derivative_lower.divide_vector(sin_lower*sin_lower, _precision, false);
+                    
+                    
+                    exact_number<T> derivative_upper = cos_upper;
+                    derivative_upper.divide_vector(sin_upper*sin_upper, _precision, true); 
+                    // checking for point of minima
+                    if(derivative_lower.positive != derivative_upper.positive){
+                        // if minima exists and either number is positive, then lower end of resulting interval is 1
+                        if(sin_upper.positive){
+                            this->_approximation_interval.lower_bound = exact_number<T>("1");
+                            this->_approximation_interval.upper_bound = exact_number<T>("1");
+                            if(sin_upper > sin_lower){
+                                this->_approximation_interval.upper_bound.divide_vector(sin_lower, _precision, true);
+                            }
+                            else{
+                                this->_approximation_interval.upper_bound.divide_vector(sin_upper, _precision, true);
+                            }
+                        }
+                        else{
+                            this->_approximation_interval.upper_bound = exact_number<T>("-1");
+                            this->_approximation_interval.lower_bound = exact_number<T>("1");
+                            if(sin_upper > sin_lower){
+                                this->_approximation_interval.upper_bound.divide_vector(sin_lower, _precision, false);
+                            }
+                            else{
+                                this->_approximation_interval.upper_bound.divide_vector(sin_upper, _precision, false);
+                            }
+
+                        }
+                    }
+                    else{
+                        this->_approximation_interval.upper_bound = exact_number<T>("1");
+                        this->_approximation_interval.lower_bound = exact_number<T>("1");
+                        if(sin_upper > sin_lower){
+                            this->_approximation_interval.lower_bound.divide_vector(sin_upper, _precision, false);
+                            this->_approximation_interval.upper_bound.divide_vector(sin_lower, _precision, true);
+                        }
+                        else{
+                            this->_approximation_interval.lower_bound.divide_vector(sin_lower, _precision, false);
+                            this->_approximation_interval.upper_bound.divide_vector(sin_upper, _precision, true);
                         }
                     }
 

@@ -609,7 +609,29 @@ namespace boost {
                 return recurse_op(other, rc_lvl, OPERATION::SUBTRACTION);
             }
 
+            /**
+             *      EXPONENT METHOD
+             * @brief: Calculates e^real_num
+             * @params: real_num: power to which e is to be raised
+             * @return: returns a new boost::real which is e^real_num
+             * @author: Vikram Singh Chundawat
+             **/
+            static real exp(real<T> real_num){
+                static real<T> zero("0");
+                return real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::EXPONENT));
+            }
 
+            /**
+             *      LOGARITHM METHOD
+             * @brief: Calculated ln(real_num) or log(real_num) (base e)
+             * @params: real_num: boost::real number whose logarithm is to be calculated.
+             * @return: returns a new boost::real which is ln(real_num)
+             * @author: Vikram Singh Chundawat
+             **/
+            static real log(real<T> real_num){
+                static real<T> zero("0");
+                return real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::LOGARITHM));
+            }
 
             /*      POWER METHOD
              *  @brief:  Calculates real_num^exponent
@@ -620,9 +642,84 @@ namespace boost {
              */
 
             static real power(real<T> real_num, real<T> exponent){
-
+ 
                 return real(real_operation<T>(real_num._real_p, exponent._real_p, OPERATION::POWER));
             }
+
+
+            /**
+             *      SIN METHOD (INPUT IN RADIANS)
+             * @brief: Calculated sin(real_num), real_num should represent angle in radians
+             * @params: real_num: boost::real number whose sin is to be calculated.
+             * @return: returns a new boost::real which is sin(real_num)
+             * @author: Vikram Singh Chundawat
+             **/
+            static real sin(real<T> real_num){
+                static real<T> zero("0");
+                return real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::SIN));
+            }
+
+            /**
+             *      COS METHOD (INPUT IN RADIANS)
+             * @brief: Calculated cos(real_num), real_num should represent angle in radians
+             * @params: real_num: boost::real number whose cos is to be calculated.
+             * @return: returns a new boost::real which is cos(real_num)
+             * @author: Vikram Singh Chundawat
+             **/
+            static real cos(real<T> real_num){
+                static real<T> zero("0");
+                return real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::COS));
+            }
+
+
+            /**
+             *      TAN METHOD (INPUT IN RADIANS)
+             * @brief: Calculated tan(real_num), real_num should represent angle in radians
+             * @params: real_num: boost::real number whose tan is to be calculated.
+             * @return: returns a new boost::real which is tan(real_num)
+             * @author: Vikram Singh Chundawat
+             **/
+            static real tan(real<T> real_num){
+                static real<T> zero("0");
+                return real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::TAN));
+            }
+
+            /**
+             *      COT METHOD (INPUT IN RADIANS)
+             * @brief: Calculated cot(real_num), real_num should represent angle in radians
+             * @params: real_num: boost::real number whose cot is to be calculated.
+             * @return: returns a new boost::real which is cot(real_num)
+             * @author: Vikram Singh Chundawat
+             **/
+            static real cot(real<T> real_num){
+                static real<T> zero("0");
+                return real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::COT));
+            }
+
+            /**
+             *      SEC METHOD (INPUT IN RADIANS)
+             * @brief: Calculated sec(real_num), real_num should represent angle in radians
+             * @params: real_num: boost::real number whose sec is to be calculated.
+             * @return: returns a new boost::real which is sec(real_num)
+             * @author: Vikram Singh Chundawat
+             **/
+            static real sec(real<T> real_num){
+                static real<T> zero("0");
+                return real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::SEC));
+            }
+
+            /**
+             *      COSEC METHOD (INPUT IN RADIANS)
+             * @brief: Calculated cosec(real_num), real_num should represent angle in radians
+             * @params: real_num: boost::real number whose cosec is to be calculated.
+             * @return: returns a new boost::real which is cosec(real_num)
+             * @author: Vikram Singh Chundawat
+             **/
+            static real cosec(real<T> real_num){
+                static real<T> zero("0");
+                return real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::COSEC));
+            }
+
 
             /**
              * @brief Sets this real_data to that of the operation between this previous

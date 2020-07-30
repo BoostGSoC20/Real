@@ -433,15 +433,14 @@ namespace boost {
 
                 case OPERATION::TAN :{
                     // we will keep on iterating until we get our interval in domain of tan(x)
-                    exact_number<T> sin_lower, cos_lower, sin_upper, cos_upper;
-                    exact_number<T> zero("0");            
+                    exact_number<T> sin_lower, cos_lower, sin_upper, cos_upper;           
                     while(true)
                     {
                         auto [sin_lower_tmp, cos_lower_tmp] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
                         auto [sin_upper_tmp, cos_upper_tmp] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
 
                             // if we have point of maxima of minima in our input interval
-                            if(cos_upper_tmp.positive != cos_lower_tmp.positive || cos_lower_tmp == zero || cos_upper_tmp == zero){
+                            if(cos_upper_tmp.positive != cos_lower_tmp.positive || cos_lower_tmp == literals::zero_exact<T> || cos_upper_tmp == literals::zero_exact<T>){
                                 // updating the boundaries of lhs
                                 if(_precision >= ro.get_lhs_itr().maximum_precision()){
                                     throw max_precision_for_trigonometric_function_error();
@@ -466,15 +465,14 @@ namespace boost {
                 }
 
                 case OPERATION::COT :{
-                    exact_number<T> sin_lower, cos_lower, sin_upper, cos_upper;
-                    exact_number<T> zero("0");                   
+                    exact_number<T> sin_lower, cos_lower, sin_upper, cos_upper;                   
                     while(true)
                     {
                         auto [sin_lower_tmp, cos_lower_tmp] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
                         auto [sin_upper_tmp, cos_upper_tmp] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
 
                             // if we have point of maxima of minima in our input interval
-                            if(sin_upper_tmp.positive != sin_lower_tmp.positive || sin_lower_tmp == zero || sin_upper_tmp == zero){
+                            if(sin_upper_tmp.positive != sin_lower_tmp.positive || sin_lower_tmp == literals::zero_exact<T> || sin_upper_tmp == literals::zero_exact<T>){
                                 // updating the boundaries of lhs
                                 if(_precision >= ro.get_lhs_itr().maximum_precision()){
                                     throw max_precision_for_trigonometric_function_error();
@@ -500,13 +498,12 @@ namespace boost {
 
                 case OPERATION::SEC :{
                     exact_number<T> sin_lower, cos_lower, sin_upper, cos_upper;
-                    exact_number<T> zero("0");
 
                     while(true){
                         auto [sin_lower_tmp, cos_lower_tmp] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
                         auto [sin_upper_tmp, cos_upper_tmp] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
                         // if we have point of maxima of minima in our input interval
-                        if(cos_upper_tmp.positive != cos_lower_tmp.positive || cos_lower_tmp == zero || cos_upper_tmp == zero){
+                        if(cos_upper_tmp.positive != cos_lower_tmp.positive || cos_lower_tmp == literals::zero_exact<T> || cos_upper_tmp == literals::zero_exact<T>){
                             // updating the boundaries of lhs
                             if(_precision >= ro.get_lhs_itr().maximum_precision()){
                                 throw max_precision_for_trigonometric_function_error();
@@ -573,13 +570,12 @@ namespace boost {
 
                 case OPERATION::COSEC :{
                     exact_number<T> sin_lower, cos_lower, sin_upper, cos_upper;
-                    exact_number<T> zero("0");
 
                     while(true){
                         auto [sin_lower_tmp, cos_lower_tmp] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
                         auto [sin_upper_tmp, cos_upper_tmp] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
                         // if we have point of maxima of minima in our input interval
-                        if(sin_upper_tmp.positive != sin_lower_tmp.positive || sin_lower_tmp == zero || sin_upper_tmp == zero){
+                        if(sin_upper_tmp.positive != sin_lower_tmp.positive || sin_lower_tmp == literals::zero_exact<T> || sin_upper_tmp == literals::zero_exact<T>){
                             // updating the boundaries of lhs
                             if(_precision >= ro.get_lhs_itr().maximum_precision()){
                                 throw max_precision_for_trigonometric_function_error();

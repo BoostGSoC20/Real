@@ -398,6 +398,14 @@ namespace boost{
 
 		};
 
+		namespace literals{
+			template<typename T>
+			const integer_number<T> zero_integer = integer_number<T>("0");
+
+			template<typename T>
+			const integer_number<T> one_integer = integer_number<T>("1");
+		}
+
 		/* GREATEST COMMON DIVISOR
 		 * @brief: to find GCD/HCF of two integers
 		 * @param: a: an integer_number object which represents the first integer in GCD operation.
@@ -405,9 +413,8 @@ namespace boost{
 		 * @author: Vikram Singh Chundawat.
 		 **/
 		template<typename T>
-		integer_number<T> gcd(integer_number<T> a, integer_number<T> b) {
-			static integer_number<T> zero = integer_number<T>("0"); // to avoid initialization of zero integer for every copy of this function 
-    		if (b == zero) 
+		integer_number<T> gcd(integer_number<T> a, integer_number<T> b) { 
+    		if (b == literals::zero_integer<T>) 
         		return a; 
     		return gcd(b, a % b);    
 		}

@@ -296,6 +296,14 @@ namespace boost{
 
 		};
 
+		namespace literals{
+			template<typename T>
+			const real_rational<T> zero_rational = real_rational<T>("0");
+
+			template<typename T>
+			const real_rational<T> one_rational = real_rational<T>("1");
+		}
+
 
 
 
@@ -378,10 +386,8 @@ namespace boost{
 		 **/
 		template<typename T>
 		integer_number<T> floor(real_rational<T> num){
-			// if number is of integer type, (a/1), then return a
-			static const integer_number<T> one("1");
-			static const integer_number<T> zero("0"); 
-			if(num.b == one){
+			// if number is of integer type, (a/1), then return a 
+			if(num.b == literals::one_integer<T>){
 				integer_number<T> result(num.a);
 				result.positive = num.positive;
 				return result;
@@ -390,7 +396,7 @@ namespace boost{
 			// if number is less than 1
 			if(num.b > num.a){
 				if(num.positive)
-					return zero;
+					return literals::zero_integer<T>;
 				else 
 					return integer_number<T>("-1");
 			}
@@ -404,7 +410,7 @@ namespace boost{
 				return result;
 			}
 			// now only case left is number is negative and less than one
-			result += one;
+			result += literals::one_integer<T>;
 			result.positive = false;
 			return result;
 		}
@@ -418,7 +424,7 @@ namespace boost{
 		 **/
 		template<typename T>
 		integer_number<T> ceil(real_rational<T> num){
-			if(num.b == integer_number<T>("1")){
+			if(num.b == literals::one_integer<T>){
 				integer_number<T> result(num.a);
 				result.positive = num.positive;
 				return result;
@@ -427,9 +433,9 @@ namespace boost{
 			// if number is less than 1 in magnitude
 			if(num.b > num.a){
 				if(num.positive)
-					return integer_number<T>("1");
+					return literals::one_integer<T>;
 				else 
-					return integer_number<T>("0");
+					return literals::zero_integer<T>;
 			}
 
 			// now only case left is number is greater than one in magnitude and not an integer type
@@ -438,7 +444,7 @@ namespace boost{
 			if(num.positive)
 			{
 				result.positive = true;
-				result += integer_number<T>("1");
+				result += literals::one_integer<T>;
 				return result;
 			}
 			// now only case left is number is negative and less than one

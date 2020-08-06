@@ -273,7 +273,7 @@ namespace boost {
 
                     break;
                 }
-                case OPERATION::POWER: {
+                case OPERATION::INTEGER_POWER: {
                     ro.get_rhs_itr().iterate_n_times(ro.get_rhs_itr().maximum_precision());
 
                     if (ro.get_rhs_itr().get_interval().lower_bound != ro.get_rhs_itr().get_interval().upper_bound ||

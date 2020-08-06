@@ -123,6 +123,12 @@ namespace boost {
                 return "Number is not in domain of this trigonometric function";
             }
         };
+
+        struct non_integral_power_of_negative_number : public std::exception {
+            const char * what() const throw () override {
+                return "Non integral power of a negative number is a complex number (NOT SUPPORTED)";
+            }
+        };
         
 
     }

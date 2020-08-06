@@ -638,12 +638,43 @@ namespace boost {
              *  @params: real_num: boost real number whose power is to be evaluated
              *  @params: exponent: power to which real_num is to be raised (needs to be an integer)
              *  @return: returns a new boost real whose value is real_num^exponent
-             *  @author: Kishan Shukla
+             *  @author: Kishan Shukla & Vikram Singh Chundawat
              */
 
             static real power(real<T> real_num, real<T> exponent){
- 
-                return real(real_operation<T>(real_num._real_p, exponent._real_p, OPERATION::POWER));
+
+                //checking whether the number is integer or not
+                static real<T> zero("0");
+                real<T> result;
+                auto itr = exponent.get_real_itr();
+                itr.iterate_n_times(itr.maximum_precision());
+
+                // power is of non integer type, then we will use logarithm and exponent to find power
+                if (itr.get_interval().lower_bound != itr.get_interval().upper_bound ||
+                        (int) itr.get_interval().lower_bound.digits.size() > itr.get_interval().lower_bound.exponent) {
+                    /**
+                     * result = exp(exponent * log(real_num))
+                     * Warning: the result of non-integral power of a negative number is a complex number,
+                     * and we do not support complex numbers. So, that will generate error.
+                     **/
+                    
+                    /**
+                     * Now, we will check whether upper bound is negative or not, if it is, then we will throw error
+                     **/
+                    if(itr.get_interval().upper_bound.positive == false){
+                        throw non_integral_power_of_negative_number();
+                    }
+
+                    /**
+                     * Now, if number is negative, then logarithm function will automatic check out and throw error
+                     **/
+                    result = real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::LOGARITHM));
+                    result = real(real_operation<T>(result._real_p, exponent._real_p, OPERATION::MULTIPLICATION));
+                    result = real(real_operation<T>(result._real_p, zero._real_p, OPERATION::EXPONENT));
+                    return result;
+                }
+                         
+                return real(real_operation<T>(real_num._real_p, exponent._real_p, OPERATION::INTEGER_POWER));
             }
 
 

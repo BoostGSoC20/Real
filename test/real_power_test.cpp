@@ -25,14 +25,6 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                 CHECK(actual_result == calculated_result);
             }
 
-            SECTION("Non-Integral exponents") { /* throw non_integral_exponent_exception */
-                /* 234^0.1  */
-                real a("234");
-                real exp("0.01e1");
-
-                CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
-            }
-
         }
 
         SECTION("Exponent = real_operation") {
@@ -93,53 +85,6 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
 
             }
 
-            SECTION("Non-Integral exponents") { /* throw non_integral_exponent_exception */
-
-                SECTION("ADDITION") {
-                    /* (5)^(8+1.2) */
-                    real a("5");
-                    real b("8");
-                    real c("1.2");
-                    real exp = b + c;
-
-                    CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
-
-                }
-
-                SECTION("SUBTRACTION") {
-                    /* (5)^(25-0.5) */
-                    real a("5");
-                    real b("25");
-                    real c("0.5");
-                    real exp = b - c;
-
-                    CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
-
-                }
-
-                SECTION("MULTIPLICATION") {
-                    /* (5)^(0.5*0.4) */
-                    real a("5");
-                    real b("0.5");
-                    real c("0.4");
-                    real exp = b * c;
-
-                    CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
-
-                }
-
-                SECTION("DIVISION") {
-                    /* (5)^(0.4/2) */
-                    real a("5");
-                    real b("0.4");
-                    real c("2");
-                    real exp = b / c;
-
-                    CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
-
-                }
-
-            }
 
         }
 
@@ -181,14 +126,6 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     real calculated_result = real::power(a, exp);
 
                     CHECK(actual_result == calculated_result);
-                }
-
-                SECTION("Non-Integral exponents") { /* throw non_integral_exponent_exception */
-                    /* (12+8)^0.1  */
-                    real a = real("12") + real("8");
-                    real exp("0.01e1");
-
-                    CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
                 }
 
             }
@@ -251,54 +188,6 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
 
                 }
 
-                SECTION("Non-Integral exponents") { /* throw non_integral_exponent_exception */
-
-                    SECTION("ADDITION") {
-                        /* (2+3)^(8+1.2) */
-                        real a = real("2") + real("3");
-                        real b("8");
-                        real c("1.2");
-                        real exp = b + c;
-
-                        CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
-
-                    }
-
-                    SECTION("SUBTRACTION") {
-                        /* (2+3)^(25-0.5) */
-                        real a = real("2") + real("3");
-                        real b("25");
-                        real c("0.5");
-                        real exp = b - c;
-
-                        CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
-
-                    }
-
-                    SECTION("MULTIPLICATION") {
-                        /* (3+2)^20 */
-                        real a = real("2") + real("3");
-                        real b("0.5");
-                        real c("0.4");
-                        real exp = b * c;
-
-                        CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
-
-                    }
-
-                    SECTION("DIVISION") {
-                        /* (2+3)^(40/2) */
-                        real a = real("2") + real("3");
-                        real b("0.4");
-                        real c("2");
-                        real exp = b / c;
-
-                        CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
-
-                    }
-
-                }
-
             }
 
             // SECTION("Exponent = real_algorithm"){
@@ -339,14 +228,6 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     real calculated_result = real::power(a, exp);
 
                     CHECK(actual_result == calculated_result);
-                }
-
-                SECTION("Non-Integral exponents") { /* throw non_integral_exponent_exception */
-                    /* (240-6)^0.1  */
-                    real a = real("240") - real("6");
-                    real exp("0.01e1");
-
-                    CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
                 }
 
             }
@@ -409,53 +290,6 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
 
                 }
 
-                SECTION("Non-Integral exponents") { /* throw non_integral_exponent_exception */
-
-                    SECTION("ADDITION") {
-                        /* (8-3)^(8+1.2) */
-                        real a = real("8") - real("3");
-                        real b("8");
-                        real c("1.2");
-                        real exp = b + c;
-
-                        CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
-
-                    }
-
-                    SECTION("SUBTRACTION") {
-                        /* (8-3)^(25-0.5) */
-                        real a = real("8") - real("3");
-                        real b("25");
-                        real c("0.5");
-                        real exp = b - c;
-
-                        CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
-
-                    }
-
-                    SECTION("MULTIPLICATION") {
-                        /* (8-3)^20 */
-                        real a = real("8") - real("3");
-                        real b("0.5");
-                        real c("0.4");
-                        real exp = b * c;
-
-                        CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
-
-                    }
-
-                    SECTION("DIVISION") {
-                        /* (8-3)^(40/2) */
-                        real a = real("8") - real("3");
-                        real b("0.4");
-                        real c("2");
-                        real exp = b / c;
-
-                        CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
-
-                    }
-
-                }
 
             }
 
@@ -497,14 +331,6 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     real calculated_result = real::power(a, exp);
 
                     CHECK(actual_result == calculated_result);
-                }
-
-                SECTION("Non-Integral exponents") { /* throw non_integral_exponent_exception */
-                    /* (2*117)^0.1  */
-                    real a = real("2") * real("117");
-                    real exp("0.01e1");
-
-                    CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
                 }
 
             }
@@ -567,53 +393,6 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
 
                 }
 
-                SECTION("Non-Integral exponents") { /* throw non_integral_exponent_exception */
-
-                    SECTION("ADDITION") {
-                        /* ((5*1))^(8+1.2) */
-                        real a = real("5") * real("1");
-                        real b("8");
-                        real c("1.2");
-                        real exp = b + c;
-
-                        CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
-
-                    }
-
-                    SECTION("SUBTRACTION") {
-                        /* ((5*1))^(25-0.5) */
-                        real a = real("5") * real("1");
-                        real b("25");
-                        real c("0.5");
-                        real exp = b - c;
-
-                        CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
-
-                    }
-
-                    SECTION("MULTIPLICATION") {
-                        /* ((5*1))^20 */
-                        real a = real("5") * real("1");
-                        real b("0.5");
-                        real c("0.4");
-                        real exp = b * c;
-
-                        CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
-
-                    }
-
-                    SECTION("DIVISION") {
-                        /* ((5*1))^(40/2) */
-                        real a = real("5") * real("1");
-                        real b("0.4");
-                        real c("2");
-                        real exp = b / c;
-
-                        CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
-
-                    }
-
-                }
 
             }
 
@@ -655,14 +434,6 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
                     real calculated_result = real::power(a, exp);
 
                     CHECK(actual_result == calculated_result);
-                }
-
-                SECTION("Non-Integral exponents") { /* throw non_integral_exponent_exception */
-                    /* (468/2)^0.1  */
-                    real a = real("468") / real("2");
-                    real exp("0.01e1");
-
-                    CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
                 }
 
             }
@@ -725,52 +496,6 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
 
                 }
 
-                SECTION("Non-Integral exponents") { /* throw non_integral_exponent_exception */
-
-                    SECTION("ADDITION") {
-                        /* (10/2)^(8+1.2) */
-                        real a = real("10") / real("2");
-                        real b("8");
-                        real c("1.2");
-                        real exp = b + c;
-
-                        CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
-
-                    }
-
-                    SECTION("SUBTRACTION") {
-                        /* (10/2)^(25-0.5) */
-                        real a = real("10") / real("2");
-                        real b("25");
-                        real c("0.5");
-                        real exp = b - c;
-
-                        CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
-
-                    }
-
-                    SECTION("MULTIPLICATION") {
-                        /* (10/2)^20 */
-                        real a = real("10") / real("2");
-                        real b("0.5");
-                        real c("0.4");
-                        real exp = b * c;
-
-                        CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
-
-                    }
-
-                    SECTION("DIVISION") {
-                        /* (10/2)^(40/2) */
-                        real a = real("10") / real("2");
-                        real b("0.4");
-                        real c("2");
-                        real exp = b / c;
-
-                        CHECK_THROWS_AS( real::power(a, exp), boost::real::non_integral_exponent_exception);
-                    }
-
-                }
 
             }
 

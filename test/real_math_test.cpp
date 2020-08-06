@@ -72,7 +72,7 @@ TEST_CASE("LOGARITHM AND EXPONENT"){
 		CHECK(b > lower_limit);
 		CHECK(b < upper_limit);
 
-		b = real::exp(a); // ln(0.0047783) = −0.738500258
+		b = real::exp(a); // exo(0.47783) = 1.612571323
 		lower_limit = real("1.612571322");
 		upper_limit = real("1.612571324");
 		CHECK(b > lower_limit);

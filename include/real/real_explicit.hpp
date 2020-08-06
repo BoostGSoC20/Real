@@ -293,6 +293,14 @@ namespace boost {
 
             
         };
+
+        namespace literals{
+            template<typename T>
+            const real_explicit<T> zero_explicit = real_explicit<T>("0");
+
+            template<typename T>
+            const real_explicit<T> one_explicit = real_explicit<T>("1");
+        }
     }
 }
 

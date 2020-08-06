@@ -1834,6 +1834,14 @@ namespace boost {
             }
         };
 
+        namespace literals{
+            template<typename T>
+            const exact_number<T> one_exact = exact_number<T>("1");
+
+            template<typename T>
+            const exact_number<T> zero_exact = exact_number<T>("0");
+        }
+
         template<> inline int exact_number<int>::mulmod (int a, int b, int c)
         {
             return ((long long)a * (long long)b )%c;

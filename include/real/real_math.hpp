@@ -19,7 +19,6 @@ namespace boost{
 		template<typename T>
 		exact_number<T> exponent(exact_number<T> num, size_t max_error_exponent, bool upper){
 			exact_number<T> result("1");
-			exact_number<T> one("1");
 			exact_number<T> term_number("1");
 			exact_number<T> factorial("1");
 			exact_number<T> cur_term("0");
@@ -28,7 +27,7 @@ namespace boost{
 			do{
 				result += cur_term;
 				factorial *= term_number;
-				term_number += one;
+				term_number = term_number + literals::one_exact<T>;
 				x_pow *= num;
 				cur_term = x_pow;
 				cur_term.divide_vector(factorial, max_error_exponent, upper);
@@ -49,10 +48,8 @@ namespace boost{
 		template<typename T>
 		exact_number<T> logarithm(exact_number<T> x, size_t max_error_exponent, bool upper){
 			// log is only defined for numbers greater than 0
-			static const exact_number<T> zero("0");
-			static exact_number<T> one("1");
 			static const exact_number<T> two("2");
-			if(x == zero || x.positive == false){
+			if(x == literals::zero_exact<T> || x.positive == false){
 				throw logarithm_not_defined_for_non_positive_number();
 			}
 			exact_number<T> result("0");
@@ -62,29 +59,29 @@ namespace boost{
 			exact_number<T> x_pow ("1");
 			exact_number<T> max_error(std::vector<T> {1}, -max_error_exponent, true);
 			
-			if(x > zero && x < two){
+			if(x > literals::zero_exact<T> && x < two){
 				do{
 					if(term_number_int %2 == 1)
 						result -= cur_term;
 					else 
 						result += cur_term;	
-					x_pow = x_pow * (x - one);
+					x_pow = x_pow * (x - literals::one_exact<T>);
 					cur_term = x_pow;
 					cur_term.divide_vector(term_number, max_error_exponent, upper);
 					++term_number_int;
-					term_number += one;
+					term_number = term_number + literals::one_exact<T>;
 				}while(cur_term.abs() > max_error);
 				return result;
 			}
 
 			do{
 				result += cur_term;
-				x_pow = x_pow * (x-one);
+				x_pow = x_pow * (x - literals::one_exact<T>);
 				x_pow.divide_vector(x, max_error_exponent, upper);
 				cur_term = x_pow ;
 				cur_term.divide_vector(term_number, max_error_exponent, upper);
 				++term_number_int;
-				term_number += one;
+				term_number = term_number + literals::one_exact<T>;
 			}while(cur_term.abs() > max_error);
 			result = result.up_to(max_error_exponent, upper);
 			return result;
@@ -110,7 +107,6 @@ namespace boost{
 			exact_number<T> tmp;
 			exact_number<T> x_square = x*x;
 			exact_number<T> max_error(std::vector<T> {1}, -max_error_exponent, true);
-			static exact_number<T> one("1");
 			static exact_number<T> two("2");
 			
 			do{
@@ -120,9 +116,9 @@ namespace boost{
 				else 
 					result -= cur_term; // if this term is odd
 				++term_number_int;
-				term_number += one;
+				term_number = term_number + literals::one_exact<T>;
 				x_pow *= x_square; // increasing power by two powers of original x
-				factorial = factorial * ( two * term_number) * ( (two * term_number) + one); // increasing the values of factorial by two
+				factorial = factorial * ( two * term_number) * ( (two * term_number) + literals::one_exact<T>); // increasing the values of factorial by two
 				cur_term  = x_pow;
 				cur_term.divide_vector(factorial, max_error_exponent, upper);
 			}while(cur_term.abs() > max_error);
@@ -146,7 +142,6 @@ namespace boost{
 			exact_number<T> square_x = x*x;
 			exact_number<T> cur_power("1");
 			exact_number<T> factorial("1");
-			static exact_number<T> one("1");
 			static exact_number<T> two("2");
 			exact_number<T> term_number("0");
 			exact_number<T> max_error(std::vector<T> {1}, -max_error_exponent, true);
@@ -157,14 +152,14 @@ namespace boost{
 				else 
 					result -= cur_term;
 				
-				for(exact_number<T> i = (two * term_number) + one ; i <= two * (term_number + one); i += one){
+				for(exact_number<T> i = (two * term_number) + literals::one_exact<T> ; i <= two * (term_number + literals::one_exact<T>); i = i + literals::one_exact<T>){
 					factorial *= i;
 				}
 				cur_power *= square_x;
 				cur_term = cur_power;
 				cur_term.divide_vector(factorial, max_error_exponent, upper);
 				++ term_number_int;
-				term_number += one;
+				term_number = term_number + literals::one_exact<T>;
 				
 			}while(cur_term.abs() > max_error);
 			result = result.up_to(max_error_exponent, upper);
@@ -190,7 +185,6 @@ namespace boost{
 			exact_number<T> cur_cos_term("1");
 			exact_number<T> cur_power = x;
 			exact_number<T> factorial("1");
-			static exact_number<T> one("1");
 			static exact_number<T> two("2");
 			exact_number<T> factorial_number("1");
 			unsigned int term_number_int = 0;
@@ -206,13 +200,13 @@ namespace boost{
 					cos_result -= cur_cos_term;
 				}
 				++term_number_int;
-				factorial_number += one;
+				factorial_number = factorial_number + literals::one_exact<T>;
 				factorial *= factorial_number;
 				cur_power *= x;
 				cur_cos_term = cur_power;
 				cur_cos_term.divide_vector(factorial, max_error_exponent, upper);
 
-				factorial_number += one;
+				factorial_number = factorial_number + literals::one_exact<T>;
 				factorial *= factorial_number;
 				cur_power *= x;
 				cur_sin_term = cur_power;

@@ -740,7 +740,7 @@ namespace boost {
                     [this, &other] (real_rational<T> rat, auto tmp){
                         // converting rational number to explicit or operation
                         real<T> rat_num;
-                        if(rat.b == integer_number<T>("1")){
+                        if(rat.b == literals::one_integer<T>){
                             rat_num._real_p = 
                                 std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
                         }
@@ -768,7 +768,7 @@ namespace boost {
 
                     [this, &other] (auto tmp, real_rational<T> rat){
                         real<T> rat_num;
-                        if(rat.b == integer_number<T>("1")){
+                        if(rat.b == literals::one_integer<T>){
                             rat_num._real_p = 
                                 std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
                         }
@@ -824,7 +824,7 @@ namespace boost {
                         real<T> rat_num; //rational number
 
                         // if number is of integer type, rat_num will be converted to explicit number
-                        if(rat.b == integer_number<T>("1")){
+                        if(rat.b == literals::one_integer<T>){
                             rat_num._real_p =
                                 std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
                         }
@@ -852,7 +852,7 @@ namespace boost {
                         real<T> rat_num; //rational number
 
                         // if number is of integer type, rat_num will be converted to explicit number
-                        if(rat.b == integer_number<T>("1")){
+                        if(rat.b == literals::one_integer<T>){
                             rat_num._real_p =
                                 std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
                         }
@@ -904,7 +904,7 @@ namespace boost {
                     [this, &other] (real_rational<T> rat, auto tmp){
                         // converting rational number to explicit or operation
                         real<T> rat_num;
-                        if(rat.b == integer_number<T>("1")){
+                        if(rat.b == literals::one_integer<T>){
                             rat_num._real_p = 
                                 std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
                         }
@@ -932,7 +932,7 @@ namespace boost {
 
                     [this, &other] (auto tmp, real_rational<T> rat){
                         real<T> rat_num;
-                        if(rat.b == integer_number<T>("1")){
+                        if(rat.b == literals::one_integer<T>){
                             rat_num._real_p = 
                                 std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
                         }
@@ -989,7 +989,7 @@ namespace boost {
                         real<T> rat_num; //rational number
 
                         // if number is of integer type, rat_num will be converted to explicit number
-                        if(rat.b == integer_number<T>("1")){
+                        if(rat.b == literals::one_integer<T>){
                             rat_num._real_p =
                                 std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
                         }
@@ -1017,7 +1017,7 @@ namespace boost {
                         real<T> rat_num; //rational number
 
                         // if number is of integer type, rat_num will be converted to explicit number
-                        if(rat.b == integer_number<T>("1")){
+                        if(rat.b == literals::one_integer<T>){
                             rat_num._real_p =
                                 std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
                         }
@@ -1068,7 +1068,7 @@ namespace boost {
                     [this, &other] (real_rational<T> rat, auto tmp){
                         // converting rational number to explicit or operation
                         real<T> rat_num;
-                        if(rat.b == integer_number<T>("1")){
+                        if(rat.b == literals::one_integer<T>){
                             rat_num._real_p = 
                                 std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
                         }
@@ -1093,7 +1093,7 @@ namespace boost {
 
                     [this, &other] (auto tmp, real_rational<T> rat){
                         real<T> rat_num;
-                        if(rat.b == integer_number<T>("1")){
+                        if(rat.b == literals::one_integer<T>){
                             rat_num._real_p = 
                                 std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
                         }
@@ -1145,7 +1145,7 @@ namespace boost {
                         real<T> rat_num; //rational number
 
                         // if number is of integer type, rat_num will be converted to explicit number
-                        if(rat.b == integer_number<T>("1")){
+                        if(rat.b == literals::one_integer<T>){
                             rat_num._real_p =
                                 std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
                         }
@@ -1170,7 +1170,7 @@ namespace boost {
                         real<T> rat_num; //rational number
 
                         // if number is of integer type, rat_num will be converted to explicit number
-                        if(rat.b == integer_number<T>("1")){
+                        if(rat.b == literals::one_integer<T>){
                             rat_num._real_p =
                                 std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
                         }
@@ -1218,7 +1218,7 @@ namespace boost {
                         real<T> rat_num; //rational number
 
                         // if number is of integer type, rat_num will be converted to explicit number
-                        if(rat.b == integer_number<T>("1")){
+                        if(rat.b == literals::one_integer<T>){
                             rat_num._real_p =
                                 std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
                         }
@@ -1243,7 +1243,7 @@ namespace boost {
                         real<T> rat_num; //rational number
 
                         // if number is of integer type, rat_num will be converted to explicit number
-                        if(rat.b == integer_number<T>("1")){
+                        if(rat.b == literals::one_integer<T>){
                             rat_num._real_p =
                                 std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
                         }
@@ -1286,7 +1286,7 @@ namespace boost {
                     [this, &other] (real_rational<T> rat, auto tmp){
                         // converting rational number to explicit or operation
                         real<T> rat_num;
-                        if(rat.b == integer_number<T>("1")){
+                        if(rat.b == literals::one_integer<T>){
                             rat_num._real_p = 
                                 std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
                         }
@@ -1311,7 +1311,7 @@ namespace boost {
 
                     [this, &other] (auto tmp, real_rational<T> rat){
                         real<T> rat_num;
-                        if(rat.b==integer_number<T>("1")){
+                        if(rat.b==literals::one_integer<T>){
                             rat_num._real_p = 
                                 std::make_shared<real_data<T>>(real_explicit<T>(rat.a));
                         }
@@ -1379,7 +1379,7 @@ namespace boost {
 
                     [this, &other, &ret] (real_rational<T> rat_num, auto tmp){
                         real<T> _this;
-                        if(rat_num.b == integer_number<T>("1"))
+                        if(rat_num.b == literals::one_integer<T>)
                             _this._real_p = 
                                 std::make_shared<real_data<T>>(real_explicit<T>(rat_num.a));
                         else {
@@ -1439,7 +1439,7 @@ namespace boost {
 
                     [this, &ret] (auto tmp, real_rational<T> rat_num){
                         real<T> other; // representing "other" number, which is a rational number
-                        if(rat_num.b == integer_number<T>("1"))   
+                        if(rat_num.b == literals::one_integer<T>)   
                             other._real_p = 
                                 std::make_shared<real_data<T>>(real_explicit<T>(rat_num.a));
                         else {
@@ -1562,7 +1562,7 @@ namespace boost {
 
                     [&other, &ret] (real_rational<T> rat_num, auto tmp){
                         real<T> _this; // representing "other" number, which is a rational number
-                        if(rat_num.b == integer_number<T>("1"))   
+                        if(rat_num.b == literals::one_integer<T>)   
                             _this._real_p = 
                                 std::make_shared<real_data<T>>(real_explicit<T>(rat_num.a));
                         else {
@@ -1618,7 +1618,7 @@ namespace boost {
                     [this, &ret] (auto tmp, real_rational<T> rat_num){
 
                         real<T> other; // representing "other" number, which is a rational number
-                        if(rat_num.b == integer_number<T>("1"))   
+                        if(rat_num.b == literals::one_integer<T>)   
                             other._real_p = 
                                 std::make_shared<real_data<T>>(real_explicit<T>(rat_num.a));
                         else {
@@ -1728,7 +1728,7 @@ namespace boost {
 
                     [&other, &ret] (real_rational<T> rat_num, auto tmp){
                         real<T> _this; // representing "other" number, which is a rational number
-                        if(rat_num.b==integer_number<T>("1"))   
+                        if(rat_num.b==literals::one_integer<T>)   
                             _this._real_p = 
                                 std::make_shared<real_data<T>>(real_explicit<T>(rat_num.a));
                         else {
@@ -1778,7 +1778,7 @@ namespace boost {
 
                     [this, &ret] (auto tmp, real_rational<T> rat_num){
                         real<T> other; // representing "other" number, which is a rational number
-                        if(rat_num.b==integer_number<T>("1"))   
+                        if(rat_num.b==literals::one_integer<T>)   
                             other._real_p = 
                                 std::make_shared<real_data<T>>(real_explicit<T>(rat_num.a));
                         else {
@@ -1882,7 +1882,7 @@ namespace boost {
         void to_explicit(){
             std::visit(overloaded{
                 [this] (real_rational<T> a){
-                    if(a.b!=real_rational<T>("1")){
+                    if(a.b!=literals::one_rational<T>){
                         throw expected_real_integer_type_number();
                     }
                     this->_real_p = 
@@ -1922,7 +1922,7 @@ namespace boost {
             real<T> result;
             std::visit(overloaded{
                 [&result] (real_rational<T> a, real_rational<T> b){
-                    if(a.b != integer_number<T> ("1") || b.b != integer_number<T>("1")){
+                    if(a.b != literals::one_integer<T> || b.b != literals::one_integer<T>){
                         throw expected_real_integer_type_number();
                     }
 
@@ -1937,6 +1937,14 @@ namespace boost {
         }
 
         }; // end real class
+
+        namespace literals{
+            template<typename T>
+            const real<T> one_real = real<T>("1");
+
+            template<typename T>
+            const real<T> one_zero = real<T>("0");
+        }
     }
 }
 

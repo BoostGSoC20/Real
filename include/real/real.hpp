@@ -1937,6 +1937,14 @@ namespace boost {
         }
 
         }; // end real class
+
+        namespace literals{
+            template<typename T>
+            const real<T> one_real = real<T>("1");
+
+            template<typename T>
+            const real<T> one_zero = real<T>("0");
+        }
     }
 }
 

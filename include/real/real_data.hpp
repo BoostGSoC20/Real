@@ -347,6 +347,21 @@ namespace boost {
                 }
 
                 case OPERATION::LOGARITHM :{
+                    // if upper bound of number is zero or negative, then it is sure that number is out of domain
+                    if(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true) == literals::zero_exact<T> || ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true).positive == false){
+                        throw logarithm_not_defined_for_non_positive_number();
+                    }
+                    // now if we get our lower bound as negative, then we iterate for more precise input, until maximum precision is reached or we get positive lower bound
+                    while(true){
+                        if(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, true) == literals::zero_exact<T> || ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, true).positive == false){
+                            if(_precision >= ro.get_lhs_itr().maximum_precision()){
+                                        throw logarithm_not_defined_for_non_positive_number();
+                            }
+                            ro.get_lhs_itr().iterate_n_times(1);
+                            ++_precision;
+                        }
+                        else break;
+                    }
                     this->_approximation_interval.lower_bound = 
                         logarithm(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
                     this->_approximation_interval.upper_bound = 

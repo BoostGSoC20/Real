@@ -281,6 +281,10 @@ namespace boost {
                         throw non_integral_exponent_exception();
                     }
 
+                    if(ro.get_rhs_itr().get_interval().upper_bound.positive == false){
+                        throw negative_integers_not_supported();
+                    }
+
                     exact_number<T> exponent = ro.get_rhs_itr().get_interval().upper_bound, _2, zero = exact_number<T> (), tmp;
                     _2.digits = {2};
                     _2.exponent = 1;

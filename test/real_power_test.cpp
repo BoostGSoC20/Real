@@ -528,3 +528,41 @@ TEMPLATE_TEST_CASE("Power", "[template]", int, long, long long) {
     }
 
 }
+
+// Non-integral power test is not made template test case, it is taking too much time to test it on all template test cases
+TEST_CASE("Non-Integral Power"){
+    using real = boost::real::real<int>;
+    SECTION("Positive Non-Integral Powers"){
+        real a("20");
+        real b("1.5");
+        real c = real::power(a,b); // 20^1.5 = 89.4427191
+        real lower_bound("89.4427190");
+        real upper_bound("89.4427192");
+        CHECK(c > lower_bound);
+        CHECK(c < upper_bound);
+
+        b = real("0.5");
+        c = real::power(a,b); // 20^0.5 = 4.472135955
+        lower_bound = real("4.472135954");
+        upper_bound = real("4.472135956");
+        CHECK(c > lower_bound);
+        CHECK(c < upper_bound);
+    }
+
+    SECTION("Negative Non-Integral Powers"){
+        real a("20");
+        real b("-1.5");
+        real c = real::power(a,b); // 20^(-1.5) = 0.0111803399
+        real lower_bound = real("0.0111803398");
+        real upper_bound = real("0.01118034");
+        CHECK(c > lower_bound);
+        CHECK(c < upper_bound);
+
+        b = real("-0.5");
+        c = real::power(a,b);  // 20^(-0.5) = 0.2236067977
+        lower_bound = real("0.2236067976");
+        upper_bound = real("0.2236067978");
+        CHECK(c > lower_bound);
+        CHECK(c < upper_bound);
+    }
+}

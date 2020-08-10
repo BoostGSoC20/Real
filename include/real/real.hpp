@@ -646,13 +646,18 @@ namespace boost {
                 static real<T> zero("0");
                 static real<T> one("1");
                 real<T> result;
-                auto itr = power.get_real_itr();
-                itr.iterate_n_times(itr.maximum_precision());
 
-                // power is of non integer type, then we will use logarithm and exponent to find power a^b = exp(b * log(a))
-                if (itr.get_interval().lower_bound != itr.get_interval().upper_bound ||
-                        (int) itr.get_interval().lower_bound.digits.size() > itr.get_interval().lower_bound.exponent) {
-                    /**
+                try{
+                    result = real(real_operation<T>(real_num._real_p, power._real_p, OPERATION::INTEGER_POWER));
+                }
+                catch(const negative_integers_not_supported& e1){
+                    power = real<T>("-1")*power;
+                    result = real(real_operation<T>(real_num._real_p, power._real_p, OPERATION::INTEGER_POWER));
+                    result = real(real_operation<T>(one._real_p, result._real_p, OPERATION::DIVISION));
+                }
+                catch(const non_integral_exponent_exception& e2){
+                    try{
+                        /**
                      * result = exp(exponent * log(real_num))
                      * Warning: the result of non-integral power of a negative number is a complex number,
                      * and we do not support complex numbers. So, that will generate error.
@@ -666,16 +671,13 @@ namespace boost {
                     result = real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::LOGARITHM));
                     result = real(real_operation<T>(result._real_p, power._real_p, OPERATION::MULTIPLICATION));
                     result = real(real_operation<T>(result._real_p, zero._real_p, OPERATION::EXPONENT));
-                    return result;
+                    }
+                    catch(const logarithm_not_defined_for_non_positive_number& e3){
+                        throw non_integral_power_of_negative_number();
+                    }
+
                 }
-                // if power is integer and negative
-                else if(itr.get_interval().lower_bound.positive == false){
-                    result = real(real_operation<T>(real_num._real_p, power._real_p, OPERATION::INTEGER_POWER));
-                    result = real(real_operation<T>(one._real_p, result._real_p, OPERATION::DIVISION));
-                    return result;
-                }
-                // if power is integer and positive
-                return real(real_operation<T>(real_num._real_p, power._real_p, OPERATION::INTEGER_POWER));
+                return result; 
             }
 
 

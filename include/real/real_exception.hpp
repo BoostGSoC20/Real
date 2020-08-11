@@ -114,13 +114,25 @@ namespace boost {
        
         struct logarithm_not_defined_for_non_positive_number : public std::exception {
             const char * what() const throw () override {
-                return "Logarithm is only defined for positive number";
+                return "Logarithm is only defined for positive number or you are trying to find non-integral power of negative number(Complex Numbers not supported)";
             }
         };
 
         struct max_precision_for_trigonometric_function_error : public std::exception {
             const char * what() const throw () override {
                 return "Number is not in domain of this trigonometric function";
+            }
+        };
+
+        struct negative_integers_not_supported : public std::exception {
+            const char * what() const throw () override {
+                return "Integer Power function only supports positive integers";
+            }
+        };
+
+        struct non_integral_power_of_negative_number : public std::exception {
+            const char * what() const throw () override {
+                return "Non-integral power of a negative number is a complex number";
             }
         };
         

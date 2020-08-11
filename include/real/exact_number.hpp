@@ -14,6 +14,8 @@
 namespace boost {
     namespace real {
 
+        int KARATSUBA_THRESHOLD = 1000;
+
         template <typename T = int>
         struct exact_number {
             using exponent_t = int;
@@ -147,7 +149,7 @@ namespace boost {
             }
 
             //Returns (a*b)%mod
-            inline T mulmod(T a, T b, T mod) 
+            static inline T mulmod(T a, T b, T mod) 
             { 
                 T res = 0; // Initialize result 
                 a = a % mod; 
@@ -168,7 +170,7 @@ namespace boost {
             }
 
             //Returns (a*b)/mod
-            inline T mult_div(T a, T b, T c) {
+            static inline T mult_div(T a, T b, T c) {
                 T rem = 0;
                 T res = (a / c) * b;
                 a = a % c;
@@ -192,8 +194,14 @@ namespace boost {
                 return res;
             } 
 
+            void multiply_vector(exact_number &other, T base = (std::numeric_limits<T>::max() / 4) * 2) {
+                
+                karatsuba_multiplication(other, base);
+
+            }
+
             /// multiplies *this by other
-            void multiply_vector(exact_number &other, T base = (std::numeric_limits<T>::max() /4)*2) {
+            void standard_multiplication(exact_number &other, T base = (std::numeric_limits<T>::max() /4)*2) {
                 // will keep the result number in vector in reverse order
                 // Digits: .123 | Exponent: -3 | .000123 <--- Number size is the Digits size less the exponent
                 // Digits: .123 | Exponent: 2  | 12.3
@@ -263,6 +271,116 @@ namespace boost {
                 this->positive = this->positive == other.positive;
                 this->normalize();
             }
+
+            /**     KARATSUBA MULTIPLICATION
+             *  @brief: multiplies (*this) with other using karatsuba multiplication algorithm
+             *  @param: other: an exact_number to be multiplied with (*this)
+             *  @param: base: base of the numbers being multiplied
+             *  @author: Kishan Shukla
+             */
+
+            void karatsuba_multiplication (
+                    exact_number<T> &other, 
+                    const T base = (std::numeric_limits<T>::max() / 4) * 2
+            ) {
+
+                while (this->exponent > (int)this->digits.size()) {
+                    this->digits.push_back(0);
+                }
+
+                while (other.exponent > (int)other.digits.size()) {
+                    other.digits.push_back(0);
+                }
+
+                // this --- a, other --- b
+
+            	int a_size = this->digits.size();
+            	int b_size = other.digits.size();
+
+                const int max_length = std::max(a_size, b_size);
+
+                if (max_length <= KARATSUBA_THRESHOLD) {
+                    this->standard_multiplication(other, base);
+                    return;
+                }
+
+
+                // appending zeroes in front to make sizes of a & b equal
+                std::vector<T> final_a, final_b;
+                if (a_size < max_length) {
+                	std::vector<T> zeroes(max_length - a_size, 0);
+                	final_a.reserve(max_length);
+                	final_a.insert(final_a.end(), zeroes.begin(), zeroes.end());
+                	final_a.insert(final_a.end(), this->digits.begin(), this->digits.end());
+                	final_b = other.digits;
+                } else if (b_size < max_length) {
+                	std::vector<T> zeroes(max_length - b_size, 0);
+                	final_b.reserve(max_length);
+                	final_b.insert(final_b.end(), zeroes.begin(), zeroes.end());
+                	final_b.insert(final_b.end(), other.digits.begin(), other.digits.end());
+                	final_a = this->digits;
+                } else {
+                	final_a = this->digits;
+                	final_b = other.digits;
+                }
+
+                const int left_half_length = max_length / 2;
+                const int right_half_length = max_length - left_half_length;
+
+
+                //   a = al * base^(left_half_length) + ar
+                std::vector<T> al (final_a.begin(), final_a.begin() + left_half_length);
+                std::vector<T> ar (final_a.begin() + left_half_length, final_a.end());
+
+                //   b = al * base^(left_half_length) + br
+                std::vector<T> bl (final_b.begin(), final_b.begin() + left_half_length);
+                std::vector<T> br (final_b.begin() + left_half_length, final_b.end()); 
+
+                exact_number<T> exact_al (al, true);
+                exact_number<T> exact_ar (ar, true);
+                exact_number<T> exact_bl (bl, true);
+                exact_number<T> exact_br (br, true);
+
+                exact_al.normalize();
+                exact_bl.normalize();
+                exact_ar.normalize();
+                exact_br.normalize();
+
+                exact_number<T> sum_al_ar (al, true);
+                exact_number<T> sum_bl_br (bl, true);
+
+                // sum_al_ar = al + ar
+                // sum_bl_br = bl + br
+                sum_al_ar.add_vector(exact_ar, base - 1);
+                sum_bl_br.add_vector(exact_br, base - 1);
+
+
+                exact_al.karatsuba_multiplication(exact_bl, base);
+                sum_al_ar.karatsuba_multiplication(sum_bl_br, base);
+                exact_ar.karatsuba_multiplication(exact_br, base);
+
+                // exact_al = al * bl
+                // sum_al_ar = (al + ar) * (bl + br)
+                // exact_ar = ar * br
+
+                sum_al_ar.subtract_vector(exact_al, base - 1);
+                sum_al_ar.subtract_vector(exact_ar, base - 1);
+                // sum_al_ar = al * br + ar * bl
+
+                // multiply exact_al by base^(2 * right_half_length)
+                exact_al.exponent += 2 * right_half_length;
+
+                // multiply sum_al_ar by base^(right_half_length)
+                sum_al_ar.exponent += right_half_length;
+
+                exact_al.add_vector(sum_al_ar, base - 1);
+                exact_al.add_vector(exact_ar, base - 1);
+
+                *this = exact_al;
+                this->normalize();
+
+            } 
+
 
             //Performs long division on dividend by divisor and returns result in quotient
             std::vector<T> long_divide_vectors(

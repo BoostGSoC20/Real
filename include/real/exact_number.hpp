@@ -14,7 +14,8 @@
 namespace boost {
     namespace real {
 
-        int KARATSUBA_THRESHOLD = 1000;
+        // value obtained after benchmarking
+        int KARATSUBA_BASE_CASE_THRESHOLD = 100;
 
         template <typename T = int>
         struct exact_number {
@@ -149,7 +150,7 @@ namespace boost {
             }
 
             //Returns (a*b)%mod
-            static inline T mulmod(T a, T b, T mod) 
+            static T mul_mod(T a, T b, T mod) 
             { 
                 T res = 0; // Initialize result 
                 a = a % mod; 
@@ -170,7 +171,7 @@ namespace boost {
             }
 
             //Returns (a*b)/mod
-            static inline T mult_div(T a, T b, T c) {
+            static T mult_div(T a, T b, T c) {
                 T rem = 0;
                 T res = (a / c) * b;
                 a = a % c;
@@ -195,9 +196,7 @@ namespace boost {
             } 
 
             void multiply_vector(exact_number &other, T base = (std::numeric_limits<T>::max() / 4) * 2) {
-                
                 karatsuba_multiplication(other, base);
-
             }
 
             /// multiplies *this by other
@@ -228,7 +227,7 @@ namespace boost {
 
                         // Multiply current digit of second number with current digit of first number
                         // and add result to previously stored result at current position.
-                        T rem = mulmod(this->digits[i], other.digits[j], base);
+                        T rem = mul_mod(this->digits[i], other.digits[j], base);
                         T rem_s;
                         T q = mult_div(this->digits[i], other.digits[j], base);
                         if ( temp[i_n1 - i_n2] >= base - carry ) {
@@ -283,7 +282,6 @@ namespace boost {
                     exact_number<T> &other, 
                     const T base = (std::numeric_limits<T>::max() / 4) * 2
             ) {
-
                 while (this->exponent > (int)this->digits.size()) {
                     this->digits.push_back(0);
                 }
@@ -294,78 +292,96 @@ namespace boost {
 
                 // this --- a, other --- b
 
-            	int a_size = this->digits.size();
-            	int b_size = other.digits.size();
+                int a_size = this->digits.size();
+                int b_size = other.digits.size();
 
                 const int max_length = std::max(a_size, b_size);
 
-                if (max_length <= KARATSUBA_THRESHOLD) {
+                if (max_length <= KARATSUBA_BASE_CASE_THRESHOLD) {
                     this->standard_multiplication(other, base);
                     return;
                 }
 
-
                 // appending zeroes in front to make sizes of a & b equal
-                std::vector<T> final_a, final_b;
+                int a_pref_zeroes = 0, b_pref_zeroes = 0;
                 if (a_size < max_length) {
-                	std::vector<T> zeroes(max_length - a_size, 0);
-                	final_a.reserve(max_length);
-                	final_a.insert(final_a.end(), zeroes.begin(), zeroes.end());
-                	final_a.insert(final_a.end(), this->digits.begin(), this->digits.end());
-                	final_b = other.digits;
+                    a_pref_zeroes = max_length - a_size;
                 } else if (b_size < max_length) {
-                	std::vector<T> zeroes(max_length - b_size, 0);
-                	final_b.reserve(max_length);
-                	final_b.insert(final_b.end(), zeroes.begin(), zeroes.end());
-                	final_b.insert(final_b.end(), other.digits.begin(), other.digits.end());
-                	final_a = this->digits;
-                } else {
-                	final_a = this->digits;
-                	final_b = other.digits;
-                }
+                    b_pref_zeroes = max_length - b_size;
+                } 
 
                 const int left_half_length = max_length / 2;
                 const int right_half_length = max_length - left_half_length;
 
+                /*
+                        Variable Explanation
+                    a is vector representation of "this", b is vector representation of "other"
+                    a = exact_al * base^(right_half_length) + exact_ar
+                    b = exact_bl * base^(right_half_length) + exact_br
+                */
+                exact_number<T> exact_al;
+                exact_number<T> exact_ar;
+                exact_number<T> exact_bl;
+                exact_number<T> exact_br;
 
-                //   a = al * base^(left_half_length) + ar
-                std::vector<T> al (final_a.begin(), final_a.begin() + left_half_length);
-                std::vector<T> ar (final_a.begin() + left_half_length, final_a.end());
-
-                //   b = al * base^(left_half_length) + br
-                std::vector<T> bl (final_b.begin(), final_b.begin() + left_half_length);
-                std::vector<T> br (final_b.begin() + left_half_length, final_b.end()); 
-
-                exact_number<T> exact_al (al, true);
-                exact_number<T> exact_ar (ar, true);
-                exact_number<T> exact_bl (bl, true);
-                exact_number<T> exact_br (br, true);
+                if (a_pref_zeroes > 0) {
+                    if (a_pref_zeroes >= left_half_length) {
+                        exact_al = exact_number(std::vector<T> (), true);
+                        exact_ar = exact_number(this->digits, true);
+                    } else {
+                        exact_al = exact_number(std::vector<T> (this->digits.begin(), this->digits.begin() + left_half_length - a_pref_zeroes), true);
+                        exact_ar = exact_number(std::vector<T> (this->digits.begin() + left_half_length - a_pref_zeroes, this->digits.end()), true);
+                    }
+                    exact_bl = exact_number(std::vector<T> (other.digits.begin(), other.digits.begin() + left_half_length), true);
+                    exact_br = exact_number(std::vector<T> (other.digits.begin() + left_half_length, other.digits.end()), true);
+                } else if (b_pref_zeroes > 0) {
+                    if (b_pref_zeroes >= left_half_length) {
+                        exact_bl = exact_number(std::vector<T> (), true);
+                        exact_br = exact_number(other.digits, true);
+                    } else {
+                        exact_bl = exact_number(std::vector<T> (other.digits.begin(), other.digits.begin() + left_half_length - b_pref_zeroes), true);
+                        exact_br = exact_number(std::vector<T> (other.digits.begin() + left_half_length - b_pref_zeroes, other.digits.end()), true);
+                    }
+                    exact_al = exact_number(std::vector<T> (this->digits.begin(), this->digits.begin() + left_half_length), true);
+                    exact_ar = exact_number(std::vector<T> (this->digits.begin() + left_half_length, this->digits.end()), true);
+                } else {
+                    exact_al = exact_number(std::vector<T> (this->digits.begin(), this->digits.begin() + left_half_length), true);
+                    exact_ar = exact_number(std::vector<T> (this->digits.begin() + left_half_length, this->digits.end()), true);
+                    exact_bl = exact_number(std::vector<T> (other.digits.begin(), other.digits.begin() + left_half_length), true);
+                    exact_br = exact_number(std::vector<T> (other.digits.begin() + left_half_length, other.digits.end()), true);
+                }
 
                 exact_al.normalize();
                 exact_bl.normalize();
                 exact_ar.normalize();
                 exact_br.normalize();
 
-                exact_number<T> sum_al_ar (al, true);
-                exact_number<T> sum_bl_br (bl, true);
+                exact_number<T> sum_al_ar (exact_al);
+                exact_number<T> sum_bl_br (exact_bl);
 
-                // sum_al_ar = al + ar
-                // sum_bl_br = bl + br
+                /*
+                    Variable explanation
+                    sum_al_ar = al + ar
+                    sum_bl_br = bl + br
+                */
                 sum_al_ar.add_vector(exact_ar, base - 1);
                 sum_bl_br.add_vector(exact_br, base - 1);
-
 
                 exact_al.karatsuba_multiplication(exact_bl, base);
                 sum_al_ar.karatsuba_multiplication(sum_bl_br, base);
                 exact_ar.karatsuba_multiplication(exact_br, base);
-
-                // exact_al = al * bl
-                // sum_al_ar = (al + ar) * (bl + br)
-                // exact_ar = ar * br
+                /*
+                    Variable explanation
+                    exact_al = al * bl
+                    sum_al_ar = (al + ar) * (bl + br)
+                    exact_ar = ar * br
+                */
 
                 sum_al_ar.subtract_vector(exact_al, base - 1);
                 sum_al_ar.subtract_vector(exact_ar, base - 1);
-                // sum_al_ar = al * br + ar * bl
+                /*
+                    sum_al_ar = al * br + ar * bl
+                */
 
                 // multiply exact_al by base^(2 * right_half_length)
                 exact_al.exponent += 2 * right_half_length;
@@ -378,7 +394,6 @@ namespace boost {
 
                 *this = exact_al;
                 this->normalize();
-
             } 
 
 
@@ -1952,7 +1967,7 @@ namespace boost {
             }
         };
 
-        template<> inline int exact_number<int>::mulmod (int a, int b, int c)
+        template<> inline int exact_number<int>::mul_mod (int a, int b, int c)
         {
             return ((long long)a * (long long)b )%c;
         }

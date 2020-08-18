@@ -183,9 +183,11 @@ namespace boost {
                     bool deviation_upper_boundary, deviation_lower_boundary;
 
                     /* if the interval contains zero, iterate until it doesn't, or until maximum_precision. */
-                    while (!ro.get_rhs_itr().get_interval().positive() &&
-                           !ro.get_rhs_itr().get_interval().negative() &&
-                           _precision <= this->maximum_precision())
+                   while (((!ro.get_rhs_itr().get_interval().positive() 
+                            && !ro.get_rhs_itr().get_interval().negative() ) 
+                            || ro.get_rhs_itr().get_interval().lower_bound == literals::zero_exact<T>
+                            || ro.get_rhs_itr().get_interval().upper_bound == literals::zero_exact<T> ) 
+                            && _precision <= this->maximum_precision())
                         ++(*this);
 
                     /* if the interval contains zero after iterating until max precision, throw,

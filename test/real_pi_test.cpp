@@ -20,25 +20,25 @@ TEST_CASE("Pi") {
 			auto sin_pi_iterator = sin_pi.get_real_itr().cbegin();
 			++sin_pi_iterator;
 
-            CHECK(sin_pi_iterator.get_interval().lower_bound <= sin_pi_iterator.get_interval().upper_bound);
-            CHECK(!sin_pi_iterator.get_interval().lower_bound.positive);
-            CHECK(sin_pi_iterator.get_interval().upper_bound.positive);
-            ++sin_pi_iterator;
+			CHECK(sin_pi_iterator.get_interval().lower_bound <= sin_pi_iterator.get_interval().upper_bound);
+			CHECK(!sin_pi_iterator.get_interval().lower_bound.positive);
+			CHECK(sin_pi_iterator.get_interval().upper_bound.positive);
+			++sin_pi_iterator;
 
-            CHECK(sin_pi_iterator.get_interval().lower_bound <= sin_pi_iterator.get_interval().upper_bound);
-            CHECK(!sin_pi_iterator.get_interval().lower_bound.positive);
-            CHECK(sin_pi_iterator.get_interval().upper_bound.positive);
-            ++sin_pi_iterator;
+			CHECK(sin_pi_iterator.get_interval().lower_bound <= sin_pi_iterator.get_interval().upper_bound);
+			CHECK(!sin_pi_iterator.get_interval().lower_bound.positive);
+			CHECK(sin_pi_iterator.get_interval().upper_bound.positive);
+			++sin_pi_iterator;
 
-            CHECK(sin_pi_iterator.get_interval().lower_bound <= sin_pi_iterator.get_interval().upper_bound);
-            CHECK(!sin_pi_iterator.get_interval().lower_bound.positive);
-            CHECK(sin_pi_iterator.get_interval().upper_bound.positive);
-            ++sin_pi_iterator;
+			CHECK(sin_pi_iterator.get_interval().lower_bound <= sin_pi_iterator.get_interval().upper_bound);
+			CHECK(!sin_pi_iterator.get_interval().lower_bound.positive);
+			CHECK(sin_pi_iterator.get_interval().upper_bound.positive);
+			++sin_pi_iterator;
 
-            CHECK(sin_pi_iterator.get_interval().lower_bound <= sin_pi_iterator.get_interval().upper_bound);
-            CHECK(!sin_pi_iterator.get_interval().lower_bound.positive);
-            CHECK(sin_pi_iterator.get_interval().upper_bound.positive);
-            ++sin_pi_iterator;
+			CHECK(sin_pi_iterator.get_interval().lower_bound <= sin_pi_iterator.get_interval().upper_bound);
+			CHECK(!sin_pi_iterator.get_interval().lower_bound.positive);
+			CHECK(sin_pi_iterator.get_interval().upper_bound.positive);
+			++sin_pi_iterator;
 		}
 
 		SECTION("cos(2 * pi) == 1") {
@@ -50,76 +50,76 @@ TEST_CASE("Pi") {
 			auto cos_pi_iterator = cos_pi.get_real_itr().cbegin();
 			++cos_pi_iterator;
 
-            CHECK(cos_pi_iterator.get_interval().lower_bound <= cos_pi_iterator.get_interval().upper_bound);
-            CHECK(cos_pi_iterator.get_interval().lower_bound <= one);
-            CHECK(cos_pi_iterator.get_interval().upper_bound >= one);
+			CHECK(cos_pi_iterator.get_interval().lower_bound <= cos_pi_iterator.get_interval().upper_bound);
+			CHECK(cos_pi_iterator.get_interval().lower_bound <= one);
+			CHECK(cos_pi_iterator.get_interval().upper_bound >= one);
 
-            ++cos_pi_iterator;
+			++cos_pi_iterator;
 
-            CHECK(cos_pi_iterator.get_interval().lower_bound <= cos_pi_iterator.get_interval().upper_bound);
-            CHECK(cos_pi_iterator.get_interval().lower_bound <= one);
-            CHECK(cos_pi_iterator.get_interval().upper_bound >= one);
+			CHECK(cos_pi_iterator.get_interval().lower_bound <= cos_pi_iterator.get_interval().upper_bound);
+			CHECK(cos_pi_iterator.get_interval().lower_bound <= one);
+			CHECK(cos_pi_iterator.get_interval().upper_bound >= one);
 
-            ++cos_pi_iterator;
-            
-            CHECK(cos_pi_iterator.get_interval().lower_bound <= cos_pi_iterator.get_interval().upper_bound);
-            CHECK(cos_pi_iterator.get_interval().lower_bound <= one);
-            CHECK(cos_pi_iterator.get_interval().upper_bound >= one);
+			++cos_pi_iterator;
 
-            ++cos_pi_iterator;
-            
-            CHECK(cos_pi_iterator.get_interval().lower_bound <= cos_pi_iterator.get_interval().upper_bound);
-            CHECK(cos_pi_iterator.get_interval().lower_bound <= one);
-            CHECK(cos_pi_iterator.get_interval().upper_bound >= one);
+			CHECK(cos_pi_iterator.get_interval().lower_bound <= cos_pi_iterator.get_interval().upper_bound);
+			CHECK(cos_pi_iterator.get_interval().lower_bound <= one);
+			CHECK(cos_pi_iterator.get_interval().upper_bound >= one);
 
-            ++cos_pi_iterator;
-            
-            CHECK(cos_pi_iterator.get_interval().lower_bound <= cos_pi_iterator.get_interval().upper_bound);
-            CHECK(cos_pi_iterator.get_interval().lower_bound <= one);
-            CHECK(cos_pi_iterator.get_interval().upper_bound >= one);
+			++cos_pi_iterator;
+
+			CHECK(cos_pi_iterator.get_interval().lower_bound <= cos_pi_iterator.get_interval().upper_bound);
+			CHECK(cos_pi_iterator.get_interval().lower_bound <= one);
+			CHECK(cos_pi_iterator.get_interval().upper_bound >= one);
+
+			++cos_pi_iterator;
+
+			CHECK(cos_pi_iterator.get_interval().lower_bound <= cos_pi_iterator.get_interval().upper_bound);
+			CHECK(cos_pi_iterator.get_interval().lower_bound <= one);
+			CHECK(cos_pi_iterator.get_interval().upper_bound >= one);
 		}
 
 		SECTION("sin(2 * pi) == 0") {
 
 			real two("2");
 			real sin_2pi = real::sin(two * pi);
-			
+
 			auto sin_2pi_iterator = sin_2pi.get_real_itr().cbegin();
 			++sin_2pi_iterator;
 
-            CHECK(sin_2pi_iterator.get_interval().lower_bound <= sin_2pi_iterator.get_interval().upper_bound);
-            CHECK(!sin_2pi_iterator.get_interval().lower_bound.positive);
-            CHECK(sin_2pi_iterator.get_interval().upper_bound.positive);
+			CHECK(sin_2pi_iterator.get_interval().lower_bound <= sin_2pi_iterator.get_interval().upper_bound);
+			CHECK(!sin_2pi_iterator.get_interval().lower_bound.positive);
+			CHECK(sin_2pi_iterator.get_interval().upper_bound.positive);
 
-            ++sin_2pi_iterator;
+			++sin_2pi_iterator;
 
-            CHECK(sin_2pi_iterator.get_interval().lower_bound <= sin_2pi_iterator.get_interval().upper_bound);
-            CHECK(!sin_2pi_iterator.get_interval().lower_bound.positive);
-            CHECK(sin_2pi_iterator.get_interval().upper_bound.positive);
+			CHECK(sin_2pi_iterator.get_interval().lower_bound <= sin_2pi_iterator.get_interval().upper_bound);
+			CHECK(!sin_2pi_iterator.get_interval().lower_bound.positive);
+			CHECK(sin_2pi_iterator.get_interval().upper_bound.positive);
 
-            ++sin_2pi_iterator;
+			++sin_2pi_iterator;
 
-            CHECK(sin_2pi_iterator.get_interval().lower_bound <= sin_2pi_iterator.get_interval().upper_bound);
-            CHECK(!sin_2pi_iterator.get_interval().lower_bound.positive);
-            CHECK(sin_2pi_iterator.get_interval().upper_bound.positive);
+			CHECK(sin_2pi_iterator.get_interval().lower_bound <= sin_2pi_iterator.get_interval().upper_bound);
+			CHECK(!sin_2pi_iterator.get_interval().lower_bound.positive);
+			CHECK(sin_2pi_iterator.get_interval().upper_bound.positive);
 
-            ++sin_2pi_iterator;
+			++sin_2pi_iterator;
 
-            CHECK(sin_2pi_iterator.get_interval().lower_bound <= sin_2pi_iterator.get_interval().upper_bound);
-            CHECK(!sin_2pi_iterator.get_interval().lower_bound.positive);
-            CHECK(sin_2pi_iterator.get_interval().upper_bound.positive);
+			CHECK(sin_2pi_iterator.get_interval().lower_bound <= sin_2pi_iterator.get_interval().upper_bound);
+			CHECK(!sin_2pi_iterator.get_interval().lower_bound.positive);
+			CHECK(sin_2pi_iterator.get_interval().upper_bound.positive);
 
-            ++sin_2pi_iterator;
+			++sin_2pi_iterator;
 
-            CHECK(sin_2pi_iterator.get_interval().lower_bound <= sin_2pi_iterator.get_interval().upper_bound);
-            CHECK(!sin_2pi_iterator.get_interval().lower_bound.positive);
-            CHECK(sin_2pi_iterator.get_interval().upper_bound.positive);
+			CHECK(sin_2pi_iterator.get_interval().lower_bound <= sin_2pi_iterator.get_interval().upper_bound);
+			CHECK(!sin_2pi_iterator.get_interval().lower_bound.positive);
+			CHECK(sin_2pi_iterator.get_interval().upper_bound.positive);
 
-            ++sin_2pi_iterator;
+			++sin_2pi_iterator;
 
-            CHECK(sin_2pi_iterator.get_interval().lower_bound <= sin_2pi_iterator.get_interval().upper_bound);
-            CHECK(!sin_2pi_iterator.get_interval().lower_bound.positive);
-            CHECK(sin_2pi_iterator.get_interval().upper_bound.positive);
+			CHECK(sin_2pi_iterator.get_interval().lower_bound <= sin_2pi_iterator.get_interval().upper_bound);
+			CHECK(!sin_2pi_iterator.get_interval().lower_bound.positive);
+			CHECK(sin_2pi_iterator.get_interval().upper_bound.positive);
 		}
 
 
@@ -132,32 +132,32 @@ TEST_CASE("Pi") {
 			auto sin_pi_by_2_iterator = sin_pi_by_2.get_real_itr().cbegin();
 			++sin_pi_by_2_iterator;
 
-            CHECK(sin_pi_by_2_iterator.get_interval().lower_bound <= sin_pi_by_2_iterator.get_interval().upper_bound);
-            CHECK(sin_pi_by_2_iterator.get_interval().lower_bound <= one);
-            CHECK(sin_pi_by_2_iterator.get_interval().upper_bound >= one);
+			CHECK(sin_pi_by_2_iterator.get_interval().lower_bound <= sin_pi_by_2_iterator.get_interval().upper_bound);
+			CHECK(sin_pi_by_2_iterator.get_interval().lower_bound <= one);
+			CHECK(sin_pi_by_2_iterator.get_interval().upper_bound >= one);
 
-            ++sin_pi_by_2_iterator;
+			++sin_pi_by_2_iterator;
 
-            CHECK(sin_pi_by_2_iterator.get_interval().lower_bound <= sin_pi_by_2_iterator.get_interval().upper_bound);
-            CHECK(sin_pi_by_2_iterator.get_interval().lower_bound <= one);
-            CHECK(sin_pi_by_2_iterator.get_interval().upper_bound >= one);
+			CHECK(sin_pi_by_2_iterator.get_interval().lower_bound <= sin_pi_by_2_iterator.get_interval().upper_bound);
+			CHECK(sin_pi_by_2_iterator.get_interval().lower_bound <= one);
+			CHECK(sin_pi_by_2_iterator.get_interval().upper_bound >= one);
 
-            ++sin_pi_by_2_iterator;
+			++sin_pi_by_2_iterator;
 
-            CHECK(sin_pi_by_2_iterator.get_interval().lower_bound <= sin_pi_by_2_iterator.get_interval().upper_bound);
-            CHECK(sin_pi_by_2_iterator.get_interval().lower_bound <= one);
-            CHECK(sin_pi_by_2_iterator.get_interval().upper_bound >= one);
-            ++sin_pi_by_2_iterator;
+			CHECK(sin_pi_by_2_iterator.get_interval().lower_bound <= sin_pi_by_2_iterator.get_interval().upper_bound);
+			CHECK(sin_pi_by_2_iterator.get_interval().lower_bound <= one);
+			CHECK(sin_pi_by_2_iterator.get_interval().upper_bound >= one);
+			++sin_pi_by_2_iterator;
 
-            CHECK(sin_pi_by_2_iterator.get_interval().lower_bound <= sin_pi_by_2_iterator.get_interval().upper_bound);
-            CHECK(sin_pi_by_2_iterator.get_interval().lower_bound <= one);
-            CHECK(sin_pi_by_2_iterator.get_interval().upper_bound >= one);
+			CHECK(sin_pi_by_2_iterator.get_interval().lower_bound <= sin_pi_by_2_iterator.get_interval().upper_bound);
+			CHECK(sin_pi_by_2_iterator.get_interval().lower_bound <= one);
+			CHECK(sin_pi_by_2_iterator.get_interval().upper_bound >= one);
 
-            ++sin_pi_by_2_iterator;
+			++sin_pi_by_2_iterator;
 
-            CHECK(sin_pi_by_2_iterator.get_interval().lower_bound <= sin_pi_by_2_iterator.get_interval().upper_bound);
-            CHECK(sin_pi_by_2_iterator.get_interval().lower_bound <= one);
-            CHECK(sin_pi_by_2_iterator.get_interval().upper_bound >= one);
+			CHECK(sin_pi_by_2_iterator.get_interval().lower_bound <= sin_pi_by_2_iterator.get_interval().upper_bound);
+			CHECK(sin_pi_by_2_iterator.get_interval().lower_bound <= one);
+			CHECK(sin_pi_by_2_iterator.get_interval().upper_bound >= one);
 
 		}
 
@@ -171,39 +171,39 @@ TEST_CASE("Pi") {
 			++cos_pi_by_2_iterator;
 
 
-            CHECK(cos_pi_by_2_iterator.get_interval().lower_bound <= cos_pi_by_2_iterator.get_interval().upper_bound);
-            CHECK(!cos_pi_by_2_iterator.get_interval().lower_bound.positive);
-            CHECK(cos_pi_by_2_iterator.get_interval().upper_bound.positive);
+			CHECK(cos_pi_by_2_iterator.get_interval().lower_bound <= cos_pi_by_2_iterator.get_interval().upper_bound);
+			CHECK(!cos_pi_by_2_iterator.get_interval().lower_bound.positive);
+			CHECK(cos_pi_by_2_iterator.get_interval().upper_bound.positive);
 
-            ++cos_pi_by_2_iterator;
+			++cos_pi_by_2_iterator;
 
-            CHECK(cos_pi_by_2_iterator.get_interval().lower_bound <= cos_pi_by_2_iterator.get_interval().upper_bound);
-            CHECK(!cos_pi_by_2_iterator.get_interval().lower_bound.positive);
-            CHECK(cos_pi_by_2_iterator.get_interval().upper_bound.positive);
+			CHECK(cos_pi_by_2_iterator.get_interval().lower_bound <= cos_pi_by_2_iterator.get_interval().upper_bound);
+			CHECK(!cos_pi_by_2_iterator.get_interval().lower_bound.positive);
+			CHECK(cos_pi_by_2_iterator.get_interval().upper_bound.positive);
 
-            ++cos_pi_by_2_iterator;
+			++cos_pi_by_2_iterator;
 
-            CHECK(cos_pi_by_2_iterator.get_interval().lower_bound <= cos_pi_by_2_iterator.get_interval().upper_bound);
-            CHECK(!cos_pi_by_2_iterator.get_interval().lower_bound.positive);
-            CHECK(cos_pi_by_2_iterator.get_interval().upper_bound.positive);
+			CHECK(cos_pi_by_2_iterator.get_interval().lower_bound <= cos_pi_by_2_iterator.get_interval().upper_bound);
+			CHECK(!cos_pi_by_2_iterator.get_interval().lower_bound.positive);
+			CHECK(cos_pi_by_2_iterator.get_interval().upper_bound.positive);
 
-            ++cos_pi_by_2_iterator;
+			++cos_pi_by_2_iterator;
 
-            CHECK(cos_pi_by_2_iterator.get_interval().lower_bound <= cos_pi_by_2_iterator.get_interval().upper_bound);
-            CHECK(!cos_pi_by_2_iterator.get_interval().lower_bound.positive);
-            CHECK(cos_pi_by_2_iterator.get_interval().upper_bound.positive);
+			CHECK(cos_pi_by_2_iterator.get_interval().lower_bound <= cos_pi_by_2_iterator.get_interval().upper_bound);
+			CHECK(!cos_pi_by_2_iterator.get_interval().lower_bound.positive);
+			CHECK(cos_pi_by_2_iterator.get_interval().upper_bound.positive);
 
-            ++cos_pi_by_2_iterator;
+			++cos_pi_by_2_iterator;
 
-            CHECK(cos_pi_by_2_iterator.get_interval().lower_bound <= cos_pi_by_2_iterator.get_interval().upper_bound);
-            CHECK(!cos_pi_by_2_iterator.get_interval().lower_bound.positive);
-            CHECK(cos_pi_by_2_iterator.get_interval().upper_bound.positive);
+			CHECK(cos_pi_by_2_iterator.get_interval().lower_bound <= cos_pi_by_2_iterator.get_interval().upper_bound);
+			CHECK(!cos_pi_by_2_iterator.get_interval().lower_bound.positive);
+			CHECK(cos_pi_by_2_iterator.get_interval().upper_bound.positive);
 
-            ++cos_pi_by_2_iterator;
+			++cos_pi_by_2_iterator;
 
-            CHECK(cos_pi_by_2_iterator.get_interval().lower_bound <= cos_pi_by_2_iterator.get_interval().upper_bound);
-            CHECK(!cos_pi_by_2_iterator.get_interval().lower_bound.positive);
-            CHECK(cos_pi_by_2_iterator.get_interval().upper_bound.positive);
+			CHECK(cos_pi_by_2_iterator.get_interval().lower_bound <= cos_pi_by_2_iterator.get_interval().upper_bound);
+			CHECK(!cos_pi_by_2_iterator.get_interval().lower_bound.positive);
+			CHECK(cos_pi_by_2_iterator.get_interval().upper_bound.positive);
 
 		}
 
@@ -235,20 +235,17 @@ TEST_CASE("Pi") {
 		++itr2;
 
 		CHECK(itr1.get_interval().lower_bound >= itr2.get_interval().upper_bound);
-		std::cout << itr1.get_interval().lower_bound.as_string() << "  >=   " << itr2.get_interval().upper_bound.as_string() << "\n"; 
 
 		++itr1;
 		++itr2;
 
 		CHECK(itr1.get_interval().lower_bound >= itr2.get_interval().upper_bound);
-		std::cout << itr1.get_interval().lower_bound.as_string() << "  >=   " << itr2.get_interval().upper_bound.as_string() << "\n";
 
 		++itr1;
 		++itr2;
 
 		CHECK(itr1.get_interval().lower_bound >= itr2.get_interval().upper_bound);
-		std::cout << itr1.get_interval().lower_bound.as_string() << "  >=   " << itr2.get_interval().upper_bound.as_string() << "\n";
-		
+
 	}
 
 }

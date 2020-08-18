@@ -1335,8 +1335,8 @@ namespace boost {
                 if (this->digits == zero || this->digits.empty()) {
                     return !(other.digits == zero || !other.positive || other.digits.empty());
                 } else {
-                    if ((other.digits == zero || other.digits.empty()) && !this->positive)
-                        return true;
+                    if ((other.digits == zero || other.digits.empty()))
+                        return !this->positive;
                 }
                 if (this->positive != other.positive) {
                     return !this->positive;

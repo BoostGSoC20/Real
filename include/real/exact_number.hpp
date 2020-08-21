@@ -1835,11 +1835,24 @@ namespace boost {
         };
 
         namespace literals{
+
+            template<typename T>
+            const exact_number<T> minus_one_exact = exact_number<T>("-1");
+
+            template<typename T>
+            const exact_number<T> zero_exact = exact_number<T>("0");
+
             template<typename T>
             const exact_number<T> one_exact = exact_number<T>("1");
 
             template<typename T>
-            const exact_number<T> zero_exact = exact_number<T>("0");
+            const exact_number<T> two_exact = exact_number<T>("2");
+
+            template<typename T>
+            const exact_number<T> four_exact = exact_number<T>("4");
+
+            template<typename T>
+            const exact_number<T> eight_exact = exact_number<T>("8");
         }
 
         template<> inline int exact_number<int>::mulmod (int a, int b, int c)

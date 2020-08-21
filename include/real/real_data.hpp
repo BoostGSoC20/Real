@@ -378,38 +378,113 @@ namespace boost {
                 case OPERATION::SIN :{
                     auto [sin_lower, cos_lower] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
                     auto [sin_upper, cos_upper] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
-                    // checking for sign change of derivative, detection of minima-maxima point
-                    // if sign of both upper and lower bound of cos(x) is same, then there are no minima-maxima point in input interval
-                    if(cos_upper.positive == cos_lower.positive){
-                        if(sin_lower < sin_upper){
-                            this->_approximation_interval.lower_bound = sin_lower;
-                            this->_approximation_interval.upper_bound = sin_upper;
+                    /** 
+                     * First we ensure that our input interval is greater than 2π or not. We can either check that by comparing the difference
+                     * of upper and lower bound with 2π or a number greater than 2π. We will check whether the difference is greater than 8 or not.
+                     * If the difference is greater than 8 then we are sure that difference is greater than 2π. We are not using π here for checking because
+                     * algorithm for π is very complex and checking with that number will be very inefficient.
+                     * The condition of difference between 2π and 8 will be checked in next case. Here we will only check whether our number is
+                     * greater than 8 or not. If it is, then we will give hardcoded output of [-1, 1] because the result can be anything between -1 to 1.
+                     **/
+                    if(ro.get_lhs_itr().get_interval().upper_bound - ro.get_lhs_itr().get_interval().lower_bound >= literals::eight_exact<T>){
+                        this->_approximation_interval.lower_bound = literals::minus_one_exact<T>;
+                        this->_approximation_interval.upper_bound = literals::one_exact<T>;
+                    }
+                    /**
+                     * Now we will check whether the difference is greater than 4 or not.
+                     * 4 is greater than π, so we are sure that there is at least one minima/maxima.
+                     * But there can exist both minima and maxima, as input can be anywhere between [4,8).
+                     * So, we will check sign of derivative of sin, which is cos. If there is one minima/maxima, sign of derivative
+                     * will change once, so we will different signs of derivative on upper and lower bound. If there are both minima and maxima,
+                     * sign of derivative will change twice, so at the end, sign of derivative in both upper and lower bound will remain same.
+                     **/
+                    else if(ro.get_lhs_itr().get_interval().upper_bound - ro.get_lhs_itr().get_interval().lower_bound >= literals::four_exact<T>){
+                        /**
+                         * If sign of derivative, which cos(x), if it is same for both upper and lower bound. Then we will return 
+                         * hardcoded output [-1, 1].
+                         **/
+                        if(cos_upper.positive == cos_lower.positive){
+                            this->_approximation_interval.lower_bound = literals::minus_one_exact<T>;
+                            this->_approximation_interval.upper_bound = literals::one_exact<T>;
                         }
+                        /**
+                         * Now, the sign was changed, then there is either one minima/maxima or three maxima minima.
+                         * There can exist either one minima/maxima or three points of maxima. In case of three points of maxima, and 
+                         * difference between inputs less than 8, both ends of sin will have same sign and sin(x) of mid point of upper and 
+                         * lower bound will have oppsite sign from end points. In that case, we will give hard coded output [-1, 1]. 
+                         **/
                         else{
-                            this->_approximation_interval.lower_bound = sin_upper;
-                            this->_approximation_interval.upper_bound = sin_lower;
+                            auto mid = ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true) + ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false);
+                            mid.divide_vector(literals::two_exact<T>, _precision, true);
+                            if(sin_lower.positive == sin_upper.positive 
+                                && sine(mid, _precision, true).positive == sin_upper.positive){
+                                this->_approximation_interval.lower_bound = literals::minus_one_exact<T>;
+                                this->_approximation_interval.upper_bound = literals::one_exact<T>;
+                            }
+                            /**
+                             * We will check sign of lower bound of derivative, if it is positive, then initially function was increasing
+                             * then it would have gone up to 1 and then started decresing. So, the output will be [min(sin(upper_bound, sin(lower_bounf))), 1].
+                            **/
+                            else if(cos_lower.positive){
+                                this->_approximation_interval.lower_bound = std::min(sin_upper, sin_lower);
+                                this->_approximation_interval.upper_bound = literals::one_exact<T>;
+                            }
+                            /**
+                             * Now if the sign of derivaye is negative, then initially function was decreasing. So, the function would have got to -1 and then again 
+                             * started incresing. So, the output should be [-1, max(sin_lower, cos_lower)].
+                             **/
+                            else{
+                                this->_approximation_interval.lower_bound = literals::minus_one_exact<T>;
+                                this->_approximation_interval.upper_bound = std::max(sin_upper, sin_lower);
+                            }
+                        }
+                    }
+                    /**
+                     * Now, the final case, the difference is less than 4.
+                     * There are two possibilities, no maxima/minima or one maxima/minima.
+                     * If sign of derivative changes, then one maxima/minima, if it doesn't, then no maxima/minima
+                     **/
+                    else{
+                        /**
+                         * If sign does not changes, then no maxima/minima or both maxima and minima.
+                         * We will check sign of derivative at mid of interval, if it is not same as that of lower and upper bounds.
+                         * Then we have both maxima and minima.
+                         **/
+                        if(cos_upper.positive == cos_lower.positive){
+                             // if sign of derivative at mid point is not same as at end points then both minima and maxima are there
+                            auto mid = ro.get_lhs_itr().get_interval().upper_bound + ro.get_lhs_itr().get_interval().lower_bound;
+                            mid.divide_vector(literals::two_exact<T>, _precision, true);
+                            if(cosine(mid, _precision, true).positive != cos_lower.positive){
+                                this->_approximation_interval.lower_bound = literals::minus_one_exact<T>;
+                                this->_approximation_interval.upper_bound = literals::one_exact<T>;
+                            }
+                            // If cos(x), which is derivative of sin(x), is positive, then function was increasing in that interval. So, the output will be [sin_lower, sin_upper].
+                            else if(cos_lower.positive){
+                                this->_approximation_interval.lower_bound = sin_lower;
+                                this->_approximation_interval.upper_bound = sin_upper;
+                            }
+                            // If it is negative, then function was decreasing in that interval. SO, the output will be [sin_upper, sin_lower].
+                            else{
+                                this->_approximation_interval.lower_bound = sin_upper;
+                                this->_approximation_interval.upper_bound = sin_lower;
+                            }
+                        }
+                        /**
+                         * If sign changes, then one maxima/minima. So, we will check sign of derivative at lower bound of input.
+                         * If it is positive, then function was increasing initially. So, the output will be [min(sin_lower, sin_upper), 1].
+                         * If it is negative, then function was decreasing initially. So, the output will be [-1, max(sin_upper, sin_lower)].
+                         **/
+                        else{
+                            if(cos_lower.positive){
+                                this->_approximation_interval.lower_bound = std::min(sin_lower, sin_upper);
+                                this->_approximation_interval.upper_bound = literals::one_exact<T>;
+                            }
+                            else{
+                                this->_approximation_interval.lower_bound = literals::minus_one_exact<T>;
+                                this->_approximation_interval.upper_bound = std::max(sin_lower, sin_upper);
+                            }
                         }
 
-                    }
-                    // if sign of derivative was changed, then there is point of maxima or minima
-                    // if sign of values given by sin(x) is negative, then lower bound should be -1
-                    else if(!sin_upper.positive){
-                        this->_approximation_interval.lower_bound = exact_number<T>("-1");
-                        if(sin_lower > sin_upper){
-                            this->_approximation_interval.upper_bound = sin_lower;
-                        }
-                        else{
-                            this->_approximation_interval.upper_bound = sin_upper;
-                        }
-                    }
-                    else{
-                        this->_approximation_interval.upper_bound = exact_number<T>("1");
-                        if(sin_upper < sin_lower){
-                            this->_approximation_interval.lower_bound = sin_upper;
-                        }
-                        else{
-                            this->_approximation_interval.lower_bound = sin_lower;
-                        }
                     }
                     break;
                 }
@@ -417,37 +492,112 @@ namespace boost {
                 case OPERATION::COS :{
                     auto [sin_lower, cos_lower] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
                     auto [sin_upper, cos_upper] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
-                    // checking for sign change of derivative, detection of minima-maxima point
-                    // if sign of both upper and lower bound of cos(x) is same, then there are no minima-maxima point in input interval
-                    if(sin_upper.positive == sin_lower.positive){
-                        if(cos_lower < cos_upper){
-                            this->_approximation_interval.lower_bound = cos_lower;
-                            this->_approximation_interval.upper_bound = cos_upper;
+                    /** 
+                     * First we ensure that our input interval is greater than 2π or not. We can either check that by comparing the difference
+                     * of upper and lower bound with 2π or a number greater than 2π. We will check whether the difference is greater than 8 or not.
+                     * If the difference is greater than 8 then we are sure that difference is greater than 2π. We are not using π here for checking because
+                     * algorithm for π is very complex and checking with that number will be very inefficient.
+                     * The condition of difference between 2π and 8 will be checked in next case. Here we will only check whether our number is
+                     * greater than 8 or not. If it is, then we will give hardcoded output of [-1, 1] because the result can be anything between -1 to 1.
+                     **/
+                    if(ro.get_lhs_itr().get_interval().upper_bound - ro.get_lhs_itr().get_interval().lower_bound >= literals::eight_exact<T>){
+                        this->_approximation_interval.lower_bound = literals::minus_one_exact<T>;
+                        this->_approximation_interval.upper_bound = literals::one_exact<T>;
+                    }
+                    /**
+                     * Now we will check whether the difference is greater than 4 or not.
+                     * 4 is greater than π, so we are sure that there is at least one minima/maxima.
+                     * But there can exist both minima and maxima, as input can be anywhere between [4,8).
+                     * So, we will check sign of derivative of cos(x), which is -sin(x). If there is one minima/maxima, sign of derivative
+                     * will change once, so we will different signs of derivative on upper and lower bound. If there are both minima and maxima,
+                     * sign of derivative will change twice, so at the end, sign of derivative in both upper and lower bound will remain same.
+                     **/
+                    else if(ro.get_lhs_itr().get_interval().upper_bound - ro.get_lhs_itr().get_interval().lower_bound >= literals::four_exact<T>){
+                        /**
+                         * If sign of derivative, which -sin(x), if it is same for both upper and lower bound. Then we will return 
+                         * hardcoded output [-1, 1].
+                         **/
+                        if(sin_upper.positive == sin_lower.positive){
+                            this->_approximation_interval.lower_bound = literals::minus_one_exact<T>;
+                            this->_approximation_interval.upper_bound = literals::one_exact<T>;
                         }
+                        /**
+                         * Now, the sign of deriavtive is changed, then there is either one minima/maxima or three maxima minima.
+                         * There can exist either one minima/maxima or three points of maxima. In case of three points of maxima, 
+                         * difference between inputs less than 8, both ends of cos(x) will have same sign and cos(x) of mid point of upper and 
+                         * lower bound will have oppsite sign from end points. In that case, we will give hard coded output [-1, 1]. 
+                         **/
                         else{
-                            this->_approximation_interval.lower_bound = cos_upper;
-                            this->_approximation_interval.upper_bound = cos_lower;
+                            auto mid = ro.get_lhs_itr().get_interval().upper_bound + ro.get_lhs_itr().get_interval().lower_bound;
+                            mid.divide_vector(literals::two_exact<T>, _precision, true);
+                            if(cos_lower.positive == cos_upper.positive 
+                                && cosine(mid, _precision, true).positive == cos_upper.positive){
+                                this->_approximation_interval.lower_bound = literals::minus_one_exact<T>;
+                                this->_approximation_interval.upper_bound = literals::one_exact<T>;
+                            }
+                            /**
+                             * We will check sign of lower bound of sin(x), if it is negative, then initially function was increasing
+                             * then it would have gone up to 1 and then started decresing. So, the output will be [min(cos(upper_bound, cos(lower_bounf))), 1].
+                            **/
+                            else if(!sin_lower.positive){
+                                this->_approximation_interval.lower_bound = std::min(cos_upper, cos_lower);
+                                this->_approximation_interval.upper_bound = literals::one_exact<T>;
+                            }
+                            /**
+                             * Now if the sign of cos(lower_bound) is positive, then initially function was decreasing. So, the function would have got to -1 and then again 
+                             * started incresing. So, the output should be [-1, max(cos_lower, cos_lower)].
+                             **/
+                            else{
+                                this->_approximation_interval.lower_bound = literals::minus_one_exact<T>;
+                                this->_approximation_interval.upper_bound = std::max(cos_upper, cos_lower);
+                            }
                         }
                     }
-                    // if sign of derivative was changed, then there is point of maxima or minima
-                    // if sign of values given by sin(x) is negative, then lower bound should be -1
-                    else if(!cos_upper.positive){
-                        this->_approximation_interval.lower_bound = exact_number<T>("-1");
-                        if(sin_lower > sin_upper){
-                            this->_approximation_interval.upper_bound = cos_lower;
-                        }
-                        else{
-                            this->_approximation_interval.upper_bound = cos_upper;
-                        }
-                    }
+                    /**
+                     * Now, the final case, the difference is less than 4.
+                     * There are three possibilities, no maxima/minima or one maxima/minima or both maxima and minima.
+                     **/
                     else{
-                        this->_approximation_interval.upper_bound = exact_number<T>("1");
-                        if(sin_upper < sin_lower){
-                            this->_approximation_interval.lower_bound = cos_upper;
+                        /**
+                         * If sign does not changes, then no maxima/minima or both maxima and minima.
+                         * We will check sign of derivative at mid of interval, if it is not same as that of lower and upper bounds.
+                         * Then we have both maxima and minima.
+                         **/
+                        if(sin_upper.positive == sin_lower.positive){
+                            // if sign of derivative at mid point is not same as at end points then both minima and maxima are there
+                            auto mid = ro.get_lhs_itr().get_interval().upper_bound + ro.get_lhs_itr().get_interval().lower_bound;
+                            mid.divide_vector(literals::two_exact<T>, _precision, true);
+                            if(sine(mid, _precision, true).positive != sin_lower.positive){
+                                this->_approximation_interval.lower_bound = literals::minus_one_exact<T>;
+                                this->_approximation_interval.upper_bound = literals::one_exact<T>;
+                            }
+                            // If -sin(x), which is derivative of cos(x), is positive, then function was increasing in that interval. So, the output will be [cos_lower, cos_upper].
+                            else if(!sin_lower.positive){
+                                this->_approximation_interval.lower_bound = cos_lower;
+                                this->_approximation_interval.upper_bound = cos_upper;
+                            }
+                            // If it is negative, then function was decreasing in that interval. SO, the output will be [cos_upper, cos_lower].
+                            else{
+                                this->_approximation_interval.lower_bound = cos_upper;
+                                this->_approximation_interval.upper_bound = cos_lower;
+                            }
                         }
+                        /**
+                         * If sign changes, then one maxima/minima. So, we will check sign of derivative at lower bound of input.
+                         * If it is positive, then function was increasing initially. So, the output will be [min(sin_lower, sin_upper), 1].
+                         * If it is negative, then function was decreasing initially. So, the output will be [-1, max(sin_upper, sin_lower)].
+                         **/
                         else{
-                            this->_approximation_interval.lower_bound = cos_lower;
+                            if(!sin_lower.positive){
+                                this->_approximation_interval.lower_bound = std::min(cos_lower, cos_upper);
+                                this->_approximation_interval.upper_bound = literals::one_exact<T>;
+                            }
+                            else{
+                                this->_approximation_interval.lower_bound = literals::minus_one_exact<T>;
+                                this->_approximation_interval.upper_bound = std::max(cos_lower, cos_upper);
+                            }
                         }
+
                     }
                     break;
                 }
@@ -460,22 +610,50 @@ namespace boost {
                         auto [sin_lower_tmp, cos_lower_tmp] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
                         auto [sin_upper_tmp, cos_upper_tmp] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
 
-                            // if we have point of maxima of minima in our input interval
-                            if(cos_upper_tmp.positive != cos_lower_tmp.positive || cos_lower_tmp == literals::zero_exact<T> || cos_upper_tmp == literals::zero_exact<T>){
-                                // updating the boundaries of lhs
-                                if(_precision >= ro.get_lhs_itr().maximum_precision()){
-                                    throw max_precision_for_trigonometric_function_error();
-                                }
-                                ro.get_lhs_itr().iterate_n_times(1);
-                                ++_precision;
+                        bool iterate_again;
+                        if(ro.get_lhs_itr().get_interval().upper_bound - ro.get_lhs_itr().get_interval().lower_bound >= literals::four_exact<T>){
+                            iterate_again = true;
+                        }
+                        else{
+                            /**
+                             * Now if difference between lower and upper bounds of interval is less than 4, then there can exist 0,1 or 2 minima/maxima points.
+                             * First we will check whether the sign of cos(x) from lower to upper bound is changed or not, if it is, then we have one point 
+                             * of maxima/minima. Then we will iterate for better input.
+                             **/
+                            if(cos_upper_tmp.positive != cos_lower.positive){
+                                iterate_again = true;
                             }
+                            /**
+                             * Now, if sign is not changed, then we will check if sign of mid point of derivative is same as end points.
+                             * If it is, then no points of minima/maxima, no need to iterate further.
+                             **/
                             else{
-                                sin_lower = sin_lower_tmp;
-                                sin_upper = sin_upper_tmp;
-                                cos_lower = cos_lower_tmp;
-                                cos_upper = cos_upper_tmp;
-                                break;
+                                auto mid = ro.get_lhs_itr().get_interval().lower_bound + ro.get_lhs_itr().get_interval().upper_bound;
+                                mid.divide_vector(literals::two_exact<T>, _precision, true);
+                                if(cosine(mid, _precision, true).positive != cos_lower_tmp.positive){
+                                    iterate_again = true;
+                                }
+                                else{
+                                    iterate_again = false;
+                                }
                             }
+                        }
+                        // if we have point of maxima of minima in our input interval
+                        if(iterate_again){
+                            // updating the boundaries of lhs
+                            if(_precision >= ro.get_lhs_itr().maximum_precision()){
+                                    throw max_precision_for_trigonometric_function_error();
+                            }
+                            ro.get_lhs_itr().iterate_n_times(1);
+                            ++_precision;
+                        }
+                        else{
+                            sin_lower = sin_lower_tmp;
+                            sin_upper = sin_upper_tmp;
+                            cos_lower = cos_lower_tmp;
+                            cos_upper = cos_upper_tmp;
+                            break;
+                        }
                     }
                     sin_lower.divide_vector(cos_lower, _precision, false);
                     sin_upper.divide_vector(cos_upper, _precision, true);
@@ -492,22 +670,50 @@ namespace boost {
                         auto [sin_lower_tmp, cos_lower_tmp] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
                         auto [sin_upper_tmp, cos_upper_tmp] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
 
-                            // if we have point of maxima of minima in our input interval
-                            if(sin_upper_tmp.positive != sin_lower_tmp.positive || sin_lower_tmp == literals::zero_exact<T> || sin_upper_tmp == literals::zero_exact<T>){
-                                // updating the boundaries of lhs
-                                if(_precision >= ro.get_lhs_itr().maximum_precision()){
-                                    throw max_precision_for_trigonometric_function_error();
-                                }
-                                ro.get_lhs_itr().iterate_n_times(1);
-                                ++_precision;
+                        bool iterate_again;
+                        if(ro.get_lhs_itr().get_interval().upper_bound - ro.get_lhs_itr().get_interval().lower_bound >= literals::four_exact<T>){
+                            iterate_again = true;
+                        }
+                        else{
+                            /**
+                             * Now if difference between lower and upper bounds of interval is less than 4, then there can exist 0,1 or 2 minima/maxima points.
+                             * First we will check whether the sign of sin(x) from lower to upper bound is changed or not, if it is, then we have one point 
+                             * of maxima/minima. Then we will iterate for better input.
+                             **/
+                            if(sin_upper_tmp.positive != sin_lower.positive){
+                                iterate_again = true;
                             }
+                            /**
+                             * Now, if sign is not changed, then we will check if sign of mid point of derivative is same as end points.
+                             * If it is, then no points of minima/maxima, no need to iterate further.
+                             **/
                             else{
-                                sin_lower = sin_lower_tmp;
-                                sin_upper = sin_upper_tmp;
-                                cos_lower = cos_lower_tmp;
-                                cos_upper = cos_upper_tmp;
-                                break;
+                                auto mid = ro.get_lhs_itr().get_interval().lower_bound + ro.get_lhs_itr().get_interval().upper_bound;
+                                mid.divide_vector(literals::two_exact<T>, _precision, true);
+                                if(sine(mid, _precision, true).positive != sin_lower_tmp.positive){
+                                    iterate_again = true;
+                                }
+                                else{
+                                    iterate_again = false;
+                                }
                             }
+                        }
+                        // if we have point of maxima of minima in our input interval
+                        if(iterate_again){
+                            // updating the boundaries of lhs
+                            if(_precision >= ro.get_lhs_itr().maximum_precision()){
+                                    throw max_precision_for_trigonometric_function_error();
+                            }
+                            ro.get_lhs_itr().iterate_n_times(1);
+                            ++_precision;
+                        }
+                        else{
+                            sin_lower = sin_lower_tmp;
+                            sin_upper = sin_upper_tmp;
+                            cos_lower = cos_lower_tmp;
+                            cos_upper = cos_upper_tmp;
+                            break;
+                        }
                     }
                     cos_lower.divide_vector(sin_lower, _precision, false);
                     cos_upper.divide_vector(sin_upper, _precision, true);
@@ -523,11 +729,40 @@ namespace boost {
                     while(true){
                         auto [sin_lower_tmp, cos_lower_tmp] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
                         auto [sin_upper_tmp, cos_upper_tmp] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
+
+                        bool iterate_again;
+                        if(ro.get_lhs_itr().get_interval().upper_bound - ro.get_lhs_itr().get_interval().lower_bound >= literals::four_exact<T>){
+                            iterate_again = true;
+                        }
+                        else{
+                            /**
+                             * Now if difference between lower and upper bounds of interval is less than 4, then there can exist 0,1 or 2 minima/maxima points.
+                             * First we will check whether the sign of cos(x) from lower to upper bound is changed or not, if it is, then we have one point 
+                             * of maxima/minima. Then we will iterate for better input.
+                             **/
+                            if(cos_upper_tmp.positive != cos_lower.positive){
+                                iterate_again = true;
+                            }
+                            /**
+                             * Now, if sign is not changed, then we will check if sign of mid point of derivative is same as end points.
+                             * If it is, then no points of minima/maxima, no need to iterate further.
+                             **/
+                            else{
+                                auto mid = ro.get_lhs_itr().get_interval().lower_bound + ro.get_lhs_itr().get_interval().upper_bound;
+                                mid.divide_vector(literals::two_exact<T>, _precision, true);
+                                if(cosine(mid, _precision, true).positive != cos_lower_tmp.positive){
+                                    iterate_again = true;
+                                }
+                                else{
+                                    iterate_again = false;
+                                }
+                            }
+                        }
                         // if we have point of maxima of minima in our input interval
-                        if(cos_upper_tmp.positive != cos_lower_tmp.positive || cos_lower_tmp == literals::zero_exact<T> || cos_upper_tmp == literals::zero_exact<T>){
+                        if(iterate_again){
                             // updating the boundaries of lhs
                             if(_precision >= ro.get_lhs_itr().maximum_precision()){
-                                throw max_precision_for_trigonometric_function_error();
+                                    throw max_precision_for_trigonometric_function_error();
                             }
                             ro.get_lhs_itr().iterate_n_times(1);
                             ++_precision;
@@ -595,11 +830,40 @@ namespace boost {
                     while(true){
                         auto [sin_lower_tmp, cos_lower_tmp] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
                         auto [sin_upper_tmp, cos_upper_tmp] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
+
+                        bool iterate_again;
+                        if(ro.get_lhs_itr().get_interval().upper_bound - ro.get_lhs_itr().get_interval().lower_bound >= literals::four_exact<T>){
+                            iterate_again = true;
+                        }
+                        else{
+                            /**
+                             * Now if difference between lower and upper bounds of interval is less than 4, then there can exist 0,1 or 2 minima/maxima points.
+                             * First we will check whether the sign of sin(x) from lower to upper bound is changed or not, if it is, then we have one point 
+                             * of maxima/minima. Then we will iterate for better input.
+                             **/
+                            if(sin_upper_tmp.positive != sin_lower_tmp.positive){
+                                iterate_again = true;
+                            }
+                            /**
+                             * Now, if sign is not changed, then we will check if sign of mid point of derivative is same as end points.
+                             * If it is, then no points of minima/maxima, no need to iterate further.
+                             **/
+                            else{
+                                auto mid = ro.get_lhs_itr().get_interval().lower_bound + ro.get_lhs_itr().get_interval().upper_bound;
+                                mid.divide_vector(literals::two_exact<T>, _precision, true);
+                                if(sine(mid, _precision, true).positive != sin_lower_tmp.positive){
+                                    iterate_again = true;
+                                }
+                                else{
+                                    iterate_again = false;
+                                }
+                            }
+                        }
                         // if we have point of maxima of minima in our input interval
-                        if(sin_upper_tmp.positive != sin_lower_tmp.positive || sin_lower_tmp == literals::zero_exact<T> || sin_upper_tmp == literals::zero_exact<T>){
+                        if(iterate_again){
                             // updating the boundaries of lhs
                             if(_precision >= ro.get_lhs_itr().maximum_precision()){
-                                throw max_precision_for_trigonometric_function_error();
+                                    throw max_precision_for_trigonometric_function_error();
                             }
                             ro.get_lhs_itr().iterate_n_times(1);
                             ++_precision;

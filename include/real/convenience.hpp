@@ -247,7 +247,7 @@ std::vector<T> multiply(std::vector<T> &a, std::vector<T> &b, T base = (std::num
 
             // Multiply current digit of second number with current digit of first number
             // and add result to previously stored result at current position.
-            T rem = op.mulmod(digit_a, digit_b, base);
+            T rem = op.mul_mod(digit_a, digit_b, base);
             T rem_s;
             T q = op.mult_div(digit_a, digit_b, base);
             if ( temp[i_n1 - i_n2] >= base - carry ) {

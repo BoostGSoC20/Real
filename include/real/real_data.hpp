@@ -620,7 +620,7 @@ namespace boost {
                              * First we will check whether the sign of cos(x) from lower to upper bound is changed or not, if it is, then we have one point 
                              * of maxima/minima. Then we will iterate for better input.
                              **/
-                            if(cos_upper_tmp.positive != cos_lower.positive){
+                            if(cos_upper_tmp.positive != cos_lower.positive || cos_lower_tmp == literals::zero_exact<T> || cos_upper_tmp == literals::zero_exact<T>){
                                 iterate_again = true;
                             }
                             /**
@@ -680,7 +680,7 @@ namespace boost {
                              * First we will check whether the sign of sin(x) from lower to upper bound is changed or not, if it is, then we have one point 
                              * of maxima/minima. Then we will iterate for better input.
                              **/
-                            if(sin_upper_tmp.positive != sin_lower.positive){
+                            if(sin_upper_tmp.positive != sin_lower_tmp.positive || sin_lower_tmp == literals::zero_exact<T> || sin_upper_tmp == literals::zero_exact<T>){
                                 iterate_again = true;
                             }
                             /**
@@ -740,7 +740,7 @@ namespace boost {
                              * First we will check whether the sign of cos(x) from lower to upper bound is changed or not, if it is, then we have one point 
                              * of maxima/minima. Then we will iterate for better input.
                              **/
-                            if(cos_upper_tmp.positive != cos_lower.positive){
+                            if(cos_upper_tmp.positive != cos_lower_tmp.positive || cos_lower_tmp == literals::zero_exact<T> || cos_upper_tmp == literals::zero_exact<T>){
                                 iterate_again = true;
                             }
                             /**
@@ -841,7 +841,7 @@ namespace boost {
                              * First we will check whether the sign of sin(x) from lower to upper bound is changed or not, if it is, then we have one point 
                              * of maxima/minima. Then we will iterate for better input.
                              **/
-                            if(sin_upper_tmp.positive != sin_lower_tmp.positive){
+                            if(sin_upper_tmp.positive != sin_lower_tmp.positive || sin_upper_tmp == literals::zero_exact<T> || sin_lower_tmp == literals::zero_exact<T>){
                                 iterate_again = true;
                             }
                             /**

@@ -284,12 +284,12 @@ namespace boost {
             ) {
 
                 // this --- a, other --- b
-                int a_size = this->digits.size();
-                int b_size = other.digits.size();
-                int a_exponent = this->exponent;
-                int b_exponent = other.exponent;
-                bool a_sign = this->positive;
-                bool b_sign = other.positive;
+                const int a_size = this->digits.size();
+                const int b_size = other.digits.size();
+                const int a_exponent = this->exponent;
+                const int b_exponent = other.exponent;
+                const bool a_sign = this->positive;
+                const bool b_sign = other.positive;
 
                 const int max_length = std::max(a_size, b_size);
 

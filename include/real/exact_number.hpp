@@ -149,7 +149,7 @@ namespace boost {
             }
 
             //Returns (a*b)%mod
-            inline T mulmod(T a, T b, T mod) 
+            static T mul_mod(T a, T b, T mod) 
             { 
                 T res = 0; // Initialize result 
                 a = a % mod; 
@@ -170,7 +170,7 @@ namespace boost {
             }
 
             //Returns (a*b)/mod
-            inline T mult_div(T a, T b, T c) {
+            static T mult_div(T a, T b, T c) {
                 T rem = 0;
                 T res = (a / c) * b;
                 a = a % c;
@@ -227,7 +227,7 @@ namespace boost {
 
                         // Multiply current digit of second number with current digit of first number
                         // and add result to previously stored result at current position.
-                        T rem = mulmod(this->digits[i], other.digits[j], base);
+                        T rem = mul_mod(this->digits[i], other.digits[j], base);
                         T rem_s;
                         T q = mult_div(this->digits[i], other.digits[j], base);
                         if ( temp[i_n1 - i_n2] >= base - carry ) {
@@ -271,8 +271,8 @@ namespace boost {
                 this->normalize();
             }
 
-            /**     KARATSUBA MULTIPLICATION
-             *  @brief: multiplies (*this) with other using karatsuba multiplication algorithm
+            /**
+             *  @brief: KARATSUBA MULTIPLICATION: multiplies (*this) with other using karatsuba multiplication algorithm
              *  @param: other: an exact_number to be multiplied with (*this)
              *  @param: base: base of the numbers being multiplied
              *  @author: Kishan Shukla
@@ -1973,7 +1973,7 @@ namespace boost {
             const exact_number<T> zero_exact = exact_number<T>("0");
         }
 
-        template<> inline int exact_number<int>::mulmod (int a, int b, int c)
+        template<> inline int exact_number<int>::mul_mod (int a, int b, int c)
         {
             return ((long long)a * (long long)b )%c;
         }

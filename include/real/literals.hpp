@@ -1,4 +1,5 @@
 #include <real/real.hpp>
+#include <real/exact_number.hpp>
 
 namespace boost{
 	namespace real{
@@ -66,7 +67,23 @@ namespace boost{
 			template<typename T>
 			const real<T> planck_constant = real<T>("6.62607015e-34");
 
+			/**
+			 * @brief Gravitation Constant : 6.67430 * 10^(-11) m3 / (Kg * s2) (cubic metre per kilogram per square seconds) with 
+			 *			uncertainity of 0.00015 * 10^(-11)
+			 * @ref National Institute of Standards and Technology
+			 **/
 
+			template<typename T>
+			const real<T> gravitation_constant = real<T>("6.67430e-11");
+
+
+			/**
+			 * @brief Boltzmann Constant : 1.380649 × 10^-23 J / K (Joule per Kelvin) (no uncertainity)
+			 * @ref National Institute of Standards and Technology
+			 **/
+
+			template<typename T>
+			const real<T> boltzmann_constant = real<T>("1.380649e-23");
 
 		}
 	}

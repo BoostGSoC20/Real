@@ -86,7 +86,7 @@ namespace boost {
                 static exact_number<T> X0 = real_x0.get_exact_number();
                 static exact_number<T> _16(std::vector<T> {16}, 1, true);
                 static exact_number<T> _12(std::vector<T> {12}, 1, true);
-                static exact_number<T> _1("1");
+                static exact_number<T> one("1");
 
                 static boost::real::const_precision_iterator<T> real_c_itr = real_c.get_real_itr();
                 real_c_itr.set_maximum_precision(n + 1);
@@ -96,7 +96,7 @@ namespace boost {
                 bool nth_digit_found = false;
                 bool first_iteration_over = false;
 
-                exact_number<T> iteration_number = _1;
+                exact_number<T> iteration_number = one;
                 exact_number<T> prev_pi;
                 exact_number<T> pi;
                 exact_number<T> error;
@@ -121,7 +121,7 @@ namespace boost {
                     if (!first_iteration_over) {
                         prev_pi = pi;
                         first_iteration_over = true;
-                        iteration_number += _1;
+                        iteration_number += one;
                     } else {
                         error = pi - prev_pi;
                         error.positive = true;
@@ -129,7 +129,7 @@ namespace boost {
                         if (error < max_error) {
                             nth_digit_found = true;
                         }
-                        iteration_number += _1;
+                        iteration_number += one;
                         prev_pi = pi;
                     }
 

@@ -420,16 +420,16 @@ namespace boost {
                 return remainder;
             }
 
-            /*      ******* KNUTH DIVISION *******
-             *   @author: Kishan Shukla
-             *   @brief:  computes quotient and remainder when dividend is divided by divisor using 
-             *            knuth's algorithm (Not exactly knuth's Algorithm due to design constrains).
+            /** 
+             *   @brief:  "KNUTH DIVISION" computes quotient and remainder when dividend is divided by divisor using 
+             *            knuth's algorithm (Not exactly knuth's Algorithm due to design constraints).
              *            Valid only for integers.
-             *   @Params: dividend  - vector of any size to be divided
-             *   @Params: divisor   - vector of any size which divides
-             *   @Params: quotient  - Empty vector in which quotient is returned
-             *   @Params: remainder - Empty vector in which remainder is returned
-             *   @Params: Base      - Base of integer vectors dividend and divisor provided
+             *   @param: dividend  - vector of any size to be divided
+             *   @param: divisor   - vector of any size which divides
+             *   @param: quotient  - Empty vector in which quotient is returned
+             *   @param: remainder - Empty vector in which remainder is returned
+             *   @param: Base      - Base of integer vectors dividend and divisor provided
+             *   @author: Kishan Shukla
              *   @ref:    The Art of Computer Programming, Vol 2, 4.33 Algorithm D
              */
 
@@ -481,13 +481,14 @@ namespace boost {
                     throw divide_by_zero();
                 }
 
-                exact_number<T> zero(std::vector<T> {0}, 0, true);
-                exact_number<T> two(std::vector<T> {2});
+                exact_number<T> zero("0");
+                static exact_number<T> one_exact("1");
+                static exact_number<T> two_exact("2");
 
                 int normalization_factor = 0;
                 while (exact_divisor.digits[0] < base / 2) {
-                    exact_divisor.multiply_vector(two, base);
-                    exact_dividend.multiply_vector(two, base);
+                    exact_divisor.multiply_vector(two_exact, base);
+                    exact_dividend.multiply_vector(two_exact, base);
                     normalization_factor++;
                 }
 
@@ -562,10 +563,9 @@ namespace boost {
                     }
                 }
                 else {
-                    exact_number<T> exact_base(std::vector<T> {1,0}, 2, true);
-                    exact_number<T> one(std::vector<T> {1});
+                    exact_number<T> exact_base(std::vector<T> {1, 0}, 2, true);
 
-                    std::vector<T> dividend_part(exact_dividend.digits.begin(), exact_dividend.digits.begin()+n);
+                    std::vector<T> dividend_part(exact_dividend.digits.begin(), exact_dividend.digits.begin() + n);
                     exact_number<T> temp_dividend(dividend_part, n, true);
                     
                     exact_number<T> first_digit, second_digit, temp_quotient, temp;
@@ -677,7 +677,7 @@ namespace boost {
                         temp = temp_quotient;
                         temp.multiply_vector(exact_divisor, base);
                         while (temp > temp_dividend) {
-                            temp_quotient.subtract_vector(one, base - 1);
+                            temp_quotient.subtract_vector(one_exact, base - 1);
                             temp = temp_quotient;
                             temp.multiply_vector(exact_divisor, base);
                         }
@@ -707,13 +707,13 @@ namespace boost {
                 }
             }
 
-            /*  
-             *  @author Kishan Shukla
-             *  @brief divides a vector by single digit divisor using modified (optimized) long division 
-             *  @param dividend: a vector to be divided by divisor, can be of any size
-             *  @param divisor: a vector of size 1
-             *  @param quotient: an empty vector in which quotient is returned
-             *  @param remainder: an empty vector in which remainder is returned
+            /** 
+             *  @brief: divides a vector by single digit divisor using modified (optimized) long division 
+             *  @param: dividend: a vector to be divided by divisor, can be of any size
+             *  @param: divisor: a vector of size 1
+             *  @param: quotient: an empty vector in which quotient is returned
+             *  @param: remainder: an empty vector in which remainder is returned
+             *  @author: Kishan Shukla
              */
 
             static void division_by_single_digit(
@@ -837,7 +837,7 @@ namespace boost {
                 remainder = exact_remainder.digits;
             }
 
-            /*              DIVISION
+            /**
              *  @brief:  divides (*this) by divisor
              *  @param:  divisor: number which divides (*this)
              *  @param:  max_error_exponent: Absolute Error in the result should be < 1*base^(-max_error_exponent)
@@ -846,13 +846,14 @@ namespace boost {
              *  @author: Kishan Shukla
              */
             void divide_vector(const exact_number<T> divisor, unsigned int max_error_exponent, bool upper) {
-
                 newton_raphson_division(divisor, max_error_exponent, upper);
-
             }
 
-            /*          BINARY SEARCH BASED DIVISION
-             *      an approximate division method, used in the initial guess of reciprocal in Newton Raphson
+            /**         
+             *  @brief: an approximate division method, used in the initial guess of reciprocal in Newton Raphson
+             *  @param: divisor: an exact_number which divides
+             *  @param: max_error_exponent: maximum error in the answer should be <= 1 * base^(-max_error_exponent)
+             *  @author: Kishan Shukla
              */
 
             void binary_search_division(
@@ -864,25 +865,26 @@ namespace boost {
                     throw exponent_overflow_exception();
                 }
 
-                static const exact_number<T> _0 = exact_number<T> ();
-                if (divisor == _0) {
+                static const exact_number<T> zero = exact_number<T> ();
+                static exact_number<T> one_exact("1");
+                static exact_number<T> two_exact("2");
+                if (divisor == zero) {
                     throw divide_by_zero();
                 }
 
                 /* Special Cases */
-                if ((*this) == _0) {
+                if ((*this) == zero) {
                     return;
                 }
 
-                static const exact_number<T> _1(std::vector<T> {1}, 1, true);
-                if (divisor == _1) {
+                if (divisor == one_exact) {
                     return;
                 }
 
                 bool positive = (this->positive == divisor.positive);
 
-                static const exact_number<T> _n1(std::vector<T> {1}, 1, false);
-                if (divisor == _n1) {
+                static const exact_number<T> neg_one(std::vector<T> {1}, 1, false);
+                if (divisor == neg_one) {
                     this->positive = positive;
                     return;
                 }
@@ -909,18 +911,18 @@ namespace boost {
                  * ==> 0 < numerator / denominator < 1
                  */
                 if (numerator > denominator) {
-                    left = _1;
+                    left = one_exact;
                     right = numerator;
                 } else {
-                    left = _0;
-                    right = _1;
+                    left = zero;
+                    right = one_exact;
                 }
 
                 exact_number<T> length = (right - left) * half;   /* length is half the length of [left, right] */
                 (*this) = length + left;
 
                 exact_number<T> residual = (*this) * denominator - numerator;
-                if (residual == _0) {
+                if (residual == zero) {
                     this->exponent += exponent_diff;
                     this->positive = positive;
                     return;
@@ -967,11 +969,11 @@ namespace boost {
                 residual = (*this) * denominator - numerator;
                 residual.normalize();
 
-                if (residual < _0) {
+                if (residual < zero) {
                     this->round_up(base);
                 }
 
-                if (residual > _0) {
+                if (residual > zero) {
                     this->round_down(base);
                 }
 
@@ -980,11 +982,11 @@ namespace boost {
                 this->normalize();
             }
 
-            /*          NEWTON RAPHSON DIVISION
+            /**
              * @brief:   calculates (*this)/divisor
              * @param:   divisor: an exact_number which divides (*this)
              * @param:   max_error_exponent: Absolute Error in the result should be < 1*base^(-max_error_exponent)
-             * @param:   upper: if upper is
+             * @param:   upper: if upper is  
              *              1. true: returns result with [0, +epsilon] error
              *              2. false: return result with [-epsilon, 0] error, here epsilon = 1*base^(-max_error_exponent)
              * @author:  Kishan Shukla
@@ -1000,26 +1002,27 @@ namespace boost {
                     throw exponent_overflow_exception();
                 }
 
-                static const exact_number<T> _0 = exact_number<T> ();
-                if (divisor == _0) {
+                static const exact_number<T> zero = exact_number<T> ();
+                static exact_number<T> one_exact("1");
+                static exact_number<T> two_exact("2");
+                if (divisor == zero) {
                     throw divide_by_zero();
                 }
                 /* Exceptions end */
 
                 /* special cases start */
-                if ((*this) == _0) {
+                if ((*this) == zero) {
                     return;
                 }
 
-                static const exact_number<T> _1(std::vector<T> {1}, 1, true);
-                if(divisor == _1){
+                if (divisor == one_exact) {
                     return;
                 }
 
                 bool positive = (this->positive == divisor.positive); /* sign of result */
 
-                static const exact_number<T> _n1(std::vector<T> {1}, 1, false); /* _n1 => negative one */
-                if (divisor == _n1) {
+                static const exact_number<T> neg_one(std::vector<T> {1}, 1, false); /* neg_one => negative one */
+                if (divisor == neg_one) {
                     this->positive = positive;
                     return;
                 }
@@ -1037,11 +1040,10 @@ namespace boost {
                 denominator.exponent = 0;
 
                 const T base = (std::numeric_limits<T>::max() / 4) * 2;
-                exact_number<T> _2(std::vector<T> {2}, 1, true);
 
                 while (denominator.digits[0] < base / 2) {
-                    denominator = denominator * _2;
-                    numerator = numerator * _2;
+                    denominator = denominator * two_exact;
+                    numerator = numerator * two_exact;
                 }
                 /* preprocessing end */
 
@@ -1066,7 +1068,7 @@ namespace boost {
                 /* newton raphson iteration starts */
                 do {
                     /* improving guess */
-                    reciprocal = reciprocal * ( _2 - reciprocal*denominator);
+                    reciprocal = reciprocal * ( two_exact - reciprocal*denominator);
                     reciprocal.normalize();
 
                     /* truncate insignificant digits from the reciprocal */
@@ -1103,31 +1105,31 @@ namespace boost {
 
                 if (upper) {/* residual shoud be positive or = zero */
 
-                    if (residual < _0) {/* if residual is negative, we make it positive or = zero */
+                    if (residual < zero) {/* if residual is negative, we make it positive or = zero */
                         (*this) += max_error;
                     }
 
-                    if (residual > _0) {/* if residual is positive, we check if we can make it zero */
+                    if (residual > zero) {/* if residual is positive, we check if we can make it zero */
                         exact_number<T> tmp_lower = (*this) - max_error;
                         residual = tmp_lower * denominator - numerator;
                         residual.normalize();
-                        if (residual == _0) {
+                        if (residual == zero) {
                             (*this) = tmp_lower;
                         }
                     }
 
                 } else {/* residual shoud be negative = zero */
 
-                    if (residual > _0) {/* if residual is positive, we make it negative or = zero */
+                    if (residual > zero) {/* if residual is positive, we make it negative or = zero */
                         (*this) -= max_error;
                     }
 
-                    if (residual < _0) {/* if residual is negative, we check if we can make it zero */
+                    if (residual < zero) {/* if residual is negative, we check if we can make it zero */
                         exact_number<T> tmp_upper = (*this) + max_error;
                         residual = tmp_upper * denominator - numerator;
                         residual.normalize();
 
-                        if (residual == _0) {
+                        if (residual == zero) {
                             (*this) = tmp_upper;
                         }
                     }
@@ -1139,11 +1141,12 @@ namespace boost {
 
             }
 
-            /*              BINARY EXPONENTIATION
+            /**
              *  @brief:  calculates exact_number^exact_number, (only integral powers)
-             *  @params: number: an exact_number whose integral power is to be evaluated
-             *  @params: exponent: an exact_number which is integer power to be evaluated
+             *  @param: number: an exact_number whose integral power is to be evaluated
+             *  @param: exponent: an exact_number which is integer power to be evaluated
              *  @return: returns an exact_number = number^exponent
+             *  @author: Kishan Shukla
              */
 
 
@@ -1963,14 +1966,18 @@ namespace boost {
                     return digits.size() <= (size_t) exponent;
                 }
             }
+
         };
 
-        namespace literals{
-            template<typename T>
+        inline namespace literals{
+            template<typename T = int>
             const exact_number<T> one_exact = exact_number<T>("1");
 
-            template<typename T>
+            template<typename T = int>
             const exact_number<T> zero_exact = exact_number<T>("0");
+
+            template<typename T = int>
+            const exact_number<T> two_exact = exact_number<T>("2");
         }
 
         template<> inline int exact_number<int>::mul_mod (int a, int b, int c)

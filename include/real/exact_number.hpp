@@ -14,6 +14,8 @@
 namespace boost {
     namespace real {
 
+        int KARATSUBA_BASE_CASE_THRESHOLD = 100;
+
         template <typename T = int>
         struct exact_number {
             using exponent_t = int;
@@ -147,7 +149,7 @@ namespace boost {
             }
 
             //Returns (a*b)%mod
-            inline T mulmod(T a, T b, T mod) 
+            static T mul_mod(T a, T b, T mod) 
             { 
                 T res = 0; // Initialize result 
                 a = a % mod; 
@@ -168,7 +170,7 @@ namespace boost {
             }
 
             //Returns (a*b)/mod
-            inline T mult_div(T a, T b, T c) {
+            static T mult_div(T a, T b, T c) {
                 T rem = 0;
                 T res = (a / c) * b;
                 a = a % c;
@@ -193,7 +195,12 @@ namespace boost {
             } 
 
             /// multiplies *this by other
-            void multiply_vector(exact_number &other, T base = (std::numeric_limits<T>::max() /4)*2) {
+            void multiply_vector(exact_number &other, T base = (std::numeric_limits<T>::max() / 4) * 2) {
+                karatsuba_multiplication(other, base);
+            }
+
+            /// multiplies *this by other
+            void standard_multiplication(exact_number &other, T base = (std::numeric_limits<T>::max() /4)*2) {
                 // will keep the result number in vector in reverse order
                 // Digits: .123 | Exponent: -3 | .000123 <--- Number size is the Digits size less the exponent
                 // Digits: .123 | Exponent: 2  | 12.3
@@ -220,7 +227,7 @@ namespace boost {
 
                         // Multiply current digit of second number with current digit of first number
                         // and add result to previously stored result at current position.
-                        T rem = mulmod(this->digits[i], other.digits[j], base);
+                        T rem = mul_mod(this->digits[i], other.digits[j], base);
                         T rem_s;
                         T q = mult_div(this->digits[i], other.digits[j], base);
                         if ( temp[i_n1 - i_n2] >= base - carry ) {
@@ -264,6 +271,130 @@ namespace boost {
                 this->normalize();
             }
 
+            /**
+             *  @brief: KARATSUBA MULTIPLICATION: multiplies (*this) with other using karatsuba multiplication algorithm
+             *  @param: other: an exact_number to be multiplied with (*this)
+             *  @param: base: base of the numbers being multiplied
+             *  @author: Kishan Shukla
+             */
+
+            void karatsuba_multiplication (
+                    exact_number<T> &other, 
+                    const T base = (std::numeric_limits<T>::max() / 4) * 2
+            ) {
+
+                // this --- a, other --- b
+                const int a_size = this->digits.size();
+                const int b_size = other.digits.size();
+                const int a_exponent = this->exponent;
+                const int b_exponent = other.exponent;
+                const bool a_sign = this->positive;
+                const bool b_sign = other.positive;
+
+                const int max_length = std::max(a_size, b_size);
+
+                if (max_length <= KARATSUBA_BASE_CASE_THRESHOLD || std::abs(a_size - b_size) > std::min(a_size, b_size)) {
+                    this->standard_multiplication(other, base);
+                    return;
+                }
+
+                // appending zeroes in front to make sizes of a & b equal
+                int a_pref_zeroes = 0, b_pref_zeroes = 0;
+                if (a_size < max_length) {
+                    a_pref_zeroes = max_length - a_size;
+                } else if (b_size < max_length) {
+                    b_pref_zeroes = max_length - b_size;
+                } 
+
+                const int left_half_length = max_length / 2;
+                const int right_half_length = max_length - left_half_length;
+
+                /*
+                        Variable Explanation
+                    a is vector representation of "this", b is vector representation of "other"
+                    a = exact_al * base^(right_half_length) + exact_ar
+                    b = exact_bl * base^(right_half_length) + exact_br
+                */
+                exact_number<T> exact_al;
+                exact_number<T> exact_ar;
+                exact_number<T> exact_bl;
+                exact_number<T> exact_br;
+
+                if (a_pref_zeroes > 0) {
+                    if (a_pref_zeroes >= left_half_length) {
+                        exact_al = exact_number(std::vector<T> (), true);
+                        exact_ar = exact_number(this->digits, true);
+                    } else {
+                        exact_al = exact_number(std::vector<T> (this->digits.begin(), this->digits.begin() + left_half_length - a_pref_zeroes), true);
+                        exact_ar = exact_number(std::vector<T> (this->digits.begin() + left_half_length - a_pref_zeroes, this->digits.end()), true);
+                    }
+                    exact_bl = exact_number(std::vector<T> (other.digits.begin(), other.digits.begin() + left_half_length), true);
+                    exact_br = exact_number(std::vector<T> (other.digits.begin() + left_half_length, other.digits.end()), true);
+                } else if (b_pref_zeroes > 0) {
+                    if (b_pref_zeroes >= left_half_length) {
+                        exact_bl = exact_number(std::vector<T> (), true);
+                        exact_br = exact_number(other.digits, true);
+                    } else {
+                        exact_bl = exact_number(std::vector<T> (other.digits.begin(), other.digits.begin() + left_half_length - b_pref_zeroes), true);
+                        exact_br = exact_number(std::vector<T> (other.digits.begin() + left_half_length - b_pref_zeroes, other.digits.end()), true);
+                    }
+                    exact_al = exact_number(std::vector<T> (this->digits.begin(), this->digits.begin() + left_half_length), true);
+                    exact_ar = exact_number(std::vector<T> (this->digits.begin() + left_half_length, this->digits.end()), true);
+                } else {
+                    exact_al = exact_number(std::vector<T> (this->digits.begin(), this->digits.begin() + left_half_length), true);
+                    exact_ar = exact_number(std::vector<T> (this->digits.begin() + left_half_length, this->digits.end()), true);
+                    exact_bl = exact_number(std::vector<T> (other.digits.begin(), other.digits.begin() + left_half_length), true);
+                    exact_br = exact_number(std::vector<T> (other.digits.begin() + left_half_length, other.digits.end()), true);
+                }
+
+                exact_al.normalize();
+                exact_bl.normalize();
+                exact_ar.normalize();
+                exact_br.normalize();
+
+                exact_number<T> sum_al_ar (exact_al);
+                exact_number<T> sum_bl_br (exact_bl);
+
+                /*
+                    Variable explanation
+                    sum_al_ar = al + ar
+                    sum_bl_br = bl + br
+                */
+                sum_al_ar.add_vector(exact_ar, base - 1);
+                sum_bl_br.add_vector(exact_br, base - 1);
+
+                exact_al.karatsuba_multiplication(exact_bl, base);
+                sum_al_ar.karatsuba_multiplication(sum_bl_br, base);
+                exact_ar.karatsuba_multiplication(exact_br, base);
+                /*
+                    Variable explanation
+                    exact_al = al * bl
+                    sum_al_ar = (al + ar) * (bl + br)
+                    exact_ar = ar * br
+                */
+
+                sum_al_ar.subtract_vector(exact_al, base - 1);
+                sum_al_ar.subtract_vector(exact_ar, base - 1);
+                /*
+                    sum_al_ar = al * br + ar * bl
+                */
+
+                // multiply exact_al by base^(2 * right_half_length)
+                exact_al.exponent += 2 * right_half_length;
+
+                // multiply sum_al_ar by base^(right_half_length)
+                sum_al_ar.exponent += right_half_length;
+
+                exact_al.add_vector(sum_al_ar, base - 1);
+                exact_al.add_vector(exact_ar, base - 1);
+
+                *this = exact_al;
+                this->exponent += -(a_size + b_size) + (a_exponent + b_exponent);
+                this->positive = (a_sign == b_sign);
+                this->normalize();
+
+            }
+
             //Performs long division on dividend by divisor and returns result in quotient
             std::vector<T> long_divide_vectors(
                     const std::vector<T>& dividend,
@@ -289,16 +420,16 @@ namespace boost {
                 return remainder;
             }
 
-            /*      ******* KNUTH DIVISION *******
-             *   @author: Kishan Shukla
-             *   @brief:  computes quotient and remainder when dividend is divided by divisor using 
-             *            knuth's algorithm (Not exactly knuth's Algorithm due to design constrains).
+            /** 
+             *   @brief:  "KNUTH DIVISION" computes quotient and remainder when dividend is divided by divisor using 
+             *            knuth's algorithm (Not exactly knuth's Algorithm due to design constraints).
              *            Valid only for integers.
-             *   @Params: dividend  - vector of any size to be divided
-             *   @Params: divisor   - vector of any size which divides
-             *   @Params: quotient  - Empty vector in which quotient is returned
-             *   @Params: remainder - Empty vector in which remainder is returned
-             *   @Params: Base      - Base of integer vectors dividend and divisor provided
+             *   @param: dividend  - vector of any size to be divided
+             *   @param: divisor   - vector of any size which divides
+             *   @param: quotient  - Empty vector in which quotient is returned
+             *   @param: remainder - Empty vector in which remainder is returned
+             *   @param: Base      - Base of integer vectors dividend and divisor provided
+             *   @author: Kishan Shukla
              *   @ref:    The Art of Computer Programming, Vol 2, 4.33 Algorithm D
              */
 
@@ -350,13 +481,14 @@ namespace boost {
                     throw divide_by_zero();
                 }
 
-                exact_number<T> zero(std::vector<T> {0}, 0, true);
-                exact_number<T> two(std::vector<T> {2});
+                exact_number<T> zero("0");
+                static exact_number<T> one_exact("1");
+                static exact_number<T> two_exact("2");
 
                 int normalization_factor = 0;
                 while (exact_divisor.digits[0] < base / 2) {
-                    exact_divisor.multiply_vector(two, base);
-                    exact_dividend.multiply_vector(two, base);
+                    exact_divisor.multiply_vector(two_exact, base);
+                    exact_dividend.multiply_vector(two_exact, base);
                     normalization_factor++;
                 }
 
@@ -431,10 +563,9 @@ namespace boost {
                     }
                 }
                 else {
-                    exact_number<T> exact_base(std::vector<T> {1,0}, 2, true);
-                    exact_number<T> one(std::vector<T> {1});
+                    exact_number<T> exact_base(std::vector<T> {1, 0}, 2, true);
 
-                    std::vector<T> dividend_part(exact_dividend.digits.begin(), exact_dividend.digits.begin()+n);
+                    std::vector<T> dividend_part(exact_dividend.digits.begin(), exact_dividend.digits.begin() + n);
                     exact_number<T> temp_dividend(dividend_part, n, true);
                     
                     exact_number<T> first_digit, second_digit, temp_quotient, temp;
@@ -546,7 +677,7 @@ namespace boost {
                         temp = temp_quotient;
                         temp.multiply_vector(exact_divisor, base);
                         while (temp > temp_dividend) {
-                            temp_quotient.subtract_vector(one, base - 1);
+                            temp_quotient.subtract_vector(one_exact, base - 1);
                             temp = temp_quotient;
                             temp.multiply_vector(exact_divisor, base);
                         }
@@ -576,13 +707,13 @@ namespace boost {
                 }
             }
 
-            /*  
-             *  @author Kishan Shukla
-             *  @brief divides a vector by single digit divisor using modified (optimized) long division 
-             *  @param dividend: a vector to be divided by divisor, can be of any size
-             *  @param divisor: a vector of size 1
-             *  @param quotient: an empty vector in which quotient is returned
-             *  @param remainder: an empty vector in which remainder is returned
+            /** 
+             *  @brief: divides a vector by single digit divisor using modified (optimized) long division 
+             *  @param: dividend: a vector to be divided by divisor, can be of any size
+             *  @param: divisor: a vector of size 1
+             *  @param: quotient: an empty vector in which quotient is returned
+             *  @param: remainder: an empty vector in which remainder is returned
+             *  @author: Kishan Shukla
              */
 
             static void division_by_single_digit(
@@ -706,7 +837,7 @@ namespace boost {
                 remainder = exact_remainder.digits;
             }
 
-            /*              DIVISION
+            /**
              *  @brief:  divides (*this) by divisor
              *  @param:  divisor: number which divides (*this)
              *  @param:  max_error_exponent: Absolute Error in the result should be < 1*base^(-max_error_exponent)
@@ -715,13 +846,14 @@ namespace boost {
              *  @author: Kishan Shukla
              */
             void divide_vector(const exact_number<T> divisor, unsigned int max_error_exponent, bool upper) {
-
                 newton_raphson_division(divisor, max_error_exponent, upper);
-
             }
 
-            /*          BINARY SEARCH BASED DIVISION
-             *      an approximate division method, used in the initial guess of reciprocal in Newton Raphson
+            /**         
+             *  @brief: an approximate division method, used in the initial guess of reciprocal in Newton Raphson
+             *  @param: divisor: an exact_number which divides
+             *  @param: max_error_exponent: maximum error in the answer should be <= 1 * base^(-max_error_exponent)
+             *  @author: Kishan Shukla
              */
 
             void binary_search_division(
@@ -733,25 +865,26 @@ namespace boost {
                     throw exponent_overflow_exception();
                 }
 
-                static const exact_number<T> _0 = exact_number<T> ();
-                if (divisor == _0) {
+                static const exact_number<T> zero = exact_number<T> ();
+                static exact_number<T> one_exact("1");
+                static exact_number<T> two_exact("2");
+                if (divisor == zero) {
                     throw divide_by_zero();
                 }
 
                 /* Special Cases */
-                if ((*this) == _0) {
+                if ((*this) == zero) {
                     return;
                 }
 
-                static const exact_number<T> _1(std::vector<T> {1}, 1, true);
-                if (divisor == _1) {
+                if (divisor == one_exact) {
                     return;
                 }
 
                 bool positive = (this->positive == divisor.positive);
 
-                static const exact_number<T> _n1(std::vector<T> {1}, 1, false);
-                if (divisor == _n1) {
+                static const exact_number<T> neg_one(std::vector<T> {1}, 1, false);
+                if (divisor == neg_one) {
                     this->positive = positive;
                     return;
                 }
@@ -778,18 +911,18 @@ namespace boost {
                  * ==> 0 < numerator / denominator < 1
                  */
                 if (numerator > denominator) {
-                    left = _1;
+                    left = one_exact;
                     right = numerator;
                 } else {
-                    left = _0;
-                    right = _1;
+                    left = zero;
+                    right = one_exact;
                 }
 
                 exact_number<T> length = (right - left) * half;   /* length is half the length of [left, right] */
                 (*this) = length + left;
 
                 exact_number<T> residual = (*this) * denominator - numerator;
-                if (residual == _0) {
+                if (residual == zero) {
                     this->exponent += exponent_diff;
                     this->positive = positive;
                     return;
@@ -836,11 +969,11 @@ namespace boost {
                 residual = (*this) * denominator - numerator;
                 residual.normalize();
 
-                if (residual < _0) {
+                if (residual < zero) {
                     this->round_up(base);
                 }
 
-                if (residual > _0) {
+                if (residual > zero) {
                     this->round_down(base);
                 }
 
@@ -849,11 +982,11 @@ namespace boost {
                 this->normalize();
             }
 
-            /*          NEWTON RAPHSON DIVISION
+            /**
              * @brief:   calculates (*this)/divisor
              * @param:   divisor: an exact_number which divides (*this)
              * @param:   max_error_exponent: Absolute Error in the result should be < 1*base^(-max_error_exponent)
-             * @param:   upper: if upper is
+             * @param:   upper: if upper is  
              *              1. true: returns result with [0, +epsilon] error
              *              2. false: return result with [-epsilon, 0] error, here epsilon = 1*base^(-max_error_exponent)
              * @author:  Kishan Shukla
@@ -869,26 +1002,27 @@ namespace boost {
                     throw exponent_overflow_exception();
                 }
 
-                static const exact_number<T> _0 = exact_number<T> ();
-                if (divisor == _0) {
+                static const exact_number<T> zero = exact_number<T> ();
+                static exact_number<T> one_exact("1");
+                static exact_number<T> two_exact("2");
+                if (divisor == zero) {
                     throw divide_by_zero();
                 }
                 /* Exceptions end */
 
                 /* special cases start */
-                if ((*this) == _0) {
+                if ((*this) == zero) {
                     return;
                 }
 
-                static const exact_number<T> _1(std::vector<T> {1}, 1, true);
-                if(divisor == _1){
+                if (divisor == one_exact) {
                     return;
                 }
 
                 bool positive = (this->positive == divisor.positive); /* sign of result */
 
-                static const exact_number<T> _n1(std::vector<T> {1}, 1, false); /* _n1 => negative one */
-                if (divisor == _n1) {
+                static const exact_number<T> neg_one(std::vector<T> {1}, 1, false); /* neg_one => negative one */
+                if (divisor == neg_one) {
                     this->positive = positive;
                     return;
                 }
@@ -906,11 +1040,10 @@ namespace boost {
                 denominator.exponent = 0;
 
                 const T base = (std::numeric_limits<T>::max() / 4) * 2;
-                exact_number<T> _2(std::vector<T> {2}, 1, true);
 
                 while (denominator.digits[0] < base / 2) {
-                    denominator = denominator * _2;
-                    numerator = numerator * _2;
+                    denominator = denominator * two_exact;
+                    numerator = numerator * two_exact;
                 }
                 /* preprocessing end */
 
@@ -935,7 +1068,7 @@ namespace boost {
                 /* newton raphson iteration starts */
                 do {
                     /* improving guess */
-                    reciprocal = reciprocal * ( _2 - reciprocal*denominator);
+                    reciprocal = reciprocal * ( two_exact - reciprocal*denominator);
                     reciprocal.normalize();
 
                     /* truncate insignificant digits from the reciprocal */
@@ -972,31 +1105,31 @@ namespace boost {
 
                 if (upper) {/* residual shoud be positive or = zero */
 
-                    if (residual < _0) {/* if residual is negative, we make it positive or = zero */
+                    if (residual < zero) {/* if residual is negative, we make it positive or = zero */
                         (*this) += max_error;
                     }
 
-                    if (residual > _0) {/* if residual is positive, we check if we can make it zero */
+                    if (residual > zero) {/* if residual is positive, we check if we can make it zero */
                         exact_number<T> tmp_lower = (*this) - max_error;
                         residual = tmp_lower * denominator - numerator;
                         residual.normalize();
-                        if (residual == _0) {
+                        if (residual == zero) {
                             (*this) = tmp_lower;
                         }
                     }
 
                 } else {/* residual shoud be negative = zero */
 
-                    if (residual > _0) {/* if residual is positive, we make it negative or = zero */
+                    if (residual > zero) {/* if residual is positive, we make it negative or = zero */
                         (*this) -= max_error;
                     }
 
-                    if (residual < _0) {/* if residual is negative, we check if we can make it zero */
+                    if (residual < zero) {/* if residual is negative, we check if we can make it zero */
                         exact_number<T> tmp_upper = (*this) + max_error;
                         residual = tmp_upper * denominator - numerator;
                         residual.normalize();
 
-                        if (residual == _0) {
+                        if (residual == zero) {
                             (*this) = tmp_upper;
                         }
                     }
@@ -1008,11 +1141,12 @@ namespace boost {
 
             }
 
-            /*              BINARY EXPONENTIATION
+            /**
              *  @brief:  calculates exact_number^exact_number, (only integral powers)
-             *  @params: number: an exact_number whose integral power is to be evaluated
-             *  @params: exponent: an exact_number which is integer power to be evaluated
+             *  @param: number: an exact_number whose integral power is to be evaluated
+             *  @param: exponent: an exact_number which is integer power to be evaluated
              *  @return: returns an exact_number = number^exponent
+             *  @author: Kishan Shukla
              */
 
 
@@ -1335,8 +1469,8 @@ namespace boost {
                 if (this->digits == zero || this->digits.empty()) {
                     return !(other.digits == zero || !other.positive || other.digits.empty());
                 } else {
-                    if ((other.digits == zero || other.digits.empty()) && !this->positive)
-                        return true;
+                    if ((other.digits == zero || other.digits.empty()))
+                        return !this->positive;
                 }
                 if (this->positive != other.positive) {
                     return !this->positive;
@@ -1832,14 +1966,16 @@ namespace boost {
                     return digits.size() <= (size_t) exponent;
                 }
             }
+
         };
+
 
         namespace literals{
 
             template<typename T>
             const exact_number<T> minus_one_exact = exact_number<T>("-1");
 
-            template<typename T>
+            template<typename T = int>
             const exact_number<T> zero_exact = exact_number<T>("0");
 
             template<typename T>
@@ -1853,9 +1989,10 @@ namespace boost {
 
             template<typename T>
             const exact_number<T> eight_exact = exact_number<T>("8");
+
         }
 
-        template<> inline int exact_number<int>::mulmod (int a, int b, int c)
+        template<> inline int exact_number<int>::mul_mod (int a, int b, int c)
         {
             return ((long long)a * (long long)b )%c;
         }

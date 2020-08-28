@@ -135,6 +135,12 @@ namespace boost {
                 return "Non-integral power of a negative number is a complex number";
             }
         };
+
+        struct sqrt_not_defined_for_negative_number : public std::exception {
+            const char * what() const throw () override {
+                return "Square root function is not defined for negative numbers";
+            }
+        };
         
 
     }

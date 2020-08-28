@@ -680,6 +680,28 @@ namespace boost {
                 return result; 
             }
 
+            /*      SQAURE ROOT METHOD
+             *  @brief:  Calculates real_num^(1/2) or sqrt(real_num)
+             *  @params: real_num: boost real number whose sqaure root is to be evaluated
+             *  @return: returns a new boost real whose value is real_num^exponent
+             *  @author: Vikram Singh Chundawat
+             */
+
+            static real sqrt(real<T> real_num){
+                real<T> power("1/2", TYPE::RATIONAL);
+                real<T> zero("0");
+                real<T> result;
+                try{
+                    result = real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::LOGARITHM));
+                    result = real(real_operation<T>(result._real_p, power._real_p, OPERATION::MULTIPLICATION));
+                    result = real(real_operation<T>(result._real_p, zero._real_p, OPERATION::EXPONENT));
+                }
+                catch(const logarithm_not_defined_for_non_positive_number& e){
+                    throw sqrt_not_defined_for_negative_number();
+                }
+                return result;
+            }
+
 
             /**
              *      SIN METHOD (INPUT IN RADIANS)

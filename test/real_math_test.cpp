@@ -7,11 +7,227 @@ TEST_CASE("TRIGONOMETRIC FUNCTIONS"){
 		real a("0");
 		real b = real::sin(a);
 		CHECK(a==b);
+		b = real::tan(a);
+		CHECK(a==b);
+		
+		CHECK_THROWS_AS(b = real::cosec(a), boost::real::max_precision_for_trigonometric_function_error);
 
 		real c("1");
 		real d = real::cos(a);
 		CHECK(c==d);
+		CHECK_THROWS_AS(d = real::cot(a), boost::real::max_precision_for_trigonometric_function_error);
+		d = real::sec(a);
+		CHECK(c==d);
+
+		a = real("1.23");
+		b = real::sin(a); // sin(1.23) = 0.942488801931698
+		real lower_limit("0.942488801931697");
+		real upper_limit("0.942488801931699");
+		CHECK(b > lower_limit);
+		CHECK(b < upper_limit);
+
+		b = real::cos(a); // cos(1.23) = 0.334237727124503
+		lower_limit = real("0.334237727124502");
+		upper_limit = real("0.334237727124504");
+		CHECK(b > lower_limit);
+		CHECK(b < upper_limit);
+
+		b = real::tan(a); // tan(1.23) = 2.819815734268152
+		lower_limit = real("2.819815734268151");
+		upper_limit = real("2.819815734268153");
+		CHECK(b > lower_limit);
+		CHECK(b < upper_limit);
+
+		b = real::sec(a); // sec(1.23) = 2.991882480183043
+		lower_limit = real("2.991882480183042");
+		upper_limit = real("2.991882480183044");
+		CHECK(b > lower_limit);
+		CHECK(b < upper_limit);
+
+		b = real::cosec(a); // cosec(1.23) = 1.061020563799198
+		lower_limit = real("1.061020563799197");
+		upper_limit = real("1.061020563799199");
+		CHECK(b > lower_limit);
+		CHECK(b < upper_limit);
+
+		b = real::cot(a); // cot(1.23) = 0.354633101676602
+		lower_limit = real("0.354633101676601");
+		upper_limit = real("0.354633101676603");
+		CHECK(b > lower_limit);
+		CHECK(b < upper_limit);
+
+		
 	}
+
+	SECTION("ADDITION OPERATION (A+B)"){
+		real a("0.45");
+		real b("1.02");
+		real value = a+b;
+
+		real result = real::sin(value); // sin(1.47) = 0.994924349777581
+		real lower_limit("0.994924349777580");
+		real upper_limit("0.994924349777582");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+		result = real::cos(value); // cos(1.47) = 0.100625733386932
+		lower_limit = real("0.100625733386931");
+		upper_limit = real("0.100625733386933");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+		result = real::tan(value); // tan(1.47) = 9.887374891985553
+		lower_limit = real("9.887374891985552");
+		upper_limit = real("9.887374891985554");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+		result = real::sec(value); // sec(1.47) = 9.937815768802837
+		lower_limit = real("9.937815768802836");
+		upper_limit = real("9.937815768802838");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+		result = real::cosec(value); // cosec(1.47) = 1.005101543874722
+		lower_limit = real("1.005101543874721");
+		upper_limit = real("1.005101543874723");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+		result = real::cot(value); // sec(1.47) = 0.101139079980731
+		lower_limit = real("0.101139079980730");
+		upper_limit = real("0.101139079980732");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+	}
+
+	SECTION("SUBTRACTION OPERATION (A-B)"){
+		real a("2.57");
+		real b("1.10");
+		real value = a - b; // 2.57 - 1.10 = 1.47
+
+		real result = real::sin(value); // sin(1.47) = 0.994924349777581
+		real lower_limit("0.994924349777580");
+		real upper_limit("0.994924349777582");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+		result = real::cos(value); // cos(1.47) = 0.100625733386932
+		lower_limit = real("0.100625733386931");
+		upper_limit = real("0.100625733386933");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+		result = real::tan(value); // tan(1.47) = 9.887374891985553
+		lower_limit = real("9.887374891985552");
+		upper_limit = real("9.887374891985554");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+		result = real::sec(value); // sec(1.47) = 9.937815768802837
+		lower_limit = real("9.937815768802836");
+		upper_limit = real("9.937815768802838");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+		result = real::cosec(value); // cosec(1.47) = 1.005101543874722
+		lower_limit = real("1.005101543874721");
+		upper_limit = real("1.005101543874723");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+		result = real::cot(value); // sec(1.47) = 0.101139079980731
+		lower_limit = real("0.101139079980730");
+		upper_limit = real("0.101139079980732");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+	}
+
+	SECTION("MULTIPLICATION OPERATION (A*B)"){
+		real a("1.2");
+		real b("4.6");
+		real value = a * b; // 1.2 * 4.6 = 5.52
+
+		real result = real::sin(value); // sin(5.52) = -0.691226771597127
+		real lower_limit("-0.691226771597128");
+		real upper_limit("-0.691226771597126");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+		result = real::cos(value); // cos(5.52) = 0.722637910870592
+		lower_limit = real("0.722637910870591");
+		upper_limit = real("0.722637910870593");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+		result = real::tan(value); // tan(5.52) = -0.956532671755869
+		lower_limit = real("-0.95653267175587");
+		upper_limit = real("-0.956532671755868");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+		result = real::sec(value); // sec(5.52) = 1.383818901495575
+		lower_limit = real("1.383818901495574");
+		upper_limit = real("1.383818901495576");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+		result = real::cosec(value); // cosec(5.52) = -1.446703225468874
+		lower_limit = real("-1.446703225468875");
+		upper_limit = real("-1.446703225468873");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+		result = real::cot(value); // sec(5.52) = -1.045442596502574
+		lower_limit = real("-1.045442596502575");
+		upper_limit = real("-1.045442596502573");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+	}
+
+	SECTION("DIVISION OPERATION (A/B)"){
+		real a("14.7");
+		real b("10");
+		real value = a / b; // 14.7 / 10 = 1.47
+
+		real result = real::sin(value); // sin(1.47) = 0.994924349777581
+		real lower_limit("0.994924349777580");
+		real upper_limit("0.994924349777582");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+		result = real::cos(value); // cos(1.47) = 0.100625733386932
+		lower_limit = real("0.100625733386931");
+		upper_limit = real("0.100625733386933");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+		result = real::tan(value); // tan(1.47) = 9.887374891985553
+		lower_limit = real("9.887374891985552");
+		upper_limit = real("9.887374891985554");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+		result = real::sec(value); // sec(1.47) = 9.937815768802837
+		lower_limit = real("9.937815768802836");
+		upper_limit = real("9.937815768802838");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+		result = real::cosec(value); // cosec(1.47) = 1.005101543874722
+		lower_limit = real("1.005101543874721");
+		upper_limit = real("1.005101543874723");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+		result = real::cot(value); // sec(1.47) = 0.101139079980731
+		lower_limit = real("0.101139079980730");
+		upper_limit = real("0.101139079980732");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+	}
+	
 
 	// checking for property sin^2 + cos^2  = 1. Not using == operator, because it takes lot of time to test
 	SECTION("BASIC TRIGONOMETRIC PROPERTIES"){
@@ -356,8 +572,7 @@ TEST_CASE("LOGARITHM AND EXPONENT"){
 		CHECK(value > lower_limit);
 		CHECK(value < upper_limit);
 	}
-	/*
-	//Currently commented due to bug in division operator 
+	
 	SECTION("A/(B*C)"){
 		real a("2.4");
 		real b("6.87");
@@ -369,7 +584,7 @@ TEST_CASE("LOGARITHM AND EXPONENT"){
 		CHECK(value > lower_limit);
 		CHECK(value < upper_limit);
 	}
-	*/
+
 	SECTION("A+(B*C)"){
 		real a("2.4");
 		real b("6.87");

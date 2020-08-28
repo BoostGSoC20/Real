@@ -565,4 +565,130 @@ TEST_CASE("Non-Integral Power"){
         CHECK(c > lower_bound);
         CHECK(c < upper_bound);
     }
+
+    SECTION("POWER IS AN OPERATION"){
+        SECTION("POWER IS ADDITION OPERATION(A+B)"){
+            real a("1.23");
+            real b("3.58");
+            real power = a + b; // 1.23 + 3.58 = 4.81
+            real number("4.39");
+
+            real result = real::power(number, power); // 4.39^4.81 = 1230.989482509448115
+            real lower_bound("1230.989482509448114");
+            real upper_bound("1230.989482509448116");
+            CHECK(result > lower_bound);
+            CHECK(result < upper_bound);
+        }
+
+        SECTION("POWER IS SUBTRACTION OPERATION(A-B)"){
+            real a("1.23");
+            real b("3.58");
+            real power = b - a; // 3.58 - 1.23 = 2.35
+            real number("4.39");
+
+            real result = real::power(number, power); // 4.39^2.35 = 32.343843174550343
+            real lower_bound("32.343843174550342");
+            real upper_bound("32.343843174550344");
+            CHECK(result > lower_bound);
+            CHECK(result < upper_bound);
+        }
+
+        SECTION("POWER IS MULTIPLICATION OPERATION(A*B)"){
+            real a("1.23");
+            real b("3.58");
+            real power = a * b; // 1.23 * 3.58 = 4.4034
+            real number("4.39");
+
+            real result = real::power(number, power); // 4.39^4.4034 = 674.571934476649233
+            real lower_bound("674.571934476649232");
+            real upper_bound("674.571934476649234");
+            CHECK(result > lower_bound);
+            CHECK(result < upper_bound);
+        }
+
+        SECTION("POWER IS DIVISION OPERATION(A/B)"){
+            real a("1.23");
+            real b("3.58");
+            real power = a / b; // 1.23 / 3.58 = 0.343575418994413
+            real number("4.39");
+
+            real result = real::power(number, power); // 4.39^0.343575418994413 = 1.662398034486293
+            real lower_bound("1.6623980344861");
+            real upper_bound("1.6623980344863");
+            CHECK(result > lower_bound);
+            CHECK(result < upper_bound);
+        }
+    }
+
+
+    SECTION("NUMBER IS AN OPERATION"){
+        SECTION("NUMBER IS ADDITION OPERATION(A+B)"){
+            real a("1.23");
+            real b("3.58");
+            real number = a + b; // 1.23 + 3.58 = 4.81
+            real power("4.39");
+
+            real result = real::power(number, power); // 4.81^4.39 = 987.681422883435912
+            real lower_bound("987.681422883435911");
+            real upper_bound("987.681422883435913");
+            CHECK(result > lower_bound);
+            CHECK(result < upper_bound);
+        }
+
+        SECTION("NUMBER IS SUBTRACTION OPERATION(A-B)"){
+            real a("1.23");
+            real b("3.58");
+            real number = b - a; // 3.58 - 1.23 = 2.35
+            real power("4.39");
+
+            real result = real::power(number, power); // 2.35^4.39 = 42.558657064721475
+            real lower_bound("42.558657064721474");
+            real upper_bound("42.558657064721476");
+            CHECK(result > lower_bound);
+            CHECK(result < upper_bound);
+        }
+
+        SECTION("NUMBER IS MULTIPLICATION OPERATION(A*B)"){
+            real a("1.23");
+            real b("3.58");
+            real number = a * b; // 1.23 * 3.58 = 4.4034
+            real power("4.39");
+
+            real result = real::power(number, power); // 4.4034^4.39 = 670.239356710538598
+            real lower_bound("670.239356710538597");
+            real upper_bound("670.239356710538599");
+            CHECK(result > lower_bound);
+            CHECK(result < upper_bound);
+        }
+
+        SECTION("NUMBER IS DIVISION OPERATION(A/B)"){
+            real a("1.23");
+            real b("3.58");
+            real number = a / b; // 1.23 / 3.58 = 0.343575418994413
+            real power("4.39");
+
+            real result = real::power(number, power); // 0.343575418994413 ^ 4.39 = 0.009186222330203
+            real lower_bound("0.0091862223301");
+            real upper_bound("0.0091862223303");
+            CHECK(result > lower_bound);
+            CHECK(result < upper_bound);
+        }
+
+
+    }
+
+    SECTION("BOTH NUMBER AND POWER ARE OPERATION"){
+        real a("1.34");
+        real b("3.26");
+        real c("8.43");
+        real d("0.38");
+        real number = a + b; // 1.34 + 3.26 = 4.6
+        real power = c * d;  // 8.43 * 0.38 = 3.2034
+
+        real result = real::power(number, power); // 4.6 ^ 3.2034 = 132.763422034566691
+        real lower_bound("132.763422034566690");
+        real upper_bound("132.763422034566692");
+        CHECK(result > lower_bound);
+        CHECK(result < upper_bound);
+    }
 }

@@ -1969,15 +1969,27 @@ namespace boost {
 
         };
 
-        inline namespace literals{
-            template<typename T = int>
-            const exact_number<T> one_exact = exact_number<T>("1");
+
+        namespace literals{
+
+            template<typename T>
+            const exact_number<T> minus_one_exact = exact_number<T>("-1");
 
             template<typename T = int>
             const exact_number<T> zero_exact = exact_number<T>("0");
 
-            template<typename T = int>
+            template<typename T>
+            const exact_number<T> one_exact = exact_number<T>("1");
+
+            template<typename T>
             const exact_number<T> two_exact = exact_number<T>("2");
+
+            template<typename T>
+            const exact_number<T> four_exact = exact_number<T>("4");
+
+            template<typename T>
+            const exact_number<T> eight_exact = exact_number<T>("8");
+
         }
 
         template<> inline int exact_number<int>::mul_mod (int a, int b, int c)

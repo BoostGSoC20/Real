@@ -775,6 +775,83 @@ TEST_CASE("LOGARITHM AND EXPONENT"){
 		CHECK(value < upper_limit);
 	}
 
+}
 
+TEST_CASE("SQURE ROOT FUNCTION TEST"){
+	using real = boost::real::real<int>;
+	using TYPE = boost::real::TYPE;
+	SECTION("BASIC VALUES TEST"){
+		real a("4");
+		real b("4", TYPE::INTEGER);
+		real result = real::sqrt(a);
+		real lower_limit("0.9999999999");
+		real upper_limit("2.0000000001");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
 
+		result = real::sqrt(b);
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+		a = real("0.25");
+		b = real("1/4", TYPE::RATIONAL);
+		result = real::sqrt(a);
+		lower_limit = real("0.499999999");
+		upper_limit = real("0.500000001");
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+
+		result = real::sqrt(b);
+		CHECK(result > lower_limit);
+		CHECK(result < upper_limit);
+	}
+
+	SECTION("NUMBER IS AN OPERATION"){
+		SECTION("ADDITION OPERATION"){
+			real a("2");
+			real b("7");
+			real value = a + b;
+			real result = real::sqrt(value);
+			real lower_limit("2.9999999999");
+			real upper_limit("3.0000000001");
+			CHECK(result > lower_limit);
+			CHECK(result < upper_limit);
+		}
+
+		SECTION("SUBTRACTION OPERATION"){
+			real a("2");
+			real b("7");
+			real value = b - a;
+			real result = real::sqrt(value); // sqrt(5) = 2.23606797749979
+			real lower_limit("2.23606797749978");
+			real upper_limit("2.23606797749980");
+			CHECK(result > lower_limit);
+			CHECK(result < upper_limit);
+		}
+
+		SECTION("MULTIPLICATION OPERATION"){
+			real a("1.23");
+			real b("4.65");
+			real value = a * b; // 1.23 * 4.65 = 5.7195
+			real result = real::sqrt(value); // sqrt(5.7195) = 2.391547616084614
+			real lower_limit("2.391547616084613");
+			real upper_limit("2.391547616084615");
+			CHECK(result > lower_limit);
+			CHECK(result < upper_limit);
+
+		}
+
+		SECTION("MULTIPLICATION OPERATION"){
+			real a("1.23");
+			real b("4.65");
+			real value = a / b; // 1.23 / 4.65 = 0.264516129032258
+			real result = real::sqrt(value); // sqrt(0.264516129032258) = 0.514311315287014	
+			real lower_limit("0.514311315286");
+			real upper_limit("0.514311315288");
+			CHECK(result > lower_limit);
+			CHECK(result < upper_limit);
+
+		}
+
+	}
 }

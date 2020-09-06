@@ -24,6 +24,8 @@ Boost::real is a real number representation data type that address the mentioned
 
 Also, to allow representing irrational numbers as π or e<sup>π</sup>, boost::real has a constructor that takes as parameter a function pointer, functor (function object with the operator ()) or lambda expression that for any integer n > 0, the function returns the n-th digit of the represented number. For example, the number 1/3 can easily be represented by a program that for any input n > 0, the function returns 3.
 
+Although it may seem that it is similar to several range/interval arithematic libraries like boost::interval arithematic but goals and features of this library are much more different. We provide a data type which can represent all computable real number, and the goal is to evluate the expression whose required precision for evaluation is unknown in advance. The implementation of interval arithematic comes because every number is represented as a function which returns an interval containing that number, and interval keeps on getting more precise and close to number as we increase the precision of number. In abstract, this is not an pure interval arithematic library, the goal of this library, which is described above will keep on getting clear as you dive more into libray, is to represent numbers using intervals and adjust the precision according to requrement of calculations.
+
 ## The boost::real numbers representation
 In boost::real, a number has one of the next three representations:
 

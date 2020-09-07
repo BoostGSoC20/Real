@@ -213,10 +213,6 @@ g: [0.99999799999999999999999999999999999999999999999999999999999999999999999999
 h: [0.00000099999999999999999999999999999999999999999999999999999999999999999999999999999999999968217350127, 0.00000100000000000000000000000000000000000000000000000000000000000000000000000000000000000066399221262]
 ```
 
-## Current limitations
-1. The number digits are of type int between 0 and 9, number representation must be correctly handled in a higher base to improve memory and time performances.
-4. The division algorithm is under implementation but is not currently available.
-
 ## References
     1. Computable calculus / Oliver Aberth, San Diego : Academic Press, c2001
     2. Lambov, B. (2007). RealLib: An efficient implementation of exact real arithmetic. Mathematical Structures in Computer Science, 17(1), 81-98.

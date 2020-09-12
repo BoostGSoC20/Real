@@ -376,8 +376,6 @@ namespace boost {
                 }
 
                 case OPERATION::SIN :{
-                    auto [sin_lower, cos_lower] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
-                    auto [sin_upper, cos_upper] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
                     /** 
                      * First we ensure that our input interval is greater than 2π or not. We can either check that by comparing the difference
                      * of upper and lower bound with 2π or a number greater than 2π. We will check whether the difference is greater than 8 or not.
@@ -389,6 +387,7 @@ namespace boost {
                     if(ro.get_lhs_itr().get_interval().upper_bound - ro.get_lhs_itr().get_interval().lower_bound >= literals::eight_exact<T>){
                         this->_approximation_interval.lower_bound = literals::minus_one_exact<T>;
                         this->_approximation_interval.upper_bound = literals::one_exact<T>;
+                        break;
                     }
                     /**
                      * Now we will check whether the difference is greater than 4 or not.
@@ -398,7 +397,9 @@ namespace boost {
                      * will change once, so we will different signs of derivative on upper and lower bound. If there are both minima and maxima,
                      * sign of derivative will change twice, so at the end, sign of derivative in both upper and lower bound will remain same.
                      **/
-                    else if(ro.get_lhs_itr().get_interval().upper_bound - ro.get_lhs_itr().get_interval().lower_bound >= literals::four_exact<T>){
+                    auto [sin_lower, cos_lower] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
+                    auto [sin_upper, cos_upper] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
+                    if(ro.get_lhs_itr().get_interval().upper_bound - ro.get_lhs_itr().get_interval().lower_bound >= literals::four_exact<T>){
                         /**
                          * If sign of derivative, which cos(x), if it is same for both upper and lower bound. Then we will return 
                          * hardcoded output [-1, 1].
@@ -490,8 +491,6 @@ namespace boost {
                 }
 
                 case OPERATION::COS :{
-                    auto [sin_lower, cos_lower] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
-                    auto [sin_upper, cos_upper] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
                     /** 
                      * First we ensure that our input interval is greater than 2π or not. We can either check that by comparing the difference
                      * of upper and lower bound with 2π or a number greater than 2π. We will check whether the difference is greater than 8 or not.
@@ -503,6 +502,7 @@ namespace boost {
                     if(ro.get_lhs_itr().get_interval().upper_bound - ro.get_lhs_itr().get_interval().lower_bound >= literals::eight_exact<T>){
                         this->_approximation_interval.lower_bound = literals::minus_one_exact<T>;
                         this->_approximation_interval.upper_bound = literals::one_exact<T>;
+                        break;
                     }
                     /**
                      * Now we will check whether the difference is greater than 4 or not.
@@ -512,7 +512,9 @@ namespace boost {
                      * will change once, so we will different signs of derivative on upper and lower bound. If there are both minima and maxima,
                      * sign of derivative will change twice, so at the end, sign of derivative in both upper and lower bound will remain same.
                      **/
-                    else if(ro.get_lhs_itr().get_interval().upper_bound - ro.get_lhs_itr().get_interval().lower_bound >= literals::four_exact<T>){
+                    auto [sin_lower, cos_lower] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
+                    auto [sin_upper, cos_upper] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
+                    if(ro.get_lhs_itr().get_interval().upper_bound - ro.get_lhs_itr().get_interval().lower_bound >= literals::four_exact<T>){
                         /**
                          * If sign of derivative, which -sin(x), if it is same for both upper and lower bound. Then we will return 
                          * hardcoded output [-1, 1].
@@ -604,17 +606,18 @@ namespace boost {
 
                 case OPERATION::TAN :{
                     // we will keep on iterating until we get our interval in domain of tan(x)
-                    exact_number<T> sin_lower, cos_lower, sin_upper, cos_upper;           
+                    exact_number<T> sin_lower, cos_lower, sin_upper, cos_upper, sin_lower_tmp, sin_upper_tmp, cos_upper_tmp, cos_lower_tmp;           
                     while(true)
                     {
-                        auto [sin_lower_tmp, cos_lower_tmp] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
-                        auto [sin_upper_tmp, cos_upper_tmp] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
+                        
 
                         bool iterate_again;
                         if(ro.get_lhs_itr().get_interval().upper_bound - ro.get_lhs_itr().get_interval().lower_bound >= literals::four_exact<T>){
                             iterate_again = true;
                         }
                         else{
+                            std::tie(sin_lower_tmp, cos_lower_tmp) = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
+                            std::tie(sin_upper_tmp, cos_upper_tmp) = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
                             /**
                              * Now if difference between lower and upper bounds of interval is less than 4, then there can exist 0,1 or 2 minima/maxima points.
                              * First we will check whether the sign of cos(x) from lower to upper bound is changed or not, if it is, then we have one point 
@@ -664,17 +667,16 @@ namespace boost {
                 }
 
                 case OPERATION::COT :{
-                    exact_number<T> sin_lower, cos_lower, sin_upper, cos_upper;                   
+                    exact_number<T> sin_lower, cos_lower, sin_upper, cos_upper,sin_lower_tmp, sin_upper_tmp, cos_lower_tmp, cos_upper_tmp;                   
                     while(true)
                     {
-                        auto [sin_lower_tmp, cos_lower_tmp] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
-                        auto [sin_upper_tmp, cos_upper_tmp] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
-
                         bool iterate_again;
                         if(ro.get_lhs_itr().get_interval().upper_bound - ro.get_lhs_itr().get_interval().lower_bound >= literals::four_exact<T>){
                             iterate_again = true;
                         }
                         else{
+                            std::tie(sin_lower_tmp, cos_lower_tmp) = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
+                            std::tie(sin_upper_tmp, cos_upper_tmp) = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
                             /**
                              * Now if difference between lower and upper bounds of interval is less than 4, then there can exist 0,1 or 2 minima/maxima points.
                              * First we will check whether the sign of sin(x) from lower to upper bound is changed or not, if it is, then we have one point 
@@ -724,17 +726,18 @@ namespace boost {
                 }
 
                 case OPERATION::SEC :{
-                    exact_number<T> sin_lower, cos_lower, sin_upper, cos_upper;
+                    exact_number<T> sin_lower, cos_lower, sin_upper, cos_upper, sin_lower_tmp, sin_upper_tmp, cos_lower_tmp, cos_upper_tmp;
 
                     while(true){
-                        auto [sin_lower_tmp, cos_lower_tmp] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
-                        auto [sin_upper_tmp, cos_upper_tmp] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
+                        
 
                         bool iterate_again;
                         if(ro.get_lhs_itr().get_interval().upper_bound - ro.get_lhs_itr().get_interval().lower_bound >= literals::four_exact<T>){
                             iterate_again = true;
                         }
                         else{
+                            std::tie(sin_lower_tmp, cos_lower_tmp) = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
+                            std::tie(sin_upper_tmp, cos_upper_tmp) = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
                             /**
                              * Now if difference between lower and upper bounds of interval is less than 4, then there can exist 0,1 or 2 minima/maxima points.
                              * First we will check whether the sign of cos(x) from lower to upper bound is changed or not, if it is, then we have one point 
@@ -825,17 +828,17 @@ namespace boost {
                 }
 
                 case OPERATION::COSEC :{
-                    exact_number<T> sin_lower, cos_lower, sin_upper, cos_upper;
+                    exact_number<T> sin_lower, cos_lower, sin_upper, cos_upper, sin_lower_tmp, sin_upper_tmp, cos_upper_tmp, cos_lower_tmp;
 
                     while(true){
-                        auto [sin_lower_tmp, cos_lower_tmp] = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
-                        auto [sin_upper_tmp, cos_upper_tmp] = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
 
                         bool iterate_again;
                         if(ro.get_lhs_itr().get_interval().upper_bound - ro.get_lhs_itr().get_interval().lower_bound >= literals::four_exact<T>){
                             iterate_again = true;
                         }
                         else{
+                            std::tie(sin_lower_tmp, cos_lower_tmp) = sin_cos(ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false), _precision, false);
+                            std::tie(sin_upper_tmp, cos_upper_tmp) = sin_cos(ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true), _precision, true);
                             /**
                              * Now if difference between lower and upper bounds of interval is less than 4, then there can exist 0,1 or 2 minima/maxima points.
                              * First we will check whether the sign of sin(x) from lower to upper bound is changed or not, if it is, then we have one point 

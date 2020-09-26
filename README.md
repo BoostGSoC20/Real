@@ -1,3 +1,4 @@
+
 ![Boost.Real](doc/other/logo/logo.png)
 
 Boost.Real numerical data type for real numbers representation using range arithmetic.
@@ -19,21 +20,28 @@ Several times, when dealing with complex mathematical calculus, numerical errors
 
 Another major problem when dealing with real numbers is the representation of the irrational number as the number π or e<sup>π</sup>, they are not handled by the native number data types causing limitations when calculations are based on those numbers. Normally we define a truncation of those numbers that are good enough for our purposes, but many times, the needed precision depends on the operation to do and to the composition of multiple operations, therefore, we are unable to determine which is the correct precision until we run the program.
 
+There are a lot of libraries and tools available where we can always specify the initial precision to be used for calculations but in case of problems stated above, where we do not know the precision prior to calculations, our calculations can produce wrong or inconclusive results when precision is less than required or we will use too high precision. So, there should be a tool or library which performs all these operations and controls the precision according to requirements.
+
 ### The boost::real solution
-Boost::real is a real number representation data type that address the mentioned issues using range arithmetic [1] and defining the precision as dynamical to be determined in run-time. The main goal of this data type is to represent a real number x as a program that returns a finite or infinite set of intervals containing the number x x(k) = [m<sub>k</sub> - e<sub>k</sub>, m<sub>k</sub> + e<sub>k</sub>], K ∈ N ≥ 0, e<sub>k</sub> ≥ 0. Where K1 < K2 ⇒ |x(k2)| < |x(k1)|. For this purposes, any Boost::real number has a precision const iterator that iterates the serie of intervals representing the number. The intervals within the serie are sorted from larger to smaller, thus, each time the iterator is increased, the number precision increases due the new calculated interval is smaller than the previous one until the interval is the number itself (if possible).
+Boost::real is a real number representation data type that address the mentioned issues using range arithmetic [1] and defining the precision as dynamical to be determined in run-time. The main goal of this data type is to represent a real number x as a program that returns a finite or infinite set of intervals containing the number x x(k) = [m<sub>k</sub> - e<sub>k</sub>, m<sub>k</sub> + e<sub>k</sub>], K ∈ N ≥ 0, e<sub>k</sub> ≥ 0. Where K1 < K2 ⇒ |x(k2)| < |x(k1)|. For this purposes, any Boost::real number has a precision const iterator that iterates over the series of intervals representing the number. The size of intervals within the series are sorted from larger to smaller, thus, each time the iterator is increased, the number precision increases due the new calculated interval is smaller than the previous one until the interval is the number itself (if possible).
 
 Also, to allow representing irrational numbers as π or e<sup>π</sup>, boost::real has a constructor that takes as parameter a function pointer, functor (function object with the operator ()) or lambda expression that for any integer n > 0, the function returns the n-th digit of the represented number. For example, the number 1/3 can easily be represented by a program that for any input n > 0, the function returns 3.
 
-Although it may seem that it is similar to several range/interval arithematic libraries like boost::interval arithematic but goals and features of this library are much more different. We provide a data type which can represent all computable real number, and the goal is to evluate the expression whose required precision for evaluation is unknown in advance. The implementation of interval arithematic comes because every number is represented as a function which returns an interval containing that number, and interval keeps on getting more precise and close to number as we increase the precision of number. In abstract, this is not an pure interval arithematic library, the goal of this library, which is described above will keep on getting clear as you dive more into libray, is to represent numbers using intervals and adjust the precision according to requrement of calculations.
+Although it may seem that it is similar to several range/interval arithematic libraries like boost::interval arithematic but goals and features of this library are much more different. We provide a data type which can represent all computable real numbers, and the goal is to evaluate the expression whose required precision for evaluation is unknown in advance. The implementation of interval arithematic comes because every number is represented as a function which returns an interval containing that number, and interval keeps on getting more precise and close to number as we increase the precision of number. In abstract, this is not an pure interval arithematic library, the goal of this library, which is described above will keep on getting clear as you dive more into libray, is to represent numbers using intervals and adjust the precision according to requrement of calculations.
 
 ## The boost::real numbers representation
 In boost::real, a number has one of the next three representations:
 
 1. Explicit number: A number is a vector of digits sorted as in the number natural representation. To determine where the integer part ends and the fractional part starts, an integer is used as the exponent of a floating point number and determines where the integer part start and the fractional ends. Also a boolean is used to set the number as positive (True) or negative (False)
 2. Algorithmic number: This representation is equal to the Explicit number but instead of using a vector of digits, a lambda function must be provided. The lambda function takes an unsigned integer "n" as parameter and returns the n-th digit of the number.
-3. A number is a composition of two numbers related by an operator (+, -, *), the number creates pointers to the operands and each time the number is used, the operation is evaluated to return the result.
+3. Operation number: A number is a composition of two numbers related by an operator (+, -, *), the number creates pointers to the operands and each time the number is used, the operation is evaluated to return the result.
+4. Integer number: Specific data type for integer type numbers. The use and benefit of this specified type will be explained later.
+5. Rational number: Specific data type to represent rational numbers (in a/b form). It also has some representational and performance benefits which will be explained later, after general structure and working of library is explained.
 
-Because of the third representation type, a number resulting from a complex calculus is a binary tree where each internal vertex is an operation and the vertex children are its operands. The tree leaves are those numbers represented by either (1) or (2) while the internal vertex are those numbers represented by (3). More information about the used number representation can be found in [3]
+Because of the third representation type, a number resulting from a complex calculus is a binary tree where each internal vertex is an operation and the vertex children are its operands. The tree leaves are those numbers represented by either (1) or (2) or (4) or (5) while the internal vertex are those numbers represented by (3). More information about the used number representation can be found in [3]
+#### Use of specialized types for integer and rational numbers:
+1. They do not create an operation tree or real::operation number when we do any operation between two integer or rational numbers. So, reptitive calculations involving integer and rational number, user should user these specific types so no complex tree is generated. Any operation between two rational or integer numbers will be simply a rational or integer number which is resultant to those two. As at every precision integers are same, there is no need to make precision iterations for those calculations. So, **user should use integer and rational number for small repetitive calculations to optimize space and reduce complexity but should not use them for very large and complex calulcations because they do whole calculation in one go so it may become unnecessary complex expressions to do calculations at full precision when a small precision can give results.**
+2. Some rational numbers can not be represented by a simple string, like 1/3, so we can represent them using this data type. They can be represented as a real operation number between two explicit numbers also.
 
 ## The boost::real precision iterator.
 The boost::real::const_precision_iterator is a forward iterator [4] that iterates through the number interval precisions. The iterator returns two numbers, a lower and an upper boundary that represent the [m<sub>k</sub> - e<sub>k</sub>, m<sub>k</sub> + e<sub>k</sub>] limits of the number approximation interval for a given precision. Each time the iterator is incremented, the interval approximation_interval is decreased and a new interval with a better precision is obtained. Normally, there is no need to interact with the precision iterator and it is used by the boost::real operators <<, < and >.
@@ -42,40 +50,48 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
 
 ### Constructors and destructors
     1. boost::real(const std::string& number)
-    2. boost::real(const initializer_vector<int> digits)
-    3. boost::real(const initializer_vector<int> digits, bool positive)
-    4. boost::real(const initializer_vector<int> digits, int exponent)
-    5. boost::real(const initializer_vector<int> digits, int exponent, bool positive)
-    6. boost::real((unsigned int) -> int digits, int exponent)
-    7. boost::real((unsigned int) -> int digits, int exponent, bool positive)
-    8. boost::real(const boost::real& x)
-    9. boost::~real()
+    2. boost::real(const std::string& number, std::string type)
+    3. boost::real(const std::string& number, boost::real::TYPE)
+    4. boost::real(const initializer_vector<int> digits)
+    5. boost::real(const initializer_vector<int> digits, bool positive)
+    6. boost::real(const initializer_vector<int> digits, int exponent)
+    7. boost::real(const initializer_vector<int> digits, int exponent, bool positive)
+    8. boost::real((unsigned int) -> int digits, int exponent)
+    9. boost::real((unsigned int) -> int digits, int exponent, bool positive)
+    10. boost::real(const boost::real& x)
+    11. boost::~real()
   
 > (1) **String constructor** 
-> Creates a real instance by parsing the string. The string must have a valid number, in other case, the constructor will throw an boost::real::invalid_string_number_exception exception.
+> Creates a real instance by parsing the string. The string must have a valid number, in other case, the constructor will throw an boost::real::invalid_string_number_exception exception. Constructs a number of type real::explicit.
 >
-> (2) **Initializer list constructor** 
+>(2) **String Constructor (with type of number passed as string)**
+> Creates a real instances of type "explicit", "integer", or "rational" based by parsing the string. The string "type" must have a valid type ("explicit"/"integer"/"rational") and number represented by string should also be a valid number.
+> 
+> (3) **String Constructor (with type of number passed as enumerator object)**
+> Creates a real instance of type "explicit", "integer", or "rational" based on type passed by enumerator boost::real::TYPE (TYPE::EXPLICIT/TYPE::INTEGER/TYPE::RATIONAL) and number given by string.
+> 
+> (4) **Initializer list constructor** 
 > Creates a real instance that represents an integer number where all the digits numbers are form the integer part in the same order.
 >
-> (3) **Signed initializer list constructor** 
+> (5) **Signed initializer list constructor** 
 >Creates a real instance that represents the number where the positive parameter is used to set the number sign and the elements of the digits parameter list are the number digits in the same order.
 >
-> (4) **Initializer list constructor with exponent** 
+> (6) **Initializer list constructor with exponent** 
 > Creates a real instance that represents the number where the exponent is used to set the number integer part and the elements of the digits list are the digits the number in the same order.
 >
-> (5) **Initializer list constructor with exponent and sign** 
+> (7) **Initializer list constructor with exponent and sign** 
 > Creates a real instance that represents the number where the exponent is used to set the number integer part and the elements of the digits list are the digits the number in the same order. This constructor uses the sign to determine if the number is positive or negative.
 >
-> (6) **Lambda function constructor with exponent** 
+> (8) **Lambda function constructor with exponent** 
 > Creates a real instance that represents the number where the exponent is used to set the number integer part and the lambda function digits is used to know the number digit, this function returns the n-th number digit.
 >
-> (7) **Lambda function constructor with exponent and sign** 
+> (9) **Lambda function constructor with exponent and sign** 
 > Creates a real instance that represents the number where the exponent is used to set the number integer part and the lambda function digits is used to know the number digit, this function returns the n-th number digit. This constructor uses the sign to determine if the number is positive or negative.
 >
-> (8) **Copy constructor** 
+> (10) **Copy constructor** 
 > Creates a copy of the number x, if the number is an operation, then, the constructor creates new copies of the x operands.
 >
-> (9) **Default destructor** 
+> (11) **Default destructor** 
 > If the number is an operator, the destructor destroys its operands.
 
 ### Operators
@@ -132,6 +148,35 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
 
 > (4) Sets a new maximum precision. If the set maximum precision is zero, the static default maximum precision will be used instead.
 
+### Some Functions
+    1. boost::real power(boost::real number, boost::real power)
+    2. boost::real sqrt(boost::real number)
+    3. boost::real exp(boost::real number)
+    4. boost::real log(boost::real number)
+    5. boost::real sin(boost::real number)
+    6. boost::real cos(boost::real number)
+    7. boost::real tan(boost::real number)
+    8. boost::real sec(boost::real number)
+    9. boost::real cosec(boost::real number)
+    10.boost::real cot(boost::real number) 
+>(1) **Power function (<i> a<sup>b</sup></i> )** 
+> Takes number and power as input and returns number <sup> power </sup> as output. Fractional power of a negative number is not supported, as the result is a imaginary number (of form a+ib) and imaginary numbers are not supported in the library. The function will throw "non_integral_power_of_negative_number" exception.
+>
+>(2) **Square Root function**
+> This functions returns square root of the number, number<sup> 1/2</sup>. Here also, if we feed a negative number, the functions throws an error. As the square root is basically number raised to power 0.5, which is an fractional power so if the number is negative, then the result would be an imaginary number. If negative number is fed to functions, it throws "sqrt_not_defined_for_negative_number" error.
+>
+>(3) **Exponent function (<i> e<sup>x</sup></i> )**
+> Gives exponent of the number fed or return <i> e<sup>number</sup></i>.
+>
+>(4) **Logarithmic funtion**
+> Return <i>log<sub>e</sub>(number)</i>. The <i>logarithm</i> only supports positive number or we can say non negative number (-&#8734;, 0] are out of domain, so if a non negative number is fed then function throws "logarithm_not_defined_for_non_positive_number" error.
+>
+>(5) - (10) **Trigonometric functions**
+> These are trigonometric functions, and their name corresponds to the trigonometric function which they represent. 
+> **Note:** There can be some scenarios where we are not able to ensure whether the number is within domain of trigonometric function or not. Like π/2 is out of domain of tan(x), and if the interval generated by the input number is [π/2 - e, π/2 +e] then we can't out put any result because the result could be anything between -&#8734; to +&#8734;, so we will iterate for more accurate input or more precise interval. We keep on iterating for more precise input until we don't have any such points(points which are out of domain) inside interval, and if we reach maximum precision and still don't get such intervals then we throw error saying number is not inside domain of trigonometric functions.
+> 
+> Also, a lot of times when the interval generated by input is too large then sin and cos will give [-1, 1] as output as the input is bigger than interval or contains both 1 and -1.
+
 ## boost::real::const_precision_iterator interface
 
 ### Constructors
@@ -161,6 +206,8 @@ The boost::real::const_precision_iterator is a forward iterator [4] that iterate
 
 ## Examples
 
+### Example 1: Declaring a real number and using precision iterator.
+Defining simple real explicit numbers and creating an operation between them.
 ```cpp
 #include <iostream>
 #include <string>
@@ -214,7 +261,253 @@ d: [0.99999899999999999999999999999999999999999999999999999999999999999999999999
 g: [0.9999979999999999999999999999999999999999999999999999999999999999999999999999999999999999991629249303, 0.99999799999999999999999999999999999999999999999999999999999999999999999999999999999999999965383428597]
 h: [0.00000099999999999999999999999999999999999999999999999999999999999999999999999999999999999968217350127, 0.00000100000000000000000000000000000000000000000000000000000000000000000000000000000000000066399221262]
 ```
+### Example 2: Integer and rational number.
+Use of specialized data types for integer and rational types of numbers.
+```cpp
+#include <iostream>
+#include <string>
+#include <real/real.hpp>
 
+int main(){
+    boost::real::real a("4/5", boost::real::TYPE::RATIONAL);
+    boost::real::real b("5", "integer");
+    boost::real::real c = a * b; 
+    std::cout<<"(4/5)*5 = "<<c<<std::endl;
+
+    a = "10"_integer;
+    b = "20"_rational;
+    c = b/a;
+    std::cout<<"20/10 = "<<c<<std::endl; 
+    return 0;
+}
+```
+### Output
+```cpp
+(4/5)*5 = 4
+20/10 = 2
+```
+
+### Example 3: Power, exponent, and logarithm.
+Use of power, exp and logarithm functions.
+```cpp
+#include <iostream>
+#include <string>
+#include <real/real.hpp>
+
+using real = boost::real::real<int>;
+using type = boost::real::TYPE;
+
+int main(){
+    real a("2", type::INTEGER); // declared as integer data type
+    real b("2"); // declare as real explicit number
+    real c = real::power(a, b);
+    std::cout<<"2^2 = "<<c<<std::endl;    
+
+    c = real::sqrt(a);
+    std::cout<<"sqrt(2) = "<<c<<std::endl;
+    for (auto it = c.get_real_itr().cbegin(); it != c.get_real_itr().cend(); ++it) {
+        std::cout << "c iteration " << it.get_interval() << std::endl;
+    }
+    
+    std::cout<<std::endl;
+    real d = real::power(c, b);
+    std::cout<<"sqrt(2)^2 = "<<d<<std::endl;
+    
+    a = real("5.7893452");
+    b = real::exp(a);
+    std::cout<< "b = exp(5.7893452)"<<std::endl;
+    for (auto it = b.get_real_itr().cbegin(); it != b.get_real_itr().cend(); ++it) {
+        std::cout << "b iteration " << it.get_interval() << std::endl;
+    }
+
+    c = real::log(a);
+    std::cout<<std::endl<<"c = log(5.7893452)"<<std::endl;
+    for (auto it = c.get_real_itr().cbegin(); it != c.get_real_itr().cend(); ++it) {
+        std::cout << "c iteration " << it.get_interval() << std::endl;
+    }
+    return 0;
+}
+```
+### Output
+```cpp
+2^2 = 4
+sqrt(2) = [1.41421356237309504880168872420969807856967187537694807317667973799073247846210703824455626906, 1.41421356237309504880168872420969807856967187537694807317667973799073247846210703929877608105]
+c iteration [0, 2]
+c iteration [1.4142135612931355113, 1.414213563155780664]
+c iteration [1.41421356237309504771882979579, 1.41421356237309504945355327823]
+c iteration [1.41421356237309504880168872268419715022, 1.41421356237309504880168872429978429314]
+c iteration [1.41421356237309504880168872420969807748793104591, 1.41421356237309504880168872420969807899256382617]
+c iteration [1.41421356237309504880168872420969807856967187429260878896, 1.41421356237309504880168872420969807856967187569390726634]
+c iteration [1.41421356237309504880168872420969807856967187537694807235712586083, 1.41421356237309504880168872420969807856967187537694807366218676902]
+c iteration [1.41421356237309504880168872420969807856967187537694807317667973727681290323, 1.41421356237309504880168872420969807856967187537694807317667973849224559054]
+c iteration [1.41421356237309504880168872420969807856967187537694807317667973799073247782435363771, 1.41421356237309504880168872420969807856967187537694807317667973799073247895631353943]
+
+sqrt(2)^2 = [1.99999999999999999999999999999999999999999999999999999999999999999999999999999999828645041643286755050686006659533432017866892149815259493304241342943026179263302251985740872, 2.00000000000000000000000000000000000000000000000000000000000000000000000000000000126823432812658600908997445370289935447077017980067733307582202211968265635911670874892079273]
+b = exp(5.7893452)
+b iteration [53, 404]
+b iteration [326.79896596036658801206, 326.79896657131419809779]
+b iteration [326.79896633785966276370220447871, 326.79896633785966333269150671875]
+b iteration [326.79896633785966320252799767479510460165, 326.79896633785966320252799820632327462247]
+b iteration [326.79896633785966320252799794778214250652298662653, 326.79896633785966320252799794778214300004253855277]
+b iteration [326.7989663378596632025279979477821427593817405130885539864, 326.79896633785966320252799794778214275938174097341510380423]
+b iteration [326.79896633785966320252799794778214275938174090441527940672129521515, 326.79896633785966320252799794778214275938174090441527983478127309979]
+b iteration [326.79896633785966320252799794778214275938174090441527970907222338267738767102, 326.79896633785966320252799794778214275938174090441527970907222378194702545062]
+b iteration [326.79896633785966320252799794778214275938174090441527970907222374555635709806047973128, 326.79896633785966320252799794778214275938174090441527970907222374555635746934332749572]
+
+c = log(5.7893452)
+c iteration [0, 2]
+c iteration [1.75601919229332207197, 1.75601919415596722467]
+c iteration [1.75601919365244082427619048642, 1.75601919365244082601091396886]
+c iteration [1.75601919365244082540382634155702620033, 1.75601919365244082540382634398040691472]
+c iteration [1.75601919365244082540382634326620308056183430644, 1.75601919365244082540382634326620308281878347684]
+c iteration [1.75601919365244082540382634326620308214439845673423000187, 1.75601919365244082540382634326620308214439845813552847924]
+c iteration [1.75601919365244082540382634326620308214439845791921676163955823715, 1.75601919365244082540382634326620308214439845791921676294461914534]
+c iteration [1.75601919365244082540382634326620308214439845791921676263247861654663653931, 1.75601919365244082540382634326620308214439845791921676263247861836978557027]
+c iteration [1.75601919365244082540382634326620308214439845791921676263247861783286263563401048786, 1.75601919365244082540382634326620308214439845791921676263247861783286263733195034044]
+```
+### Example 4: Use of Irrationals, trigonometric functions, and controlling the precision
+```cpp
+#include <iostream>
+#include <string>
+#include <real/real.hpp>
+#include <real/irrationals.hpp>
+
+using real = boost::real::real<int>;
+using type = boost::real::TYPE;
+
+int main(){
+    // importing π from irrational numbers
+    real pi = boost::real::irrational::PI<int>;
+    int precision = pi.maximum_precision();
+    std::cout<<"Current(default) maximum precision of π is "<<precision<<std::endl;
+    std::cout<<"π = "<<pi<<std::endl;
+    //feeding π to sin funtions
+    real sin = real::sin(pi);
+    std::cout<<"maximum precision of sin is "<<sin.maximum_precision()<<std::endl;
+    std::cout<<"sin(π) = "<<sin<<std::endl;
+    
+    // changing the maximum precision of π to 4
+    precision = 4;
+    std::cout<<std::endl<<"Changing the precision to "<<precision<<std::endl;
+    pi.set_maximum_precision(precision);
+    precision = pi.maximum_precision();
+    std::cout<<"Current maximum precision of π is "<<precision<<std::endl;
+    std::cout<<"π = "<<pi<<std::endl;
+    //feeding π to sin funtions
+    sin = real::sin(pi);
+    std::cout<<"maximum precision of sin is "<<sin.maximum_precision()<<std::endl;
+    std::cout<<"sin(π) = "<<sin<<std::endl;
+
+    // changing the maximum precision of π to 4
+    precision = 20;
+    std::cout<<std::endl<<"Changing the precision to "<<precision<<std::endl;
+    pi.set_maximum_precision(precision);
+    precision = pi.maximum_precision();
+    std::cout<<"Current maximum precision of π is "<<precision<<std::endl;
+    std::cout<<"π = "<<pi<<std::endl;
+    //feeding π to sin funtions
+    sin = real::sin(pi);
+    std::cout<<"Changing the max precision of sin(x) to "<<precision<<std::endl;
+    sin.set_maximum_precision(precision);
+    std::cout<<"maximum precision of sin is "<<sin.maximum_precision()<<std::endl;
+    for(auto itr = sin.get_real_itr().cbegin(); itr!= sin.get_real_itr().cend(); ++itr){
+        std::cout<<"iteration of sin "<<itr.get_interval()<<std::endl;
+    }
+    return 0;
+}
+```
+### Outputs
+```cpp
+Current(default) maximum precision of π is 10
+π = [3.14159265358979323846264338327950288419716939937510582097494459230781640628620899857018879027, 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899909729869626]
+maximum precision of sin is 10
+sin(π) = [-0.00000000000000000000000000000000000000000000000000000000000000000000000000000000046926387115300929617891203965075348871529147710776928643332557037631200996141466502084746304038157584795962599970645623, 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000005784603607199635543420190606638535742513456551916863846852111123904494210854373938807153332655924202988609274069839854]
+
+Changing the precision to 4
+Current maximum precision of π is 4
+π = [3.14159265358979323846264338327950288419716939937510582097494459230781640628620899857018879027, 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899909729869626]
+maximum precision of sin is 10
+sin(π) = [-0.00000000000000000000000000000000000000000000000000000000000000000000000000000000046926387115300929617891203965075348871529147710776928643332557037631200996141466502084746304038157584795962599970645623, 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000005784603607199635543420190606638535742513456551916863846852111123904494210854373938807153332655924202988609274069839854]
+
+Changing the precision to 20
+Current maximum precision of π is 20
+π = [3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535940812848111745028410270193840814383439, 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535940812848111745028410270193866690701871]
+Changing the max precision of sin(x) to 20
+maximum precision of sin is 20
+iteration of sin [-0.75680249588262146557627106619511730962, 0.90929742704336957429169302728719559266]
+iteration of sin [-0.00000000014219486076669568434490500064097155099775381723, 0.00000000172045029454540068127888392671949450435467244068]
+iteration of sin [-0.00000000000000000066221795425345706087009609146842893796417261132994434994, 0.00000000000000000107250553141633901156507887913240873382892218791208238911]
+iteration of sin [-0.00000000000000000000000000000056756336937149688420466722072244490816163882699034601216485282, 0.00000000000000000000000000161501958180750930312583102164678911769019841710356322345564170992]
+iteration of sin [-0.00000000000000000000000000000000000058854302776876417518939224297209576957337161088963318285869547127370406908, 0.00000000000000000000000000000000000091608975459563626753582969546076157327382314364640215557540959899599515737]
+iteration of sin [-0.00000000000000000000000000000000000000000000024743386142841868949561397383353141949892489631935611663024561552419153076620962238, 0.00000000000000000000000000000000000000000000115386461725163704869372745336921335446351376043050952525478534789606901810880312989]
+iteration of sin [-0.00000000000000000000000000000000000000000000000000000007100454489577926339515850355825310338766061421904738079548985725713106977809533312832055726, 0.00000000000000000000000000000000000000000000000000000123405636511186519276144443461026225405272259485960328832307494329257515382487704517100636374]
+iteration of sin [-0.00000000000000000000000000000000000000000000000000000000000000007149151092024619349524791498756507320469629980268919269968095045496574272522251931179584400173573108, 0.00000000000000000000000000000000000000000000000000000000000000114394117751603240483454361627111375693945277323385015244165583236406542518755436962100735363726922795]
+iteration of sin [-0.00000000000000000000000000000000000000000000000000000000000000000000000033332398690835328897286489413492579843299880459270715057453700946046175219677339471656526126369258262545972412, 0.00000000000000000000000000000000000000000000000000000000000000000000000079863591586637405964381349929313857598739622279800813139950192007881952302730905543809773149295349412165664945]
+iteration of sin [-0.00000000000000000000000000000000000000000000000000000000000000000000000000000000046926387115300929617891203965075348871529147710776928643332557037631200996141466502084746304038157584795962599970645623, 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000058495594231518329661436202463278323737005398958721563550637575596551142226703333880794257506340355505957519368652000627]
+iteration of sin [-0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000036410802923221941595054519935326786532344354189334002394437695262741427453258429102099166488938831195061842161343793885534999802, 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000061771068257201715396777290419375967050373927313905117309493380968533555638368741127277199889678659752425639226348953117253417505]
+iteration of sin [-0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000019577097066444506394897748006488851946672919325228302978179653876357403782564796161021242154289919910401623207312672350933401065051097033605979075, 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000071861896237350500453514047835409612448848150815158939041147173225173437639854978106328359785326238795561263593785493470650768891092068209124586947]
+iteration of sin [-0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000031463759314073327593223523953913353584282884421709297123238086177755867596032455618631711904259077939281071301576433779933402367414186272475294666, 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000053695439508485906658217543574192445400095768057184039830666074141075542874845387933265844343975510305932770026907767457798709531204914638295301101]
+iteration of sin [-0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000012745506152883731973740707450957939039845965949983073588512705915429572575032762451065775784843659533345833190911742145159993057177896233203641670487491285, 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000066565178331393137687759689998987217230693048635773988798006073276089680668650713835089377370526366849538512909724704995108312563125413750079480923697521495]
+iteration of sin [-0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000015423816134811406050832809963134693770202892773799050904925628241987402831434949355521279420138641698876122364848958453835279955085224900272733124455912869000800391, 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000058440014802392266354008143230367371581640227764092103274525874117814960062978387796412750863988008291052468707802246146679971081785677111846676854657744461611324377]
+iteration of sin [-0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000081222184466415059677463867751792305244005011735281103469143336171081152059119643186703502456318381359782036707060092510165886642860224115795268220491082916214823225796283702, 0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000606688348808907733932050144393131535899426163003229504933953982834623038959385887844169864373412754558437906323560398327469221973462589858566725005540214167777383563338339998]
+iteration of sin [-0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000188127220043804630550492864041695079714106615626912026450771527829289627143744423057497670352039506147521271218859760767210325373299697989653592559893340610778713476219122185912860491, 0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000452539389806276713150341001243077049034865943218614471548048939634018113862718925666289115024614661509666890467396794535918424483741660178167051620157346753805752149973788661408350085]
+iteration of sin [-0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007535483041267511028940931335381616974162848323561947345986121474296768944793816895443085936266354852400199854281528803704397693336276475323926185565068796915230764261138608567372233300869874, 0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000589131794903704797589552070264673345577023613822437478886517722329431505976813852696372900906683843094070589893594767962426437549165184225785904718090387764306122010487795901067098337428936922]
+iteration of sin [-0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003063284603671584306153467554388011766987308332932900670429691792834385895032200001900714667237445884611161759322381669350026435729817842698370796314911237821296059959356045454694708117571043904495156, 0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000525056859965331455751337219004506675858139888626997322818565138353638900638043697146523798430051736183591882457150738690706953849567966121144599179056529817104722958400043051314906525172419258744436285]
+```
+### Example 5: Some exception handling
+```cpp
+#include <iostream>
+#include <string>
+#include <real/real.hpp>
+#include <real/irrationals.hpp>
+
+using real = boost::real::real<int>;
+using type = boost::real::TYPE;
+
+int main(){
+    real x("-1");
+    // trying to find log of x and checking whether it throws error or not
+    try{
+        real y = real::log(x);
+    }catch(const boost::real::logarithm_not_defined_for_non_positive_number& e1){
+        std::cout<<"Caught log not defined for non positive number error."<<std::endl;
+    }
+
+    // out of domain number for trigonometric functions
+    x = real("0");
+    try{
+        real y = real::cosec(x);
+    }catch(const boost::real::max_precision_for_trigonometric_function_error& e1){
+        std::cout<<"Caught number out of domain of trigonometric functions error"<<std::endl;
+    }
+
+    // Non integral power of a negative number
+    x = real("-4");
+    real y("1.5");
+    try{
+        real z = real::power(x, y);
+    }catch(const boost::real::non_integral_power_of_negative_number& e1){
+        std::cout<<"Caught power of non integral power of negative number exception."<<std::endl;
+    }
+
+    // Square root of a negative number
+    try{
+        real z = real::sqrt(x);
+    }catch(const boost::real::sqrt_not_defined_for_negative_number& e1){
+        std::cout<<"Caught square root for negative number not supported exception."<<std::endl;
+    }
+    
+    return 0;
+}
+```
+
+### Output
+```cpp
+Caught log not defined for non positive number error.
+Caught number out of domain of trigonometric functions error
+Caught power of non integral power of negative number exception.
+Caught square root for negative number not supported exception.
+```
 ## References
     1. Computable calculus / Oliver Aberth, San Diego : Academic Press, c2001
     2. Lambov, B. (2007). RealLib: An efficient implementation of exact real arithmetic. Mathematical Structures in Computer Science, 17(1), 81-98.

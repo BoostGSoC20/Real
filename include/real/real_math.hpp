@@ -86,6 +86,56 @@ namespace boost{
 			result = result.up_to(max_error_exponent, upper);
 			return result;
 		}
+		/**
+		 *  LOGARITHM(BASE 10) FUNCTION USING TAYLOR EXPANSION
+		 * @brief: calculates log(base 10) of a exact_number using taylor expansion
+		 * @param: x: the exact number. whose logarithm (log10(x)) is to be found
+		 * @param: max_error_exponent: Absolute Error in the result should be < 1*base^(-max_error_exponent)
+		 * @param:  upper: if true: error lies in [0, +epsilon]
+		 *                  else: error lies in [-epsilon, 0], here epsilon = 1*base^(-max_error_exponent)
+		 * @author: Harsh Agarwal
+		 **/
+		template<typename T>
+		exact_number<T> logarithm(exact_number<T> x, size_t max_error_exponent, bool upper){
+			// log is only defined for numbers greater than 0
+			static const exact_number<T> two("2");
+			if(x == literals::zero_exact<T> || x.positive == false){
+				throw logarithm base 10_not_defined_for_non_positive_number();
+			}
+			exact_number<T> result("0");
+			exact_number<T> term_number("1");
+			unsigned int term_number_int = 1;
+			exact_number<T> cur_term("0");
+			exact_number<T> x_pow ("1");
+			exact_number<T> max_error(std::vector<T> {1}, -max_error_exponent, true);
+			
+			if(x > literals::zero_exact<T> && x < two){
+				do{
+					if(term_number_int %2 == 1)
+						result -= cur_term;
+					else 
+						result += cur_term;	
+					x_pow = x_pow * (x - literals::one_exact<T>);
+					cur_term = x_pow;
+					cur_term.divide_vector(term_number, max_error_exponent, upper);
+					++term_number_int;
+					term_number = term_number + literals::one_exact<T>;
+				}while(cur_term.abs() > max_error);
+				return result;
+			}
+
+			do{
+				result += cur_term;
+				x_pow = x_pow * (x - literals::one_exact<T>);
+				x_pow.divide_vector(x, max_error_exponent, upper);
+				cur_term = x_pow ;
+				cur_term.divide_vector(term_number, max_error_exponent, upper);
+				++term_number_int;
+				term_number = term_number + literals::one_exact<T>;
+			}while(cur_term.abs() > max_error);
+			result = result.up_to(max_error_exponent, upper);
+			return result;
+		}
 
 		/**
 		 *  SINE FUNCTION USING TAYLOR EXPANSION

@@ -1,6 +1,7 @@
 #include <catch2/catch.hpp>
 #include <test_helpers.hpp>
 
+
 TEST_CASE("TRIGONOMETRIC FUNCTIONS"){
 	using real = boost::real::real<int>;
 	SECTION("BASIC TRIGONOMETRIC VALUES"){
@@ -261,10 +262,19 @@ TEST_CASE("LOGARITHM AND EXPONENT"){
 		b = real::log(c); // log(1) = 0
 		CHECK(a==b);
 
+		b = real::log10(c); // log10(1) = 0
+		CHECK(a==b);
+
 		a = real("2");
 		b = real::log(a); // log 2 = 0.693147181
 		real lower_limit("0.693147180");
 		real upper_limit("0.693147182");
+		CHECK(b > lower_limit);
+		CHECK(b < upper_limit);
+
+		b = real::log10(a); // log10(2) = 0.3010299956
+		lower_limit = real("0.3010299955");
+		upper_limit = real("0.3010299957");
 		CHECK(b > lower_limit);
 		CHECK(b < upper_limit);
 
@@ -276,6 +286,7 @@ TEST_CASE("LOGARITHM AND EXPONENT"){
 
 		a  = real("-7.345");
 		CHECK_THROWS_AS(b = real::log(a), boost::real::logarithm_not_defined_for_non_positive_number);
+		CHECK_THROWS_AS(b = real::log10(a), boost::real::logarithm_not_defined_for_non_positive_number);
 		b = real::exp(a); // exp (-4.345) = 0.000645813
 		lower_limit = real("0.000645812");
 		upper_limit = real("0.000645814");
@@ -283,7 +294,13 @@ TEST_CASE("LOGARITHM AND EXPONENT"){
 		CHECK(b < upper_limit);
 
 		a = real("0.47783");
-		b = real::log(a); // ln(0.47783) = −0.738500258
+		b = real::log10(a); // ln(0.47783) = -0.320726587
+		lower_limit = real("-0.320726588");
+		upper_limit = real("-0.320726586");
+		CHECK(b > lower_limit);
+		CHECK(b < upper_limit);
+
+		b = real::log(a);
 		lower_limit = real("-0.738500259");
 		upper_limit = real("-0.738500257");
 		CHECK(b > lower_limit);
@@ -312,6 +329,12 @@ TEST_CASE("LOGARITHM AND EXPONENT"){
 		CHECK(value > lower_limit);
 		CHECK(value < upper_limit);
 
+		value = real::log10(c); // log10(2) = 0.3010299956
+		lower_limit = real("0.3010299955");
+		upper_limit = real("0.3010299957");
+		CHECK(value > lower_limit);
+		CHECK(value < upper_limit);
+
 		a = real("0.46683");
 		b = real("0.01100");
 		c = a+b;
@@ -324,6 +347,12 @@ TEST_CASE("LOGARITHM AND EXPONENT"){
 		value = real::log(c);
 		lower_limit = real("-0.738500259");
 		upper_limit = real("-0.738500257");
+		CHECK(value > lower_limit);
+		CHECK(value < upper_limit);
+
+		value = real::log10(c); // log10(0.47783) = -0.320726587
+		lower_limit = real("-0.320726588");
+		upper_limit = real("-0.320726586");
 		CHECK(value > lower_limit);
 		CHECK(value < upper_limit);
 	}
@@ -345,12 +374,24 @@ TEST_CASE("LOGARITHM AND EXPONENT"){
 		CHECK(value > lower_limit);
 		CHECK(value < upper_limit);
 
+		value = real::log10(c); // log10(2) = 0.3010299956
+		lower_limit = real("0.3010299955");
+		upper_limit = real("0.3010299957");
+		CHECK(value > lower_limit);
+		CHECK(value < upper_limit);
+
 		a = real("0.48883");
 		b = real("0.01100");
 		c = a - b;
 		value = real::exp(c); // exp(0.47783) = 1.612571323
 		lower_limit = real("1.612571322");
 		upper_limit = real("1.612571324");
+		CHECK(value > lower_limit);
+		CHECK(value < upper_limit);
+
+		value = real::log10(c); // log10(0.47783) = -0.320726587
+		lower_limit = real("-0.320726588");
+		upper_limit = real("-0.320726586");
 		CHECK(value > lower_limit);
 		CHECK(value < upper_limit);
 
@@ -375,6 +416,12 @@ TEST_CASE("LOGARITHM AND EXPONENT"){
 		value = real::log(c); // log 2 = 0.693147181
 		lower_limit = real("0.693147180");
 		upper_limit = real("0.693147182");
+		CHECK(value > lower_limit);
+		CHECK(value < upper_limit);
+
+		value = real::log10(c); // log10(2) = 0.3010299956
+		lower_limit = real("0.3010299955");
+		upper_limit = real("0.3010299957");
 		CHECK(value > lower_limit);
 		CHECK(value < upper_limit);
 
@@ -407,6 +454,12 @@ TEST_CASE("LOGARITHM AND EXPONENT"){
 		upper_limit = real("-0.738500257");
 		CHECK(value > lower_limit);
 		CHECK(value < upper_limit);
+
+		value = real::log10(c); // log10(0.47783) = -0.320726587
+		lower_limit = real("-0.320726588");
+		upper_limit = real("-0.320726586");
+		CHECK(value > lower_limit);
+		CHECK(value < upper_limit);
 	}
 
 	SECTION("DIVISION OPERATOR (A/B)"){
@@ -422,6 +475,12 @@ TEST_CASE("LOGARITHM AND EXPONENT"){
 		value = real::log(c); // log 2 = 0.693147181
 		lower_limit = real("0.693147180");
 		upper_limit = real("0.693147182");
+		CHECK(value > lower_limit);
+		CHECK(value < upper_limit);
+
+		value = real::log10(c); // log10(2) = 0.3010299956
+		lower_limit = real("0.3010299955");
+		upper_limit = real("0.3010299957");
 		CHECK(value > lower_limit);
 		CHECK(value < upper_limit);
 
@@ -482,6 +541,12 @@ TEST_CASE("LOGARITHM AND EXPONENT"){
 		value = real::log(c);
 		lower_limit = real("-0.738500259");
 		upper_limit = real("-0.738500257");
+		CHECK(value > lower_limit);
+		CHECK(value < upper_limit);
+
+		value = real::log10(c); // log10(0.47783) = -0.320726587
+		lower_limit = real("-0.320726588");
+		upper_limit = real("-0.320726586");
 		CHECK(value > lower_limit);
 		CHECK(value < upper_limit);
 	}
@@ -776,6 +841,7 @@ TEST_CASE("LOGARITHM AND EXPONENT"){
 	}
 
 }
+
 
 TEST_CASE("SQURE ROOT FUNCTION TEST"){
 	using real = boost::real::real<int>;

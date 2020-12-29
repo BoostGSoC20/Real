@@ -633,6 +633,23 @@ namespace boost {
                 return real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::LOGARITHM));
             }
 
+            /**
+             *      LOGARITHM METHOD
+             * @brief: Calculated log(real_num) (base 10)
+             * @params: real_num: boost::real number whose logarithm(base 10) is to be calculated.
+             * @return: returns a new boost::real which is ln(real_num)
+             * @author: Suraj Nehra
+             **/
+            static real log10(real<T> real_num){
+                static real<T> zero("0");
+                static real<T> ten("10");
+                // log x (base 10) = lnx/ln10 or (log x (base e))/ (log 10 (base e))
+                // Errors related to non-positive numbers will be handled by log function which we are calling in this function.
+                real<T> logx = real(real_operation<T>(real_num._real_p, zero._real_p, OPERATION::LOGARITHM));
+                real<T> log10 = real(real_operation<T>(ten._real_p, zero._real_p, OPERATION::LOGARITHM));
+                return real(real_operation<T>(logx._real_p, log10._real_p, OPERATION::DIVISION));
+            }
+
             /*      POWER METHOD
              *  @brief:  Calculates real_num^exponent
              *  @params: real_num: boost real number whose power is to be evaluated
@@ -640,7 +657,6 @@ namespace boost {
              *  @return: returns a new boost real whose value is real_num^exponent
              *  @author: Kishan Shukla & Vikram Singh Chundawat
              */
-
             static real power(real<T> real_num, real<T> power){
                 // checking whether the number is integer or not
                 static real<T> zero("0");

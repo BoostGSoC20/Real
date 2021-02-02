@@ -4,4 +4,4 @@ ignore:
   - "doc/**"
   - "external/**"
   - "test/**"
-    "bench/**"
+  - "bench/**"

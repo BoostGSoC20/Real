@@ -301,7 +301,7 @@ namespace boost {
                  * @return a boost::real::const_precision_iterator of the number.
                  */
                 const_precision_iterator cend() {
-                    this->iterate_n_times(this->maximum_precision() - _precision);
+                    this->iterate_n_times(this->maximum_precision() - this->_precision);
                     return *this;
                 }
 
@@ -349,7 +349,7 @@ namespace boost {
                            // If the explicit number just reaches the full precision (the end)
                            // then set both boundaries are equals.
                            if (this->_precision + n >= real.digits().size()) {
-                               for(int i = this->_precision; i < (int)real.digits().size(); i++) {
+                               for(precision_t i = this->_precision; i < (int)real.digits().size(); i++) {
                                    this->_approximation_interval.lower_bound.push_back(real.digits()[i]);
                                }
                                this->_approximation_interval.upper_bound = this->_approximation_interval.lower_bound;
@@ -359,7 +359,7 @@ namespace boost {
                                // If the explicit number didn't reaches the full precision (the end)
                                // then the number interval is defined by truncation.
 
-                               for(precision_t i = _precision; i < _precision + n; i++) {
+                               for(precision_t i = this->_precision; i < this->_precision + n; i++) {
                                    this->_approximation_interval.lower_bound.push_back(real.digits()[i]);
                                }
 

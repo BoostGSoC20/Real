@@ -424,7 +424,7 @@ namespace boost {
                             }
                             /**
                              * We will check sign of lower bound of derivative, if it is positive, then initially function was increasing
-                             * then it would have gone up to 1 and then started decreasing. So, the output will be [min(sin(upper_bound, sin(lower_bound))), 1].
+                             * then it would have gone up to 1 and then started decreasing. So, the output will be [min(sin(upper_bound), sin(lower_bound))), 1].
                             **/
                             else if(cos_lower.positive){
                                 this->_approximation_interval.lower_bound = std::min(sin_upper, sin_lower);
@@ -432,7 +432,7 @@ namespace boost {
                             }
                             /**
                              * Now if the sign of derivative is negative, then initially function was decreasing. So, the function would have got to -1 and then again 
-                             * started increasing. So, the output should be [-1, max(sin_lower, cos_lower)].
+                             * started increasing. So, the output should be [-1, max(sin_upper, sin_lower)].
                              **/
                             else{
                                 this->_approximation_interval.lower_bound = literals::minus_one_exact<T>;
@@ -539,7 +539,7 @@ namespace boost {
                             }
                             /**
                              * We will check sign of lower bound of sin(x), if it is negative, then initially function was increasing
-                             * then it would have gone up to 1 and then started decreasing. So, the output will be [min(cos(upper_bound, cos(lower_bound))), 1].
+                             * then it would have gone up to 1 and then started decreasing. So, the output will be [min(cos(upper_bound), cos(lower_bound))), 1].
                             **/
                             else if(!sin_lower.positive){
                                 this->_approximation_interval.lower_bound = std::min(cos_upper, cos_lower);
@@ -586,8 +586,8 @@ namespace boost {
                         }
                         /**
                          * If sign changes, then one maxima/minima. So, we will check sign of derivative at lower bound of input.
-                         * If it is positive, then function was increasing initially. So, the output will be [min(sin_lower, sin_upper), 1].
-                         * If it is negative, then function was decreasing initially. So, the output will be [-1, max(sin_upper, sin_lower)].
+                         * If it is positive, then function was increasing initially. So, the output will be [min(cos_lower, cos_upper), 1].
+                         * If it is negative, then function was decreasing initially. So, the output will be [-1, max(cos_upper, cos_lower)].
                          **/
                         else{
                             if(!sin_lower.positive){

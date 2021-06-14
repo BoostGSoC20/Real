@@ -412,27 +412,27 @@ namespace boost {
                          * Now, the sign was changed, then there is either one minima/maxima or three maxima minima.
                          * There can exist either one minima/maxima or three points of maxima. In case of three points of maxima, and 
                          * difference between inputs less than 8, both ends of sin will have same sign and sin(x) of mid point of upper and 
-                         * lower bound will have oppsite sign from end points. In that case, we will give hard coded output [-1, 1]. 
+                         * lower bound will have opposite sign from end points. In that case, we will give hard coded output [-1, 1]. 
                          **/
                         else{
                             auto mid = ro.get_lhs_itr().get_interval().upper_bound.up_to(_precision, true) + ro.get_lhs_itr().get_interval().lower_bound.up_to(_precision, false);
                             mid.divide_vector(literals::two_exact<T>, _precision, true);
                             if(sin_lower.positive == sin_upper.positive 
-                                && sine(mid, _precision, true).positive == sin_upper.positive){
+                                && sine(mid, _precision, true).positive != sin_upper.positive){
                                 this->_approximation_interval.lower_bound = literals::minus_one_exact<T>;
                                 this->_approximation_interval.upper_bound = literals::one_exact<T>;
                             }
                             /**
                              * We will check sign of lower bound of derivative, if it is positive, then initially function was increasing
-                             * then it would have gone up to 1 and then started decresing. So, the output will be [min(sin(upper_bound, sin(lower_bounf))), 1].
+                             * then it would have gone up to 1 and then started decreasing. So, the output will be [min(sin(upper_bound), sin(lower_bound))), 1].
                             **/
                             else if(cos_lower.positive){
                                 this->_approximation_interval.lower_bound = std::min(sin_upper, sin_lower);
                                 this->_approximation_interval.upper_bound = literals::one_exact<T>;
                             }
                             /**
-                             * Now if the sign of derivaye is negative, then initially function was decreasing. So, the function would have got to -1 and then again 
-                             * started incresing. So, the output should be [-1, max(sin_lower, cos_lower)].
+                             * Now if the sign of derivative is negative, then initially function was decreasing. So, the function would have got to -1 and then again 
+                             * started increasing. So, the output should be [-1, max(sin_upper, sin_lower)].
                              **/
                             else{
                                 this->_approximation_interval.lower_bound = literals::minus_one_exact<T>;
@@ -442,12 +442,12 @@ namespace boost {
                     }
                     /**
                      * Now, the final case, the difference is less than 4.
-                     * There are two possibilities, no maxima/minima or one maxima/minima.
-                     * If sign of derivative changes, then one maxima/minima, if it doesn't, then no maxima/minima
+                     * There are three possibilities, no maxima/minima, one maxima/minima or both maxima and minima.
+                     * If sign of derivative changes, then one maxima/minima, if it doesn't, then no maxima/minima or both maxima and minima
                      **/
                     else{
                         /**
-                         * If sign does not changes, then no maxima/minima or both maxima and minima.
+                         * If sign does not change, then no maxima/minima or both maxima and minima.
                          * We will check sign of derivative at mid of interval, if it is not same as that of lower and upper bounds.
                          * Then we have both maxima and minima.
                          **/
@@ -524,22 +524,22 @@ namespace boost {
                             this->_approximation_interval.upper_bound = literals::one_exact<T>;
                         }
                         /**
-                         * Now, the sign of deriavtive is changed, then there is either one minima/maxima or three maxima minima.
+                         * Now, the sign of derivative is changed, then there is either one minima/maxima or three maxima minima.
                          * There can exist either one minima/maxima or three points of maxima. In case of three points of maxima, 
                          * difference between inputs less than 8, both ends of cos(x) will have same sign and cos(x) of mid point of upper and 
-                         * lower bound will have oppsite sign from end points. In that case, we will give hard coded output [-1, 1]. 
+                         * lower bound will have opposite sign from end points. In that case, we will give hard coded output [-1, 1]. 
                          **/
                         else{
                             auto mid = ro.get_lhs_itr().get_interval().upper_bound + ro.get_lhs_itr().get_interval().lower_bound;
                             mid.divide_vector(literals::two_exact<T>, _precision, true);
                             if(cos_lower.positive == cos_upper.positive 
-                                && cosine(mid, _precision, true).positive == cos_upper.positive){
+                                && cosine(mid, _precision, true).positive != cos_upper.positive){
                                 this->_approximation_interval.lower_bound = literals::minus_one_exact<T>;
                                 this->_approximation_interval.upper_bound = literals::one_exact<T>;
                             }
                             /**
                              * We will check sign of lower bound of sin(x), if it is negative, then initially function was increasing
-                             * then it would have gone up to 1 and then started decresing. So, the output will be [min(cos(upper_bound, cos(lower_bounf))), 1].
+                             * then it would have gone up to 1 and then started decreasing. So, the output will be [min(cos(upper_bound), cos(lower_bound))), 1].
                             **/
                             else if(!sin_lower.positive){
                                 this->_approximation_interval.lower_bound = std::min(cos_upper, cos_lower);
@@ -547,7 +547,7 @@ namespace boost {
                             }
                             /**
                              * Now if the sign of cos(lower_bound) is positive, then initially function was decreasing. So, the function would have got to -1 and then again 
-                             * started incresing. So, the output should be [-1, max(cos_lower, cos_lower)].
+                             * started increasing. So, the output should be [-1, max(cos_upper, cos_lower)].
                              **/
                             else{
                                 this->_approximation_interval.lower_bound = literals::minus_one_exact<T>;
@@ -586,8 +586,8 @@ namespace boost {
                         }
                         /**
                          * If sign changes, then one maxima/minima. So, we will check sign of derivative at lower bound of input.
-                         * If it is positive, then function was increasing initially. So, the output will be [min(sin_lower, sin_upper), 1].
-                         * If it is negative, then function was decreasing initially. So, the output will be [-1, max(sin_upper, sin_lower)].
+                         * If it is positive, then function was increasing initially. So, the output will be [min(cos_lower, cos_upper), 1].
+                         * If it is negative, then function was decreasing initially. So, the output will be [-1, max(cos_upper, cos_lower)].
                          **/
                         else{
                             if(!sin_lower.positive){
@@ -623,7 +623,7 @@ namespace boost {
                              * First we will check whether the sign of cos(x) from lower to upper bound is changed or not, if it is, then we have one point 
                              * of maxima/minima. Then we will iterate for better input.
                              **/
-                            if(cos_upper_tmp.positive != cos_lower.positive || cos_lower_tmp == literals::zero_exact<T> || cos_upper_tmp == literals::zero_exact<T>){
+                            if(cos_upper_tmp.positive != cos_lower_tmp.positive || cos_lower_tmp == literals::zero_exact<T> || cos_upper_tmp == literals::zero_exact<T>){
                                 iterate_again = true;
                             }
                             /**
@@ -803,10 +803,10 @@ namespace boost {
                             this->_approximation_interval.upper_bound = exact_number<T>("-1");
                             this->_approximation_interval.lower_bound = exact_number<T>("1");
                             if(cos_upper > cos_lower){
-                                this->_approximation_interval.upper_bound.divide_vector(cos_lower, _precision, true);
+                                this->_approximation_interval.lower_bound.divide_vector(cos_lower, _precision, true);
                             }
                             else{
-                                this->_approximation_interval.upper_bound.divide_vector(cos_upper, _precision, true);
+                                this->_approximation_interval.lower_bound.divide_vector(cos_upper, _precision, true);
                             }
 
                         }
@@ -880,7 +880,7 @@ namespace boost {
                         }
                     }
 
-                    // derivative of sec(x) is sec(x)tan(x)
+                    // derivative of cosec(x) is -cosec(x)cot(x)
                     exact_number<T> derivative_lower = cos_lower;
                     derivative_lower.divide_vector(sin_lower*sin_lower, _precision, false);
                     
@@ -904,10 +904,10 @@ namespace boost {
                             this->_approximation_interval.upper_bound = exact_number<T>("-1");
                             this->_approximation_interval.lower_bound = exact_number<T>("1");
                             if(sin_upper > sin_lower){
-                                this->_approximation_interval.upper_bound.divide_vector(sin_lower, _precision, false);
+                                this->_approximation_interval.lower_bound.divide_vector(sin_lower, _precision, false);
                             }
                             else{
-                                this->_approximation_interval.upper_bound.divide_vector(sin_upper, _precision, false);
+                                this->_approximation_interval.lower_bound.divide_vector(sin_upper, _precision, false);
                             }
 
                         }

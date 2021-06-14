@@ -19,6 +19,7 @@ TEST_CASE("Iterate boost::real_algorithm::const_precision_iterator until full pr
                     CHECK(approximation_it.get_interval().lower_bound <= approximation_it.get_interval().upper_bound);
                     CHECK(approximation_it.get_interval().upper_bound - approximation_it.get_interval().lower_bound <= length);
                     length = approximation_it.get_interval().upper_bound - approximation_it.get_interval().lower_bound;
+                    ++approximation_it;
                 }
             }
         }
@@ -37,6 +38,7 @@ TEST_CASE("Iterate boost::real_algorithm::const_precision_iterator until full pr
                     CHECK(approximation_it.get_interval().lower_bound <= approximation_it.get_interval().upper_bound);
                     CHECK(approximation_it.get_interval().upper_bound - approximation_it.get_interval().lower_bound <= length);
                     length = approximation_it.get_interval().upper_bound - approximation_it.get_interval().lower_bound;
+                    ++approximation_it;
                 }
         }
     }
@@ -53,6 +55,7 @@ TEST_CASE("Iterate boost::real_algorithm::const_precision_iterator until full pr
                     CHECK(approximation_it.get_interval().lower_bound <= approximation_it.get_interval().upper_bound);
                     CHECK(approximation_it.get_interval().upper_bound - approximation_it.get_interval().lower_bound <= length);
                     length = approximation_it.get_interval().upper_bound - approximation_it.get_interval().lower_bound;
+                    ++approximation_it;
                 }
         }
 
@@ -70,6 +73,7 @@ TEST_CASE("Iterate boost::real_algorithm::const_precision_iterator until full pr
                     CHECK(approximation_it.get_interval().lower_bound <= approximation_it.get_interval().upper_bound);
                     CHECK(approximation_it.get_interval().upper_bound - approximation_it.get_interval().lower_bound <= length);
                     length = approximation_it.get_interval().upper_bound - approximation_it.get_interval().lower_bound;
+                    ++approximation_it;
                 }
         }
     }

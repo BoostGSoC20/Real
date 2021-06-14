@@ -78,9 +78,9 @@ namespace boost {
                         T max = std::max(lhs_digit, rhs_digit);
                         if (min <= base/2) {
                             T remaining = base/2 - min;
-                            digit = (max - base/2) - remaining - 2;
+                            digit = (max - (base - 1)/2) - remaining - 2;
                         } else {
-                            digit = (min - base/2) + (max - base/2) - 2;
+                            digit = (min - base/2) + (max - (base - 1)/2) - 2;
                         }
                         carry = 1;
                     }
